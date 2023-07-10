@@ -1,0 +1,93 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+Goal: looking at waiting times at A&E
+1. NumberofattendancesAll
+2. Numberwithin 4 hours
+3. Number over 4 hours
+```{r}
+waiting_times <- read.csv("../data/a_and_e/monthly_ae_activity_202305.csv")
+
+```
+
+```{r}
+# open libraries
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(lubridate)
+```
+
+```{r}
+waiting_times_1 <- clean_names(waiting_times)
+```
+
+```{r}
+#explore data
+head(waiting_times)
+glimpse(waiting_times)
+view(waiting_times_1)
+colnames(waiting_times_1)
+```
+
+```{r}
+waiting_times_1 %>% 
+  distinct(country)
+# only a single country = Scotland
+
+waiting_times_1 %>% 
+  distinct(department_type)
+# 2 departments only, injury and emergency (=A&E)
+
+
+waiting_times_1 %>% 
+  select(month, hbt, number_of_attendances_all) %>% 
+  mutate(month_new = ym(month)) %>% 
+  group_by(hbt) %>% 
+  ggplot() +
+  aes(x = month_new, group = hbt) +
+  geom_histogram((aes(fill = hbt))
+  
+#group by hbt, and/or location, and/or department
+```  
+  
+```{r}
+# line graph for total attendances in A&E
+ waiting_times_1 %>% 
+  select(month, hbt, number_of_attendances_all) %>%
+  group_by(month) %>% 
+  summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
+  ggplot() +
+  aes(x = ym(month), y = total_number_attendances_all) +
+  geom_line()
+```
+
+
+```{r}
+# check all 2020 months in more detail given the weird spikes
+waiting_times_1 %>% 
+  select(month, hbt, number_of_attendances_all) %>% 
+  filter(month == str_detect(month, "^2020"))
+
+```
+
+```{r}
+# create a line for waiting times less than 4 hours and over 4 hours
+
+waiting_times_1 %>% 
+  select(month, hbt, number_within4hours_all, number_over4hours_all) %>%
+  group_by(month) %>% 
+  summarise(total_number_within4hrs = sum(number_within4hours_all),
+            total_number_over4hrs = sum(number_over4hours_all)) %>% 
+  ggplot() +
+  aes(x = ym(month)) +
+  geom_line(aes(y = total_number_within4hrs), colour = "indianred") +
+  geom_line(aes(y = total_number_over4hrs), colour = "springgreen4")
+
+
+
+```
+
+
+
