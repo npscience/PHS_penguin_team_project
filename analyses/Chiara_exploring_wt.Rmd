@@ -34,6 +34,15 @@ names(waiting_time_data)
 glimpse(waiting_time_data)
 ```
 
+```{r}
+waiting_time_data %>% 
+  mutate(quarter = str_c(str_sub(month, start = 1, end = 4), case_when(
+        str_sub(month, start = 5, end = 6) %in% c("01", "02", "03") ~ "Q1",
+            str_sub(month, start = 5, end = 6) %in% c("04", "05", "06") ~ "Q2",
+            str_sub(month, start = 5, end = 6) %in% c("07", "08", "09") ~ "Q3",
+            str_sub(month, start = 5, end = 6) %in% c("10", "11", "12") ~ "Q4" 
+  )), .after = month)
+```
 
 
 
@@ -92,19 +101,6 @@ wt_data %>%
 5414 - 5340
 ```
 
-```{r}
-wt_data %>% 
-  filter(year == "2020") %>% 
-  group_by(department_type) %>% 
-  pivot_longer(c("number_meeting_target_aggregate", "attendance_greater8hrs", "attendance_greater12hrs"),
-               names_to = "attendance_times",
-               values_to = "number_of_attendances") %>% 
- # summarise(n_attendances = sum(number))
-  ggplot() +
-  aes(x =  month, y = number_of_attendances, group = month, fill = attendance_times) +
-  geom_col(position = "dodge")
-```
-
 
 
 ```{r}
@@ -116,6 +112,125 @@ wt_data %>%
                values_to = "number_of_attendances") %>% 
   filter(attendance_times == "attendance_greater8hrs")
 ```
+
+
+```{r}
+demographic_data <- read_csv("../data/a_and_e/opendata_monthly_ae_demographics_202305.csv") %>% 
+  clean_names()
+```
+```{r}
+head(demographic_data)
+```
+
+
+```{r}
+daily_covid_by_demo <- read_csv("../data/covid/covid_stats/daily_covid_admissions_20230705 (1).csv") %>% 
+  clean_names()
+
+head(daily_covid_by_demo)
+```
+
+
+```{r}
+total_cases_by_demo %>% 
+  mutate(date = ymd(date))
+```
+
+
+
+
+
+
+```{r}
+demographic_data <- demographic_data %>% 
+  mutate(month = as.character(month)) %>% 
+  mutate(
+    year = as.numeric(str_sub(month, start = 1, end = 4)), .after = month,
+    month = as.numeric(str_sub(month, start = 5, end = 6))
+  )
+
+head(demographic_data)
+```
+
+
+```{r}
+daily_covid_by_demo <- daily_covid_by_demo %>% 
+  mutate(quarter = str_c(str_sub(date, start = 1, end = 4), case_when(
+        str_sub(date, start = 5, end = 6) %in% c("01", "02", "03") ~ "Q1",
+            str_sub(date, start = 5, end = 6) %in% c("04", "05", "06") ~ "Q2",
+            str_sub(date, start = 5, end = 6) %in% c("07", "08", "09") ~ "Q3",
+            str_sub(date, start = 5, end = 6) %in% c("10", "11", "12") ~ "Q4" 
+  )))
+```
+
+
+```{r}
+daily_covid_by_demo %>%
+  #group_by(number_admitted)
+  ggplot() +
+  aes(x = date, y = number_admitted, colour = number_admitted) +
+  geom_point()
+```
+```{r}
+daily_covid_by_demo %>%
+  #group_by(number_admitted)
+  ggplot() +
+  aes(x = quarter, y = number_admitted, fill = seven_day_average) +
+  geom_col(position = "dodge")
+```
+
+
+```{r}
+daily_covid_by_demo %>% 
+  mutate(date = ymd(date)) %>% 
+  ggplot() +
+  aes(x = date, y = seven_day_average) +
+  geom_line()
+      
+```
+
+
+
+
+
+```{r}
+daily_covid_by_demo %>% 
+  mutate(date = ymd(date)) %>% 
+  ggplot() +
+  aes(x = quarter, y = seven_day_average) +
+  geom_col()
+      
+```
+
+
+
+```{r}
+daily_covid_by_demo %>% 
+  filter(seven_day_average > number_admitted)
+```
+
+
+
+```{r}
+daily_covid_by_demo %>% 
+  mutate(quarter = str_c(str_sub(date, start = 1, end = 4), case_when(
+        str_sub(date, start = 5, end = 6) %in% c("01", "02", "03") ~ "Q1",
+            str_sub(date, start = 5, end = 6) %in% c("04", "05", "06") ~ "Q2",
+            str_sub(date, start = 5, end = 6) %in% c("07", "08", "09") ~ "Q3",
+            str_sub(date, start = 5, end = 6) %in% c("10", "11", "12") ~ "Q4" 
+  )))
+```
+
+
+
+
+```{r}
+demo_covid_boarder <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+  clean_names()
+
+head(demo_covid_boarder)
+```
+
 
 
 
