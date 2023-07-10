@@ -42,7 +42,6 @@ waiting_times_1 %>%
 
 
 waiting_times_1 %>% 
-<<<<<<< Updated upstream
   select(month, hbt, number_of_attendances_all) %>% 
   mutate(month_new = ym(month)) %>% 
   group_by(hbt) %>% 
@@ -51,21 +50,22 @@ waiting_times_1 %>%
   geom_histogram((aes(fill = hbt))
   
 #group by hbt, and/or location, and/or department
+```  
   
-  
-```
-
-=======
+```{r}
+# line graph for total attendances in A&E
+ waiting_times_1 %>% 
   select(month, hbt, number_of_attendances_all) %>%
   group_by(month) %>% 
   summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
   ggplot() +
   aes(x = ym(month), y = total_number_attendances_all) +
   geom_line()
-  
-
 ```
+
+
 ```{r}
+# check all 2020 months in more detail given the weird spikes
 waiting_times_1 %>% 
   select(month, hbt, number_of_attendances_all) %>% 
   filter(month == str_detect(month, "^2020"))
@@ -88,28 +88,6 @@ waiting_times_1 %>%
 
 
 ```
->>>>>>> Stashed changes
 
 
-```{r}
-#create a barplot with per month have the number of attendances in total
-
-<<<<<<< Updated upstream
-=======
-```
-
-```{r}
-# trials
-
-waiting_times_1 %>% 
-  select(month, hbt, number_of_attendances_all) %>% 
-  mutate(month_new = ym(month)) %>% 
-  group_by(hbt) %>% 
-  ggplot() +
-  aes(x = month_new, group = hbt) +
-  geom_line(aes(fill = hbt))
-  
-#group by hbt, and/or location, and/or department
->>>>>>> Stashed changes
-```
 
