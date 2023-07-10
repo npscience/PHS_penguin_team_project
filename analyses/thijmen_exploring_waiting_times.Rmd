@@ -33,19 +33,22 @@ colnames(waiting_times_1)
 ```{r}
 waiting_times_1 %>% 
   distinct(country)
+# only a single country = Scotland
 
 waiting_times_1 %>% 
   distinct(department_type)
-
+# 2 departments only, injury and emergency (=A&E)
 
 
 waiting_times_1 %>% 
-  select(month, number_of_attendances_all) %>% 
+  select(month, hbt, number_of_attendances_all) %>% 
   mutate(month_new = ym(month)) %>% 
-  group_by(month_new) %>% 
+  group_by(hbt) %>% 
   ggplot() +
-  aes(x = month_new, y = number_of_attendances_all) +
-  geom_bar()
+  aes(x = month_new, group = hbt) +
+  geom_histogram((aes(fill = hbt))
+  
+#group by hbt, and/or location, and/or department
   
   
 ```
