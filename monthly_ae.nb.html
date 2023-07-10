@@ -11,7 +11,7 @@
 
 
 
-<title>Exploring monthly A&amp;E stats for discharges</title>
+<title>Exploring monthly A&amp;E stats exploration</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1752,8 +1752,8 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Exploring monthly A&amp;E stats for
-discharges</h1>
+<h1 class="title toc-ignore">Exploring monthly A&amp;E stats
+exploration</h1>
 
 </div>
 
@@ -1768,6 +1768,27 @@ library(forcats)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="terminology" class="section level1">
+<h1>Terminology</h1>
+<p>“chat with client”</p>
+<ul>
+<li><p>episode = a transfer handover event (e.g. death, discharge, move
+within hospital)</p></li>
+<li><p>acute = sharp, sudden, short-term; opposite of chronic. Acute
+care includes hospitals, consultations and specialisms, emergency
+treatment, surgeries, diagnostic procedures. Whereas non-acute = long
+stay service, psychiatric services</p></li>
+<li><p>_qf = quality of data, qualifier to note about the value in the
+associated variable column</p></li>
+<li><p>Treat SIMD as one parameter to look at, also include other
+demographics</p></li>
+</ul>
+</div>
+<div id="monthly-ae-data" class="section level1">
+<h1>Monthly a&amp;e data</h1>
+<div id="discharges--" class="section level2">
+<h2>Discharges —-</h2>
+<p>Explore discharges data</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGlzY2hhcmdlcyA8LSByZWFkX2NzdihcImRhdGEvYV9hbmRfZS9vcGVuZGF0YV9tb250aGx5X2FlX2Rpc2NoYXJnZV8yMDIzMDUuY3N2XCIpICU+JSBcbiAgY2xlYW5fbmFtZXMoKVxuYGBgIn0= -->
@@ -1816,8 +1837,8 @@ $ number_of_attendances &lt;dbl&gt; 85, 386, 5, 18, 206, 682, 18, 55, 488, 2, 82
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>67,895 rows with 10 variables</p>
-<div id="looking-at-qf---quality-notes" class="section level2">
-<h2>Looking at qf - quality notes</h2>
+<div id="looking-at-qf---quality-notes" class="section level3">
+<h3>Looking at qf - quality notes</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGlzY2hhcmdlcyAlPiUgXG4gIGZpbHRlcighaXMubmEoZGlzY2hhcmdlX3FmKSkgJT4lIFxuICBkaXN0aW5jdChkaXNjaGFyZ2UpXG5gYGAifQ== -->
@@ -1877,23 +1898,8 @@ departments</li>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="terminology" class="section level1">
-<h1>Terminology</h1>
-<ul>
-<li><p>episode = a transfer handover event (e.g. death, discharge, move
-within hospital)</p></li>
-<li><p>acute = sharp, sudden, short-term; opposite of chronic. Acute
-care includes hospitals, consultations and specialisms, emergency
-treatment, surgeries, diagnostic procedures. Whereas non-acute = long
-stay service, psychiatric services</p></li>
-<li><p>_qf = quality of data, qualifier to note about the value in the
-associated variable column</p></li>
-<li><p>Treat SIMD as one parameter to look at, also include other
-demographics</p></li>
-</ul>
-</div>
-<div id="plot-discharges-by-age" class="section level1">
-<h1>Plot discharges by age</h1>
+<div id="plot-discharges-by-age" class="section level3">
+<h3>Plot discharges by age</h3>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGlzY2hhcmdlcyAlPiUgXG4gIG11dGF0ZShhZ2UgPSBmYWN0b3IoYWdlLCBsZXZlbHMgPSBjKFwiVW5kZXIgMThcIiwgXCIxOC0yNFwiLCBcIjI1LTM5XCIsIFwiNDAtNjRcIiwgXCI2NS03NFwiLCBcIjc1IHBsdXNcIiwgTkFfY2hhcmFjdGVyXykpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHkgPSBkaXNjaGFyZ2UsIHggPSBudW1iZXJfb2ZfYXR0ZW5kYW5jZXMsIGZpbGwgPSBhZ2UpICtcbiAgZ2VvbV9jb2woKVxuYGBgIn0= -->
@@ -1936,6 +1942,70 @@ demographics</p></li>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+</div>
+<div id="demographics--" class="section level2">
+<h2>Demographics —-</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVtb2dyYXBoaWNzIDwtIHJlYWRfY3N2KFwiZGF0YS9hX2FuZF9lL29wZW5kYXRhX21vbnRobHlfYWVfZGVtb2dyYXBoaWNzXzIwMjMwNS5jc3ZcIikgJT4lIFxuICBjbGVhbl9uYW1lcygpXG5gYGAifQ== -->
+<pre class="r"><code>demographics &lt;- read_csv(&quot;data/a_and_e/opendata_monthly_ae_demographics_202305.csv&quot;) %&gt;% 
+  clean_names()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xpbXBzZShkZW1vZ3JhcGhpY3MpXG5gYGAifQ== -->
+<pre class="r"><code>glimpse(demographics)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>This gives demographics of overall attendances but we can’t look at
+waiting times x demographics</p>
+</div>
+<div id="referral--" class="section level2">
+<h2>Referral —-</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVmZXJyYWwgPC0gcmVhZF9jc3YoXCJkYXRhL2FfYW5kX2Uvb3BlbmRhdGFfbW9udGhseV9hZV9yZWZlcnJhbF8yMDIzMDUuY3N2XCIpXG5gYGAifQ== -->
+<pre class="r"><code>referral &lt;- read_csv(&quot;data/a_and_e/opendata_monthly_ae_referral_202305.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xpbXBzZShyZWZlcnJhbClcbmBgYCJ9 -->
+<pre class="r"><code>glimpse(referral)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Referral gives how they were referred into the A&amp;E (frequency of
+method)</p>
+</div>
+<div id="when--" class="section level2">
+<h2>When —-</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2hlbiA8LSByZWFkX2NzdihcImRhdGEvYV9hbmRfZS9vcGVuZGF0YV9tb250aGx5X2FlX3doZW5fMjAyMzA1LmNzdlwiKVxuYGBgIn0= -->
+<pre class="r"><code>when &lt;- read_csv(&quot;data/a_and_e/opendata_monthly_ae_when_202305.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xpbXBzZSh3aGVuKVxuYGBgIn0= -->
+<pre class="r"><code>glimpse(when)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>the …<em>when</em>… data file gives the number of attendances by time
+of day (1h buckets, e.g. 08:00 to 08:59)</p>
+</div>
+</div>
+<div id="try-mapping-hbs" class="section level1">
+<h1>Try mapping HBs —</h1>
+<p>(For Ali)</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShzZilcblxuYGBgIn0= -->
@@ -1966,12 +2036,204 @@ Projected CRS: OSGB36 / British National Grid</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGxvdChoYl9nZW8pXG5cbmBgYCJ9 -->
+<pre class="r"><code>plot(hb_geo)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiW1dBUk5JTkddIERlcHJlY2F0ZWQ6IC0tc2VsZi1jb250YWluZWQuIHVzZSAtLWVtYmVkLXJlc291cmNlcyAtLXN0YW5kYWxvbmVcbiJ9 -->
+<pre><code>[WARNING] Deprecated: --self-contained. use --embed-resources --standalone</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="inpatient-and-day-cases" class="section level1">
+<h1>Inpatient and day cases</h1>
+<div id="inpatient-by-age-and-sex" class="section level2">
+<h2>inpatient by age and sex</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5wYXRpZW50X2FnZV9hbmRfc2V4IDwtIHJlYWRfY3N2KFwiZGF0YS9pbnBhdGllbnRfYW5kX2RheWNhc2VfYnlfbmhzX2JvYXJkX29mX3RyZWF0bWVudF9hZ2VfYW5kX3NleC5jc3ZcIilcblxuYGBgIn0= -->
+<pre class="r"><code>inpatient_age_and_sex &lt;- read_csv(&quot;data/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv&quot;)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTI4ODExIENvbHVtbnM6IDE44pSA4pSAIENvbHVtbiBzcGVjaWZpY2F0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxuRGVsaW1pdGVyOiBcIixcIlxuY2hyICgxMik6IFF1YXJ0ZXIsIFF1YXJ0ZXJRRiwgSEIsIEhCUUYsIExvY2F0aW9uLCBMb2NhdGlvblFGLCBBZG1pc3Npb25UeXBlLCBBZG1pc3Npb25UeXBlUUYsIFNleCwgQWdlLCBBdmVyYWdlTGVuZ3RoT2ZFLi4uXG5kYmwgICg2KTogRXBpc29kZXMsIExlbmd0aE9mRXBpc29kZSwgQXZlcmFnZUxlbmd0aE9mRXBpc29kZSwgU3RheXMsIExlbmd0aE9mU3RheSwgQXZlcmFnZUxlbmd0aE9mU3RheVxu4oS5IFVzZSBgc3BlYygpYCB0byByZXRyaWV2ZSB0aGUgZnVsbCBjb2x1bW4gc3BlY2lmaWNhdGlvbiBmb3IgdGhpcyBkYXRhLlxu4oS5IFNwZWNpZnkgdGhlIGNvbHVtbiB0eXBlcyBvciBzZXQgYHNob3dfY29sX3R5cGVzID0gRkFMU0VgIHRvIHF1aWV0IHRoaXMgbWVzc2FnZS5cbiJ9 -->
+<pre><code>Rows: 128811 Columns: 18── Column specification ────────────────────────────────────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr (12): Quarter, QuarterQF, HB, HBQF, Location, LocationQF, AdmissionType, AdmissionTypeQF, Sex, Age, AverageLengthOfE...
+dbl  (6): Episodes, LengthOfEpisode, AverageLengthOfEpisode, Stays, LengthOfStay, AverageLengthOfStay
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xpbXBzZShpbnBhdGllbnRfYWdlX2FuZF9zZXgpXG5cbmBgYCJ9 -->
+<pre class="r"><code>glimpse(inpatient_age_and_sex)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTI4LDgxMVxuQ29sdW1uczogMThcbiQgUXVhcnRlciAgICAgICAgICAgICAgICAgIDxjaHI+IFwiMjAxN1E0XCIsIFwiMjAxOFExXCIsIFwiMjAxOFEyXCIsIFwiMjAxOFEzXCIsIFwiMjAxOFE0XCIsIFwiMjAxOVExXCIsIFwiMjAxOVEyXCIsIFwiMjAxOVEzXCIsIFwiMjAxOVE0XCIs4oCmXG4kIFF1YXJ0ZXJRRiAgICAgICAgICAgICAgICA8Y2hyPiBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIFwicFwiLCBOQSwg4oCmXG4kIEhCICAgICAgICAgICAgICAgICAgICAgICA8Y2hyPiBcIlMwODAwMDAxNVwiLCBcIlMwODAwMDAxNVwiLCBcIlMwODAwMDAxNVwiLCBcIlMwODAwMDAxNVwiLCBcIlMwODAwMDAxNVwiLCBcIlMwODAwMDAxNVwiLCBcIlMwODAwMDAxNVwi4oCmXG4kIEhCUUYgICAgICAgICAgICAgICAgICAgICA8Y2hyPiBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTuKAplxuJCBMb2NhdGlvbiAgICAgICAgICAgICAgICAgPGNocj4gXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIuKAplxuJCBMb2NhdGlvblFGICAgICAgICAgICAgICAgPGNocj4gXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIizigKZcbiQgQWRtaXNzaW9uVHlwZSAgICAgICAgICAgIDxjaHI+IFwiRWxlY3RpdmUgSW5wYXRpZW50c1wiLCBcIkVsZWN0aXZlIElucGF0aWVudHNcIiwgXCJFbGVjdGl2ZSBJbnBhdGllbnRzXCIsIFwiRWxlY3RpdmUgSW5wYXRpZW50c+KAplxuJCBBZG1pc3Npb25UeXBlUUYgICAgICAgICAgPGNocj4gTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE7igKZcbiQgU2V4ICAgICAgICAgICAgICAgICAgICAgIDxjaHI+IFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIsIFwiRmVtYWxlXCIs4oCmXG4kIEFnZSAgICAgICAgICAgICAgICAgICAgICA8Y2hyPiBcIjAtOSB5ZWFyc1wiLCBcIjAtOSB5ZWFyc1wiLCBcIjAtOSB5ZWFyc1wiLCBcIjAtOSB5ZWFyc1wiLCBcIjAtOSB5ZWFyc1wiLCBcIjAtOSB5ZWFyc1wiLCBcIjAtOSB5ZWFyc1wi4oCmXG4kIEVwaXNvZGVzICAgICAgICAgICAgICAgICA8ZGJsPiAxMCwgMTAsIDE3LCAxMCwgNSwgMTAsIDEzLCAxMCwgMTAsIDEwLCA1LCAwLCA1LCA1LCAwLCA1LCA1LCA1LCA1LCA1LCA1LCAxOSwgMTIsIDI5LCAyNywgMeKAplxuJCBMZW5ndGhPZkVwaXNvZGUgICAgICAgICAgPGRibD4gMTgsIDEzLCAxOCwgNiwgOSwgMTAsIDE4LCAxMSwgMTAsIDE1LCA1LCAwLCAxMCwgNywgNSwgNSwgNSwgNSwgNywgNSwgNSwgMTQsIDEwLCAzNywgMzgsIDLigKZcbiQgQXZlcmFnZUxlbmd0aE9mRXBpc29kZSAgIDxkYmw+IDEuODAwMDAwMCwgMS4zMDAwMDAwLCAxLjA1ODgyMzUsIDAuNjAwMDAwMCwgMS44MDAwMDAwLCAxLjAwMDAwMDAsIDEuMzg0NjE1NCwgMS4xMDAwMDAwLCAx4oCmXG4kIEF2ZXJhZ2VMZW5ndGhPZkVwaXNvZGVRRiA8Y2hyPiBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIFwielwiLCBOQSwgTkEsIFwielwiLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSzigKZcbiQgU3RheXMgICAgICAgICAgICAgICAgICAgIDxkYmw+IDI1LCAxOSwgMjgsIDE5LCAxOCwgMjQsIDMwLCAzMCwgMjIsIDE5LCA1LCAwLCAxMCwgNSwgMCwgNSwgMTAsIDEzLCA1LCAxNiwgMTUsIDIzLCAyOCwgMzcs4oCmXG4kIExlbmd0aE9mU3RheSAgICAgICAgICAgICA8ZGJsPiAzMywgMjcsIDM1LCAyMSwgMjIsIDMwLCAzNywgMzgsIDI3LCAyNiwgNSwgMCwgMTcsIDcsIDUsIDgsIDE2LCAzNCwgOCwgMTksIDMxLCAyNSwgMzUsIDQ4LOKAplxuJCBBdmVyYWdlTGVuZ3RoT2ZTdGF5ICAgICAgPGRibD4gMS4zMjAwMDAwLCAxLjQyMTA1MjYsIDEuMjUwMDAwMCwgMS4xMDUyNjMyLCAxLjIyMjIyMjIsIDEuMjUwMDAwMCwgMS4yMzMzMzMzLCAxLjI2NjY2NjcsIDHigKZcbiQgQXZlcmFnZUxlbmd0aE9mU3RheVFGICAgIDxjaHI+IE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgXCJ6XCIsIE5BLCBOQSwgXCJ6XCIsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLOKAplxuIn0= -->
+<pre><code>Rows: 128,811
+Columns: 18
+$ Quarter                  &lt;chr&gt; &quot;2017Q4&quot;, &quot;2018Q1&quot;, &quot;2018Q2&quot;, &quot;2018Q3&quot;, &quot;2018Q4&quot;, &quot;2019Q1&quot;, &quot;2019Q2&quot;, &quot;2019Q3&quot;, &quot;2019Q4&quot;,…
+$ QuarterQF                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;p&quot;, NA, …
+$ HB                       &lt;chr&gt; &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;…
+$ HBQF                     &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Location                 &lt;chr&gt; &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;…
+$ LocationQF               &lt;chr&gt; &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;,…
+$ AdmissionType            &lt;chr&gt; &quot;Elective Inpatients&quot;, &quot;Elective Inpatients&quot;, &quot;Elective Inpatients&quot;, &quot;Elective Inpatients…
+$ AdmissionTypeQF          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+$ Sex                      &lt;chr&gt; &quot;Female&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Female&quot;,…
+$ Age                      &lt;chr&gt; &quot;0-9 years&quot;, &quot;0-9 years&quot;, &quot;0-9 years&quot;, &quot;0-9 years&quot;, &quot;0-9 years&quot;, &quot;0-9 years&quot;, &quot;0-9 years&quot;…
+$ Episodes                 &lt;dbl&gt; 10, 10, 17, 10, 5, 10, 13, 10, 10, 10, 5, 0, 5, 5, 0, 5, 5, 5, 5, 5, 5, 19, 12, 29, 27, 1…
+$ LengthOfEpisode          &lt;dbl&gt; 18, 13, 18, 6, 9, 10, 18, 11, 10, 15, 5, 0, 10, 7, 5, 5, 5, 5, 7, 5, 5, 14, 10, 37, 38, 2…
+$ AverageLengthOfEpisode   &lt;dbl&gt; 1.8000000, 1.3000000, 1.0588235, 0.6000000, 1.8000000, 1.0000000, 1.3846154, 1.1000000, 1…
+$ AverageLengthOfEpisodeQF &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;z&quot;, NA, NA, &quot;z&quot;, NA, NA, NA, NA, NA, NA, NA,…
+$ Stays                    &lt;dbl&gt; 25, 19, 28, 19, 18, 24, 30, 30, 22, 19, 5, 0, 10, 5, 0, 5, 10, 13, 5, 16, 15, 23, 28, 37,…
+$ LengthOfStay             &lt;dbl&gt; 33, 27, 35, 21, 22, 30, 37, 38, 27, 26, 5, 0, 17, 7, 5, 8, 16, 34, 8, 19, 31, 25, 35, 48,…
+$ AverageLengthOfStay      &lt;dbl&gt; 1.3200000, 1.4210526, 1.2500000, 1.1052632, 1.2222222, 1.2500000, 1.2333333, 1.2666667, 1…
+$ AverageLengthOfStayQF    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, &quot;z&quot;, NA, NA, &quot;z&quot;, NA, NA, NA, NA, NA, NA, NA,…</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Key measures:</p>
+<ul>
+<li>Length of episode</li>
+<li>Length of stay</li>
+<li>Demographics: age, sex</li>
+<li>Location</li>
+<li>Year quarter</li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhZG1pc3Npb24gdHlwZXNcbmlucGF0aWVudF9hZ2VfYW5kX3NleCAlPiUgXG4gIGdyb3VwX2J5KEFkbWlzc2lvblR5cGUpICU+JSBcbiAgc3VtbWFyaXNlKGNvdW50ID0gbigpKVxuYGBgIn0= -->
+<pre class="r"><code># admission types
+inpatient_age_and_sex %&gt;% 
+  group_by(AdmissionType) %&gt;% 
+  summarise(count = n())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6NywibmNvbCI6Miwic3VtbWFyeSI6eyJBIHRpYmJsZSI6WyI3IMOXIDIiXX19LCJyZGYiOiJINHNJQUFBQUFBQUFBMldSejBvRE1SREdwMnZYMG9XcW9FY1BlL0xXQmZIaVZXajlBNkpZSy9RYXM5TWFUSk1sU2RVaWlHL2hRL2dTdm9BUDVLVnJzazJLYmhjMm1mM05mRFA1Tm9QZTZDZ1pKUUN3QWMzSXJyRU5JYjRibm5hUG9TTFFnQ2EwM2Y1aTA3czJjSERIdmkyZjZKeHdudmJJUEtWRW8vWnd5OEVMVVJERFVKaEE5Ly9UbEloOFRibmI1MGdOZThKMStWNS9pbXFDZ3M3WGM1MHJhZExiQWlrYk04dzliQThWRVhxTVNydUs2c3h3L1Exdzh3b3crQUk0K3dDNC9BUTRlQU00cHpYRHNTQlQxTjVzdERLYlQ1bldUSXJodk1CUVNlVk1tSnE4cmVSekZscTQyZEc3WGNxeS9LblBvWnpvTUNmQUpDZUdaR05sOWZaclVaTzBaR0hzRWF3b2NqY1MxOFFOVlFQYk0rRk9rbmZwdzB3OGRnL2RnQ3E5ZkRvK2J2MkpvK1hJcVBTdFl0OXFFOFdFaVpWelR1NlJoenUzaml2RFdhR1kvUi9laWFVNk05S1FVSmRReVFPcHZNSGlGNUtKVXZHSUFnQUEifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["AdmissionType"],"name":[1],"type":["chr"],"align":["left"]},{"label":["count"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"All Day cases","2":"20429"},{"1":"All Inpatients","2":"20859"},{"1":"All Inpatients and Day cases","2":"21184"},{"1":"Elective Inpatients","2":"18327"},{"1":"Emergency Inpatients","2":"19627"},{"1":"Not Specified","2":"9854"},{"1":"Transfers","2":"18531"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[7]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Not sure which are acute?</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaW5wYXRpZW50X2FnZV9hbmRfc2V4ICU+JSBcbiAgZ3JvdXBfYnkoUXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UoY291bnQgPSBuKCkpXG5gYGAifQ== -->
+<pre class="r"><code>inpatient_age_and_sex %&gt;% 
+  group_by(Quarter) %&gt;% 
+  summarise(count = n())</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MjEsIm5jb2wiOjIsInN1bW1hcnkiOnsiQSB0aWJibGUiOlsiMjEgw5cgMiJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUExMlN3VTdDUUJDR2gwb2xORUZOREdKOEJ5cmRta0R2aExPZ1JxNXJxVXFzTFNsdDlPalQ4QkRldk9pVGVPTHFtZnEzN0NhZE52bTM4OC91MTluWjdXdzhkNjI1UlVRSDFEUXdtZ2pKdkx1ZDlFZFVacWhCVFdvWDczZE1ueUlva2lkUVYwMGNpb0V6bkY1VjNHanFNQ2VZYzVtcmNoN2pQTVo1alBPcW5CaFVPVGpCbk10Y2xYTVk1ekRPWVp6RE9NRTR3VGpCT0FHT3FGT2VGcDJIMEFTYVFaZlFQVFNFeHRBTmRBR0JQTHNtNm4xRHY5QUcycXI0Qy9xRS92YnJlaisxS3pJaitScXMxZlVZS3RtYVpqSkpnMFN2OGVNc1NtdGdPNG5mYkEwWHV6VStNT1I1dnExWDhFTzUxaFYwMGxySVZOcVBDWGk0WFExcHhhdDBHVWVBak9Mdk1XdHdJNmtsanJPbzJNbWk3ejluMFV2ZkxRcVUwL3VubytKdUpUYjJKWTFjZmNyVU54QkVUOHNvMEhzUDVVTVFLbk9FanN1RzdWV3l4SG1vVHBCZDIybWNTcjNPOHVOUVo4cmVhUGNQYmEreGJqUURBQUE9In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["Quarter"],"name":[1],"type":["chr"],"align":["left"]},{"label":["count"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"2017Q4","2":"6252"},{"1":"2018Q1","2":"6214"},{"1":"2018Q2","2":"6226"},{"1":"2018Q3","2":"6191"},{"1":"2018Q4","2":"6231"},{"1":"2019Q1","2":"6199"},{"1":"2019Q2","2":"6212"},{"1":"2019Q3","2":"6227"},{"1":"2019Q4","2":"6170"},{"1":"2020Q1","2":"6153"},{"1":"2020Q2","2":"5712"},{"1":"2020Q3","2":"6086"},{"1":"2020Q4","2":"6117"},{"1":"2021Q1","2":"6054"},{"1":"2021Q2","2":"6123"},{"1":"2021Q3","2":"6117"},{"1":"2021Q4","2":"6081"},{"1":"2022Q1","2":"6074"},{"1":"2022Q2","2":"6132"},{"1":"2022Q3","2":"6153"},{"1":"2022Q4","2":"6087"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[21]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>2017Q4 to 2020Q1</p>
+</div>
+</div>
+<div id="covid" class="section level1">
+<h1>Covid</h1>
+<div id="admissions-age-sex" class="section level2">
+<h2>Admissions age, sex</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY292aWRfYWdlX3NleCA8LSByZWFkX2NzdihcImRhdGEvY292aWQvaG9zcGl0YWxfYWRtaXNzaW9uc19oYl9hZ2VzZXhfMjAyMzA3MDYuY3N2XCIpXG5gYGAifQ== -->
+<pre class="r"><code>covid_age_sex &lt;- read_csv(&quot;data/covid/hospital_admissions_hb_agesex_20230706.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogNzQxNjQgQ29sdW1uczogMTLilIDilIAgQ29sdW1uIHNwZWNpZmljYXRpb24g4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXG5EZWxpbWl0ZXI6IFwiLFwiXG5jaHIgKDgpOiBIQiwgSEJRRiwgQWdlR3JvdXAsIEFnZUdyb3VwUUYsIFNleCwgU2V4UUYsIEFkbWlzc2lvblR5cGUsIEFkbWlzc2lvblR5cGVRRlxuZGJsICg0KTogV2Vla0VuZGluZywgTnVtYmVyQWRtaXNzaW9ucywgQXZlcmFnZTIwMTgyMDE5LCBQZXJjZW50VmFyaWF0aW9uXG7ihLkgVXNlIGBzcGVjKClgIHRvIHJldHJpZXZlIHRoZSBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9uIGZvciB0aGlzIGRhdGEuXG7ihLkgU3BlY2lmeSB0aGUgY29sdW1uIHR5cGVzIG9yIHNldCBgc2hvd19jb2xfdHlwZXMgPSBGQUxTRWAgdG8gcXVpZXQgdGhpcyBtZXNzYWdlLlxuIn0= -->
+<pre><code>Rows: 74164 Columns: 12── Column specification ─────────────────────────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr (8): HB, HBQF, AgeGroup, AgeGroupQF, Sex, SexQF, AdmissionType, AdmissionTypeQF
+dbl (4): WeekEnding, NumberAdmissions, Average20182019, PercentVariation
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xpbXBzZShjb3ZpZF9hZ2Vfc2V4KVxuXG5gYGAifQ== -->
+<pre class="r"><code>glimpse(covid_age_sex)
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogNzQsMTY0XG5Db2x1bW5zOiAxMlxuJCBXZWVrRW5kaW5nICAgICAgIDxkYmw+IDIwMjAwMTA1LCAyMDIwMDEwNSwgMjAyMDAxMDUsIDIwMjAwMTA1LCAyMDIwMDEwNSwgMjAyMDAxMDUsIDIwMjAwMTA1LCAyMDIwMDEwNSwgMjAyMDAx4oCmXG4kIEhCICAgICAgICAgICAgICAgPGNocj4gXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAwMTVcIiwgXCJTMDgwMDAw4oCmXG4kIEhCUUYgICAgICAgICAgICAgPGNocj4gTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBOQSwgTkHigKZcbiQgQWdlR3JvdXAgICAgICAgICA8Y2hyPiBcIlVuZGVyIDVcIiwgXCI1IC0gMTRcIiwgXCIxNSAtIDQ0XCIsIFwiNDUgLSA2NFwiLCBcIjY1IC0gNzRcIiwgXCI3NSAtIDg0XCIsIFwiODUgYW5kIG92ZXJcIiwgXCJBbGwgYeKAplxuJCBBZ2VHcm91cFFGICAgICAgIDxjaHI+IE5BLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBOQSwgTkEsIE5BLCBOQSwgTkEsIE5BLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBOQSwg4oCmXG4kIFNleCAgICAgICAgICAgICAgPGNocj4gXCJBbGxcIiwgXCJBbGxcIiwgXCJBbGxcIiwgXCJBbGxcIiwgXCJBbGxcIiwgXCJBbGxcIiwgXCJBbGxcIiwgXCJBbGxcIiwgXCJGZW1hbGVcIiwgXCJNYWxlXCIsIFwiQWxsXCIsIFwiQWxsXCLigKZcbiQgU2V4UUYgICAgICAgICAgICA8Y2hyPiBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIE5BLCBOQSwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIE5BLOKAplxuJCBBZG1pc3Npb25UeXBlICAgIDxjaHI+IFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQWxsXCIsIFwiQeKAplxuJCBBZG1pc3Npb25UeXBlUUYgIDxjaHI+IFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCJkXCIsIFwiZFwiLCBcImRcIiwgXCLigKZcbiQgTnVtYmVyQWRtaXNzaW9ucyA8ZGJsPiA4OSwgMjYsIDE3MCwgMjQ3LCAxODQsIDE2OSwgMTA2LCA5OTEsIDUwMCwgNDgzLCAyNSwgMjcsIDQ0LCA1OSwgNjUsIDUzLCAyNzUsIDE0NiwgMTI0LOKAplxuJCBBdmVyYWdlMjAxODIwMTkgIDxkYmw+IDkzLjAsIDMzLjAsIDE5MS41LCAyNjAuNSwgMTk2LjUsIDE3OS41LCAxMjguMCwgMTA4Mi4wLCA1NTkuNSwgNTEzLjAsIDI4LjUsIDMzLjUsIDUxLjUs4oCmXG4kIFBlcmNlbnRWYXJpYXRpb24gPGRibD4gLTQuMywgLTIxLjIsIC0xMS4yLCAtNS4yLCAtNi40LCAtNS44LCAtMTcuMiwgLTguNCwgLTEwLjYsIC01LjgsIC0xMi4zLCAtMTkuNCwgLTE0LjYsIDLigKZcbiJ9 -->
+<pre><code>Rows: 74,164
+Columns: 12
+$ WeekEnding       &lt;dbl&gt; 20200105, 20200105, 20200105, 20200105, 20200105, 20200105, 20200105, 20200105, 202001…
+$ HB               &lt;chr&gt; &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S080000…
+$ HBQF             &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ AgeGroup         &lt;chr&gt; &quot;Under 5&quot;, &quot;5 - 14&quot;, &quot;15 - 44&quot;, &quot;45 - 64&quot;, &quot;65 - 74&quot;, &quot;75 - 84&quot;, &quot;85 and over&quot;, &quot;All a…
+$ AgeGroupQF       &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, NA, NA, NA, NA, NA, NA, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, NA, …
+$ Sex              &lt;chr&gt; &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;All&quot;, &quot;All&quot;…
+$ SexQF            &lt;chr&gt; &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, NA, NA, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, NA,…
+$ AdmissionType    &lt;chr&gt; &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;All&quot;, &quot;A…
+$ AdmissionTypeQF  &lt;chr&gt; &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;d&quot;, &quot;…
+$ NumberAdmissions &lt;dbl&gt; 89, 26, 170, 247, 184, 169, 106, 991, 500, 483, 25, 27, 44, 59, 65, 53, 275, 146, 124,…
+$ Average20182019  &lt;dbl&gt; 93.0, 33.0, 191.5, 260.5, 196.5, 179.5, 128.0, 1082.0, 559.5, 513.0, 28.5, 33.5, 51.5,…
+$ PercentVariation &lt;dbl&gt; -4.3, -21.2, -11.2, -5.2, -6.4, -5.8, -17.2, -8.4, -10.6, -5.8, -12.3, -19.4, -14.6, 2…</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<ul>
+<li>Time: week ending</li>
+<li>HB (but not location)</li>
+<li>age group, sex</li>
+<li>admission type and number
+<ul>
+<li>average 20182019 ascomparator</li>
+<li>% variation</li>
+</ul></li>
+</ul>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY292aWRfYWdlX3NleCAlPiUgXG4gIHN1bW1hcmlzZShjb3VudCA9IG4oKSwgLmJ5ID0gQWRtaXNzaW9uVHlwZSlcbmBgYCJ9 -->
+<pre class="r"><code>covid_age_sex %&gt;% 
+  summarise(count = n(), .by = AdmissionType)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MywibmNvbCI6Miwic3VtbWFyeSI6eyJBIHRpYmJsZSI6WyIzIMOXIDIiXX19LCJyZGYiOiJINHNJQUFBQUFBQUFBMTFRMFU3RElCUzlvNnRMbTFSTi9JNzJaWW54ZFluNnJHWW1lOFdXelc0VUdxRFJ2dm5qcmw0b0xBWWU0SEF1NXh6dWZYdmNyZk5kRGdBSkxBbnVLVUpJMzdmUDVRTTRCaGF3aE15ZTMxaStRMkRKMjFuaENzbUdjdyt6cDQ2cEF4UDE2SW5WQzZkQ3NBWmg0U1J3eElUOVBjRHJHUG1uZ25aTWUyL2l5V0xUZEszV3JSVGJzV2ZoWlMwSFlTSjVwdVJYRlN4c0Z2bkJiWnFtM3ppbjVsU0huRURtRFRXMDJpdlU0KzBjU1ZheU4vZ0ZGQkU3Z0RRU0wxUkUzQXpDL3FRcDY4OUJuTXExRFhEbGVSVWVKLzh3bVNQSjVLMVNiM1hGeEtFVmw4NDUvV0JoMk5mWXNXdTQ2bFdMOC9DZElLc3JJdzBONy9KYThzQzQzdUQ4QnhERlVXNzNBUUFBIn0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["AdmissionType"],"name":[1],"type":["chr"],"align":["left"]},{"label":["count"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"All","2":"27141"},{"1":"Emergency","2":"26166"},{"1":"Planned","2":"20857"}],"options":{"columns":{"min":{},"max":[10],"total":[2]},"rows":{"min":[10],"max":[10],"total":[3]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWluKGNvdmlkX2FnZV9zZXgkV2Vla0VuZGluZylcbmBgYCJ9 -->
+<pre class="r"><code>min(covid_age_sex$WeekEnding)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIwMjAwMTA1XG4ifQ== -->
+<pre><code>[1] 20200105</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWF4KGNvdmlkX2FnZV9zZXgkV2Vla0VuZGluZylcbmBgYCJ9 -->
+<pre class="r"><code>max(covid_age_sex$WeekEnding)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDIwMjMwNjI1XG4ifQ== -->
+<pre><code>[1] 20230625</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>5th Jan 2020 to 25 June 2023 with a comparator to same week in
+2018/2019 (average of the two years)</p>
+<p>Can look at emergency admissions and see % variation from 2018/2019
+average</p>
+<!-- rnb-text-end -->
+</div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXhwbG9yaW5nIG1vbnRobHkgQSZFIHN0YXRzIGZvciBkaXNjaGFyZ2VzIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpgYGB7cn0KbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoamFuaXRvcikKbGlicmFyeShmb3JjYXRzKQpgYGAKCmBgYHtyfQpkaXNjaGFyZ2VzIDwtIHJlYWRfY3N2KCJkYXRhL2FfYW5kX2Uvb3BlbmRhdGFfbW9udGhseV9hZV9kaXNjaGFyZ2VfMjAyMzA1LmNzdiIpICU+JSAKICBjbGVhbl9uYW1lcygpCmBgYApgYGB7cn0KY29sbmFtZXMoZGlzY2hhcmdlcykKYGBgCgpgYGB7cn0KZ2xpbXBzZShkaXNjaGFyZ2VzKQpgYGAKCjY3LDg5NSByb3dzIHdpdGggMTAgdmFyaWFibGVzCgoKIyMgTG9va2luZyBhdCBxZiAtIHF1YWxpdHkgbm90ZXMKCmBgYHtyfQpkaXNjaGFyZ2VzICU+JSAKICBmaWx0ZXIoIWlzLm5hKGRpc2NoYXJnZV9xZikpICU+JSAKICBkaXN0aW5jdChkaXNjaGFyZ2UpCmBgYApBbGwgdGhlIF9xZiBub3RlcyBmb3IgZGlzY2hhcmdlIGluZGljYXRlIGEgTkEgaW4gZGlzY2hhcmdlCgpgYGB7cn0KZGlzY2hhcmdlcyAlPiUgCiAgc3VtbWFyaXNlKGFjcm9zcyguY29scyA9IGV2ZXJ5dGhpbmcoKSwKICAgICAgICAgICAgICAgICAgIC5mbnMgPSB+c3VtKGlzLm5hKC54KSkpKQpgYGAKCjY3LDg5NSByb3dzIAo5LDUyNSBoYXZlIE5BIGluIGRpc2NoYXJnZQo3LDc0OCBOQSBpbiBhZ2UKCkRhdGEgZmlsZSBoYXMgCgoqIG1vbnRoCiogY291bnRyeT8KKiBoYnQgPSBoZWFsdGggYm9hcmQgY29kZSwgbG9va3VwIGhlcmU6IGh0dHBzOi8vd3d3Lm9wZW5kYXRhLm5ocy5zY290L2RhdGFzZXQvZ2VvZ3JhcGh5LWNvZGVzLWFuZC1sYWJlbHMvcmVzb3VyY2UvNjUyZmY3MjYtZTY3Ni00YTIwLWFiZGEtNDM1Yjk4ZGQ3YmRjIAoqIHRyZWF0bWVudF9sb2NhdGlvbiAtIGlzIHRoaXMgaG9zcGl0YWw/CiogZGVwYXJ0bWVudF90eXBlIC0gbG9vayBhdCBhbGwgZm9yIGFsbCBBJkUsIGJ1dCBub3QgdGhlcmUgYXJlIGRlcGFydG1lbnRzCiogYWdlIGdyb3VwIChlLmcuIDE4LTI0KQoqIGRpc2NoYXJnZSA9IHR5cGUgb2YgZGlzY2hhcmdlIGV2ZW50IChlLmcuICJEaXNjaGFyZ2UgSG9tZS4uLiIsICJUcmFuc2ZlcnJlZCIsICJBZG1pc3Npb24uLi4iKQoqIG51bWJlciBvZiBhdHRlbmRhbmNlcyA9IGZyZXF1ZW5jeQoKYGBge3J9CmhlYWQoZGlzY2hhcmdlcykKYGBgCgojIFRlcm1pbm9sb2d5CgoqIGVwaXNvZGUgPSBhIHRyYW5zZmVyIGhhbmRvdmVyIGV2ZW50IChlLmcuIGRlYXRoLCBkaXNjaGFyZ2UsIG1vdmUgd2l0aGluIGhvc3BpdGFsKQoqIGFjdXRlID0gc2hhcnAsIHN1ZGRlbiwgc2hvcnQtdGVybTsgb3Bwb3NpdGUgb2YgY2hyb25pYy4gQWN1dGUgY2FyZSBpbmNsdWRlcyBob3NwaXRhbHMsIGNvbnN1bHRhdGlvbnMgYW5kIHNwZWNpYWxpc21zLCBlbWVyZ2VuY3kgdHJlYXRtZW50LCBzdXJnZXJpZXMsIGRpYWdub3N0aWMgcHJvY2VkdXJlcy4gV2hlcmVhcyBub24tYWN1dGUgPSBsb25nIHN0YXkgc2VydmljZSwgcHN5Y2hpYXRyaWMgc2VydmljZXMKCiogX3FmID0gcXVhbGl0eSBvZiBkYXRhLCBxdWFsaWZpZXIgdG8gbm90ZSBhYm91dCB0aGUgdmFsdWUgaW4gdGhlIGFzc29jaWF0ZWQgdmFyaWFibGUgY29sdW1uCiogVHJlYXQgU0lNRCBhcyBvbmUgcGFyYW1ldGVyIHRvIGxvb2sgYXQsIGFsc28gaW5jbHVkZSBvdGhlciBkZW1vZ3JhcGhpY3MKCgojIFBsb3QgZGlzY2hhcmdlcyBieSBhZ2UKCmBgYHtyfQpkaXNjaGFyZ2VzICU+JSAKICBtdXRhdGUoYWdlID0gZmFjdG9yKGFnZSwgbGV2ZWxzID0gYygiVW5kZXIgMTgiLCAiMTgtMjQiLCAiMjUtMzkiLCAiNDAtNjQiLCAiNjUtNzQiLCAiNzUgcGx1cyIsIE5BX2NoYXJhY3Rlcl8pKSkgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeSA9IGRpc2NoYXJnZSwgeCA9IG51bWJlcl9vZl9hdHRlbmRhbmNlcywgZmlsbCA9IGFnZSkgKwogIGdlb21fY29sKCkKYGBgCgpgYGB7cn0KbWluKGRpc2NoYXJnZXMkbW9udGgpCm1heChkaXNjaGFyZ2VzJG1vbnRoKQpgYGAKCkRhdGUgcmFuZ2U6IDIwMTgtMDEgdG8gMjAyMy0wNQoKYGBge3J9CnVuaXF1ZShkaXNjaGFyZ2VzJGRlcGFydG1lbnRfdHlwZSkKYGBgCgoKYGBge3J9CmxpYnJhcnkoc2YpCmBgYAoKYGBge3J9CmhiX2dlbyA8LSBzdF9yZWFkKGRzbiA9ICJkYXRhL21hcC9oZWFsdGhib2FyZF9nZW8vIiwKICAgICAgICAgICAgICAgICAgbGF5ZXIgPSAiU0dfTkhTX0hlYWx0aEJvYXJkc18yMDE5IikKYGBgCgpgYGB7cn0KcGxvdChoYl9nZW8pCmBgYAoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiRXhwbG9yaW5nIG1vbnRobHkgQSZFIHN0YXRzIGV4cGxvcmF0aW9uIgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgpgYGB7cn0KbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoamFuaXRvcikKbGlicmFyeShmb3JjYXRzKQpgYGAKCiMgVGVybWlub2xvZ3kKCiJjaGF0IHdpdGggY2xpZW50IgoKKiBlcGlzb2RlID0gYSB0cmFuc2ZlciBoYW5kb3ZlciBldmVudCAoZS5nLiBkZWF0aCwgZGlzY2hhcmdlLCBtb3ZlIHdpdGhpbiBob3NwaXRhbCkKKiBhY3V0ZSA9IHNoYXJwLCBzdWRkZW4sIHNob3J0LXRlcm07IG9wcG9zaXRlIG9mIGNocm9uaWMuIEFjdXRlIGNhcmUgaW5jbHVkZXMgaG9zcGl0YWxzLCBjb25zdWx0YXRpb25zIGFuZCBzcGVjaWFsaXNtcywgZW1lcmdlbmN5IHRyZWF0bWVudCwgc3VyZ2VyaWVzLCBkaWFnbm9zdGljIHByb2NlZHVyZXMuIFdoZXJlYXMgbm9uLWFjdXRlID0gbG9uZyBzdGF5IHNlcnZpY2UsIHBzeWNoaWF0cmljIHNlcnZpY2VzCgoqIF9xZiA9IHF1YWxpdHkgb2YgZGF0YSwgcXVhbGlmaWVyIHRvIG5vdGUgYWJvdXQgdGhlIHZhbHVlIGluIHRoZSBhc3NvY2lhdGVkIHZhcmlhYmxlIGNvbHVtbgoqIFRyZWF0IFNJTUQgYXMgb25lIHBhcmFtZXRlciB0byBsb29rIGF0LCBhbHNvIGluY2x1ZGUgb3RoZXIgZGVtb2dyYXBoaWNzCgoKIyBNb250aGx5IGEmZSBkYXRhCgojIyBEaXNjaGFyZ2VzIC0tLS0KCkV4cGxvcmUgZGlzY2hhcmdlcyBkYXRhCgpgYGB7cn0KZGlzY2hhcmdlcyA8LSByZWFkX2NzdigiZGF0YS9hX2FuZF9lL29wZW5kYXRhX21vbnRobHlfYWVfZGlzY2hhcmdlXzIwMjMwNS5jc3YiKSAlPiUgCiAgY2xlYW5fbmFtZXMoKQpgYGAKYGBge3J9CmNvbG5hbWVzKGRpc2NoYXJnZXMpCmBgYAoKYGBge3J9CmdsaW1wc2UoZGlzY2hhcmdlcykKYGBgCgo2Nyw4OTUgcm93cyB3aXRoIDEwIHZhcmlhYmxlcwoKCiMjIyBMb29raW5nIGF0IHFmIC0gcXVhbGl0eSBub3RlcwoKYGBge3J9CmRpc2NoYXJnZXMgJT4lIAogIGZpbHRlcighaXMubmEoZGlzY2hhcmdlX3FmKSkgJT4lIAogIGRpc3RpbmN0KGRpc2NoYXJnZSkKYGBgCkFsbCB0aGUgX3FmIG5vdGVzIGZvciBkaXNjaGFyZ2UgaW5kaWNhdGUgYSBOQSBpbiBkaXNjaGFyZ2UKCmBgYHtyfQpkaXNjaGFyZ2VzICU+JSAKICBzdW1tYXJpc2UoYWNyb3NzKC5jb2xzID0gZXZlcnl0aGluZygpLAogICAgICAgICAgICAgICAgICAgLmZucyA9IH5zdW0oaXMubmEoLngpKSkpCmBgYAoKNjcsODk1IHJvd3MgCjksNTI1IGhhdmUgTkEgaW4gZGlzY2hhcmdlCjcsNzQ4IE5BIGluIGFnZQoKRGF0YSBmaWxlIGhhcyAKCiogbW9udGgKKiBjb3VudHJ5PwoqIGhidCA9IGhlYWx0aCBib2FyZCBjb2RlLCBsb29rdXAgaGVyZTogaHR0cHM6Ly93d3cub3BlbmRhdGEubmhzLnNjb3QvZGF0YXNldC9nZW9ncmFwaHktY29kZXMtYW5kLWxhYmVscy9yZXNvdXJjZS82NTJmZjcyNi1lNjc2LTRhMjAtYWJkYS00MzViOThkZDdiZGMgCiogdHJlYXRtZW50X2xvY2F0aW9uIC0gaXMgdGhpcyBob3NwaXRhbD8KKiBkZXBhcnRtZW50X3R5cGUgLSBsb29rIGF0IGFsbCBmb3IgYWxsIEEmRSwgYnV0IG5vdCB0aGVyZSBhcmUgZGVwYXJ0bWVudHMKKiBhZ2UgZ3JvdXAgKGUuZy4gMTgtMjQpCiogZGlzY2hhcmdlID0gdHlwZSBvZiBkaXNjaGFyZ2UgZXZlbnQgKGUuZy4gIkRpc2NoYXJnZSBIb21lLi4uIiwgIlRyYW5zZmVycmVkIiwgIkFkbWlzc2lvbi4uLiIpCiogbnVtYmVyIG9mIGF0dGVuZGFuY2VzID0gZnJlcXVlbmN5CgpgYGB7cn0KaGVhZChkaXNjaGFyZ2VzKQpgYGAKCiMjIyBQbG90IGRpc2NoYXJnZXMgYnkgYWdlCgpgYGB7cn0KZGlzY2hhcmdlcyAlPiUgCiAgbXV0YXRlKGFnZSA9IGZhY3RvcihhZ2UsIGxldmVscyA9IGMoIlVuZGVyIDE4IiwgIjE4LTI0IiwgIjI1LTM5IiwgIjQwLTY0IiwgIjY1LTc0IiwgIjc1IHBsdXMiLCBOQV9jaGFyYWN0ZXJfKSkpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHkgPSBkaXNjaGFyZ2UsIHggPSBudW1iZXJfb2ZfYXR0ZW5kYW5jZXMsIGZpbGwgPSBhZ2UpICsKICBnZW9tX2NvbCgpCmBgYAoKYGBge3J9Cm1pbihkaXNjaGFyZ2VzJG1vbnRoKQptYXgoZGlzY2hhcmdlcyRtb250aCkKYGBgCgpEYXRlIHJhbmdlOiAyMDE4LTAxIHRvIDIwMjMtMDUKCmBgYHtyfQp1bmlxdWUoZGlzY2hhcmdlcyRkZXBhcnRtZW50X3R5cGUpCmBgYAoKIyMgRGVtb2dyYXBoaWNzIC0tLS0KCmBgYHtyfQpkZW1vZ3JhcGhpY3MgPC0gcmVhZF9jc3YoImRhdGEvYV9hbmRfZS9vcGVuZGF0YV9tb250aGx5X2FlX2RlbW9ncmFwaGljc18yMDIzMDUuY3N2IikgJT4lIAogIGNsZWFuX25hbWVzKCkKYGBgCgpgYGB7cn0KZ2xpbXBzZShkZW1vZ3JhcGhpY3MpCmBgYAoKVGhpcyBnaXZlcyBkZW1vZ3JhcGhpY3Mgb2Ygb3ZlcmFsbCBhdHRlbmRhbmNlcyBidXQgd2UgY2FuJ3QgbG9vayBhdCB3YWl0aW5nIHRpbWVzIHggZGVtb2dyYXBoaWNzIAoKIyMgUmVmZXJyYWwgLS0tLQoKYGBge3J9CnJlZmVycmFsIDwtIHJlYWRfY3N2KCJkYXRhL2FfYW5kX2Uvb3BlbmRhdGFfbW9udGhseV9hZV9yZWZlcnJhbF8yMDIzMDUuY3N2IikKYGBgCgpgYGB7cn0KZ2xpbXBzZShyZWZlcnJhbCkKYGBgCgpSZWZlcnJhbCBnaXZlcyBob3cgdGhleSB3ZXJlIHJlZmVycmVkIGludG8gdGhlIEEmRSAoZnJlcXVlbmN5IG9mIG1ldGhvZCkKCiMjIFdoZW4gLS0tLQoKYGBge3J9CndoZW4gPC0gcmVhZF9jc3YoImRhdGEvYV9hbmRfZS9vcGVuZGF0YV9tb250aGx5X2FlX3doZW5fMjAyMzA1LmNzdiIpCmBgYAoKYGBge3J9CmdsaW1wc2Uod2hlbikKYGBgCgp0aGUgLi4uX3doZW5fLi4uIGRhdGEgZmlsZSBnaXZlcyB0aGUgbnVtYmVyIG9mIGF0dGVuZGFuY2VzIGJ5IHRpbWUgb2YgZGF5ICgxaCBidWNrZXRzLCBlLmcuIDA4OjAwIHRvIDA4OjU5KQoKCiMgVHJ5IG1hcHBpbmcgSEJzIC0tLQoKKEZvciBBbGkpCgpgYGB7cn0KbGlicmFyeShzZikKYGBgCgpgYGB7cn0KaGJfZ2VvIDwtIHN0X3JlYWQoZHNuID0gImRhdGEvbWFwL2hlYWx0aGJvYXJkX2dlby8iLAogICAgICAgICAgICAgICAgICBsYXllciA9ICJTR19OSFNfSGVhbHRoQm9hcmRzXzIwMTkiKQpgYGAKCmBgYHtyfQpwbG90KGhiX2dlbykKYGBgCgoKCiMgSW5wYXRpZW50IGFuZCBkYXkgY2FzZXMKCiMjIGlucGF0aWVudCBieSBhZ2UgYW5kIHNleAoKYGBge3J9CmlucGF0aWVudF9hZ2VfYW5kX3NleCA8LSByZWFkX2NzdigiZGF0YS9pbnBhdGllbnRfYW5kX2RheWNhc2VfYnlfbmhzX2JvYXJkX29mX3RyZWF0bWVudF9hZ2VfYW5kX3NleC5jc3YiKQpgYGAKCmBgYHtyfQpnbGltcHNlKGlucGF0aWVudF9hZ2VfYW5kX3NleCkKYGBgCgpLZXkgbWVhc3VyZXM6CgoqIExlbmd0aCBvZiBlcGlzb2RlCiogTGVuZ3RoIG9mIHN0YXkKKiBEZW1vZ3JhcGhpY3M6IGFnZSwgc2V4CiogTG9jYXRpb24KKiBZZWFyIHF1YXJ0ZXIKCmBgYHtyfQojIGFkbWlzc2lvbiB0eXBlcwppbnBhdGllbnRfYWdlX2FuZF9zZXggJT4lIAogIGdyb3VwX2J5KEFkbWlzc2lvblR5cGUpICU+JSAKICBzdW1tYXJpc2UoY291bnQgPSBuKCkpCmBgYAoKTm90IHN1cmUgd2hpY2ggYXJlIGFjdXRlPyAKCmBgYHtyfQppbnBhdGllbnRfYWdlX2FuZF9zZXggJT4lIAogIGdyb3VwX2J5KFF1YXJ0ZXIpICU+JSAKICBzdW1tYXJpc2UoY291bnQgPSBuKCkpCmBgYAoKMjAxN1E0IHRvIDIwMjBRMQoKCiMgQ292aWQKCiMjIEFkbWlzc2lvbnMgYWdlLCBzZXgKCmBgYHtyfQpjb3ZpZF9hZ2Vfc2V4IDwtIHJlYWRfY3N2KCJkYXRhL2NvdmlkL2hvc3BpdGFsX2FkbWlzc2lvbnNfaGJfYWdlc2V4XzIwMjMwNzA2LmNzdiIpCmBgYAoKYGBge3J9CmdsaW1wc2UoY292aWRfYWdlX3NleCkKYGBgCgoqIFRpbWU6IHdlZWsgZW5kaW5nCiogSEIgKGJ1dCBub3QgbG9jYXRpb24pCiogYWdlIGdyb3VwLCBzZXgKKiBhZG1pc3Npb24gdHlwZSBhbmQgbnVtYmVyCiAgKiBhdmVyYWdlIDIwMTgyMDE5IGFzY29tcGFyYXRvcgogICogJSB2YXJpYXRpb24KICAKYGBge3J9CmNvdmlkX2FnZV9zZXggJT4lIAogIHN1bW1hcmlzZShjb3VudCA9IG4oKSwgLmJ5ID0gQWRtaXNzaW9uVHlwZSkKYGBgCgpgYGB7cn0KbWluKGNvdmlkX2FnZV9zZXgkV2Vla0VuZGluZykKbWF4KGNvdmlkX2FnZV9zZXgkV2Vla0VuZGluZykKYGBgCgo1dGggSmFuIDIwMjAgdG8gMjUgSnVuZSAyMDIzCndpdGggYSBjb21wYXJhdG9yIHRvIHNhbWUgd2VlayBpbiAyMDE4LzIwMTkgKGF2ZXJhZ2Ugb2YgdGhlIHR3byB5ZWFycykKCkNhbiBsb29rIGF0IGVtZXJnZW5jeSBhZG1pc3Npb25zIGFuZCBzZWUgJSB2YXJpYXRpb24gZnJvbSAyMDE4LzIwMTkgYXZlcmFnZQoK</div>
 
 
 
