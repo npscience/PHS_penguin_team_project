@@ -14,12 +14,46 @@ waiting_times <- read.csv("data/a_and_e/monthly_ae_activity_202305.csv")
 # open libraries
 library(tidyverse)
 library(ggplot2)
+library(janitor)
+library(lubridate)
+```
 
+```{r}
+waiting_times_1 <- clean_names(waiting_times)
 ```
 
 ```{r}
 #explore data
 head(waiting_times)
 glimpse(waiting_times)
+view(waiting_times_1)
+colnames(waiting_times_1)
+```
+
+```{r}
+waiting_times_1 %>% 
+  distinct(country)
+
+waiting_times_1 %>% 
+  distinct(department_type)
+
+
+
+waiting_times_1 %>% 
+  select(month, number_of_attendances_all) %>% 
+  mutate(month_new = ym(month)) %>% 
+  group_by(month_new) %>% 
+  ggplot() +
+  aes(x = month_new, y = number_of_attendances_all) +
+  geom_bar()
+  
+  
+```
+
+
+
+```{r}
+#create a barplot with per month have the number of attendances in total
+
 ```
 

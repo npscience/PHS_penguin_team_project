@@ -1756,59 +1756,75 @@ display: none;
 2. Numberwithin 4 hours 3. Number over 4 hours</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2FpdGluZ190aW1lcyA8LSByZWFkLmNzdihcImRhdGEvYV9hbmRfZS9tb250aGx5X2FlX2FjdGl2aXR5XzIwMjMwNS5jc3ZcIilcbmBgYCJ9 -->
+<pre class="r"><code>waiting_times &lt;- read.csv(&quot;data/a_and_e/monthly_ae_activity_202305.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShnZ3Bsb3QpXG5cbmBgYCJ9 -->
-<pre class="r"><code>library(ggplot)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShqYW5pdG9yKVxuXG5gYGAifQ== -->
+<pre class="r"><code>library(janitor)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gbGlicmFyeShnZ3Bsb3QpIDogdGhlcmUgaXMgbm8gcGFja2FnZSBjYWxsZWQg4oCYZ2dwbG904oCZXG4ifQ== -->
-<pre><code>Error in library(ggplot) : there is no package called ‘ggplot’</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYamFuaXRvcuKAmVxuXG5UaGUgZm9sbG93aW5nIG9iamVjdHMgYXJlIG1hc2tlZCBmcm9tIOKAmHBhY2thZ2U6c3RhdHPigJk6XG5cbiAgICBjaGlzcS50ZXN0LCBmaXNoZXIudGVzdFxuIn0= -->
+<pre><code>
+Attaching package: ‘janitor’
+
+The following objects are masked from ‘package:stats’:
+
+    chisq.test, fisher.test</code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xpbXBzZSh3YWl0aW5nX3RpbWVzKVxuXG5gYGAifQ== -->
-<pre class="r"><code>glimpse(waiting_times)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2FpdGluZ190aW1lc18xIDwtIGNsZWFuX25hbWVzKHdhaXRpbmdfdGltZXMpXG5gYGAifQ== -->
+<pre class="r"><code>waiting_times_1 &lt;- clean_names(waiting_times)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29sbmFtZXMod2FpdGluZ190aW1lc18xKVxuXG5gYGAifQ== -->
+<pre class="r"><code>colnames(waiting_times_1)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTYsNTIwXG5Db2x1bW5zOiAyNVxuJCBNb250aCAgICAgICAgICAgICAgICAgICAgICAgICAgIDxpbnQ+IDIwMDcwNywgMjAwNzA3LCAyMDA3MDcsIDIwMDcwNywgMjAwNzA3LCAyMDA3MDcsIDIwMDcwNywgMjAwNzA3LCAyMDA3MDcsIDIwMDcwNywgMjDigKZcbiQgQ291bnRyeSAgICAgICAgICAgICAgICAgICAgICAgICA8Y2hyPiBcIlM5MjAwMDAwM1wiLCBcIlM5MjAwMDAwM1wiLCBcIlM5MjAwMDAwM1wiLCBcIlM5MjAwMDAwM1wiLCBcIlM5MjAwMDAwM1wiLCBcIlM5MjAwMDAwM1wiLCBcIlM5MuKAplxuJCBIQlQgICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxjaHI+IFwiUzA4MDAwMDE1XCIsIFwiUzA4MDAwMDE1XCIsIFwiUzA4MDAwMDE1XCIsIFwiUzA4MDAwMDE1XCIsIFwiUzA4MDAwMDE2XCIsIFwiUzA4MDAwMDE2XCIsIFwiUzA44oCmXG4kIFRyZWF0bWVudExvY2F0aW9uICAgICAgICAgICAgICAgPGNocj4gXCJBMTAxSFwiLCBcIkExMTFIXCIsIFwiQTIwN0hcIiwgXCJBMjEwSFwiLCBcIkIxMDNIXCIsIFwiQjEwNUhcIiwgXCJCMTE0SFwiLCBcIkIxMThIXCIsIFwiQjEyMEhcIiwgXCLigKZcbiQgRGVwYXJ0bWVudFR5cGUgICAgICAgICAgICAgICAgICA8Y2hyPiBcIk1pbm9yIEluanVyeSBVbml0IG9yIE90aGVyXCIsIFwiRW1lcmdlbmN5IERlcGFydG1lbnRcIiwgXCJNaW5vciBJbmp1cnkgVW5pdCBvciBPdGhlclwi4oCmXG4kIE51bWJlck9mQXR0ZW5kYW5jZXNBbGwgICAgICAgICAgPGludD4gMjUyLCA1NDE0LCA5MiwgMzUzMCwgMjAsIDEwNSwgMzEsIDg3LCAxODIzLCA4NiwgODMsIDcsIDg1LCAxMTg5LCAyOTcwLCAzOTEyLCAxNzQsIOKAplxuJCBOdW1iZXJXaXRoaW40SG91cnNBbGwgICAgICAgICAgIDxpbnQ+IDI1MiwgNTI5MCwgOTIsIDMzNTUsIDIwLCAxMDUsIDMxLCA4NywgMTgwNCwgODYsIDgzLCA3LCA4NSwgMTE2NywgMjg2MiwgMzcwMywgMTc0LCDigKZcbiQgTnVtYmVyT3ZlcjRIb3Vyc0FsbCAgICAgICAgICAgICA8aW50PiAwLCAxMjQsIDAsIDE3NSwgMCwgMCwgMCwgMCwgMTksIDAsIDAsIDAsIDAsIDIyLCAxMDgsIDIwOSwgMCwgMCwgNjgsIDQsIDE5MiwgMTQ0LCA54oCmXG4kIFBlcmNlbnRhZ2VXaXRoaW40SG91cnNBbGwgICAgICAgPGRibD4gMTAwLjAsIDk3LjcsIDEwMC4wLCA5NS4wLCAxMDAuMCwgMTAwLjAsIDEwMC4wLCAxMDAuMCwgOTkuMCwgMTAwLjAsIDEwMC4wLCAxMDAuMCwgMeKAplxuJCBOdW1iZXJPZkF0dGVuZGFuY2VzRXBpc29kZSAgICAgIDxpbnQ+IE5BLCA1NDE0LCBOQSwgMzUzMCwgTkEsIE5BLCBOQSwgTkEsIDE4MjMsIE5BLCBOQSwgTkEsIE5BLCBOQSwgMjk3MCwgMzkxMiwgTkEsIE5BLCDigKZcbiQgTnVtYmVyT2ZBdHRlbmRhbmNlc0VwaXNvZGVRRiAgICA8Y2hyPiBcInpcIiwgXCJcIiwgXCJ6XCIsIFwiXCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcIlwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwiXCIsIFwiXCIsIFwielwiLCBcInrigKZcbiQgTnVtYmVyV2l0aGluNEhvdXJzRXBpc29kZSAgICAgICA8aW50PiBOQSwgNTI5MCwgTkEsIDMzNTUsIE5BLCBOQSwgTkEsIE5BLCAxODA0LCBOQSwgTkEsIE5BLCBOQSwgTkEsIDI4NjIsIDM3MDMsIE5BLCBOQSwg4oCmXG4kIE51bWJlcldpdGhpbjRIb3Vyc0VwaXNvZGVRRiAgICAgPGNocj4gXCJ6XCIsIFwiXCIsIFwielwiLCBcIlwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcIlwiLCBcIlwiLCBcInpcIiwgXCJ64oCmXG4kIE51bWJlck92ZXI0SG91cnNFcGlzb2RlICAgICAgICAgPGludD4gTkEsIDEyNCwgTkEsIDE3NSwgTkEsIE5BLCBOQSwgTkEsIDE5LCBOQSwgTkEsIE5BLCBOQSwgTkEsIDEwOCwgMjA5LCBOQSwgTkEsIDY4LCA0LOKAplxuJCBOdW1iZXJPdmVyNEhvdXJzRXBpc29kZVFGICAgICAgIDxjaHI+IFwielwiLCBcIlwiLCBcInpcIiwgXCJcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwiXCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJcIiwgXCJcIiwgXCJ6XCIsIFwieuKAplxuJCBQZXJjZW50YWdlV2l0aGluNEhvdXJzRXBpc29kZSAgIDxkYmw+IE5BLCA5Ny43LCBOQSwgOTUuMCwgTkEsIE5BLCBOQSwgTkEsIDk5LjAsIE5BLCBOQSwgTkEsIE5BLCBOQSwgOTYuNCwgOTQuNywgTkEsIE5BLCDigKZcbiQgUGVyY2VudGFnZVdpdGhpbjRIb3Vyc0VwaXNvZGVRRiA8Y2hyPiBcInpcIiwgXCJcIiwgXCJ6XCIsIFwiXCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcIlwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwiXCIsIFwiXCIsIFwielwiLCBcInrigKZcbiQgTnVtYmVyT3ZlcjhIb3Vyc0VwaXNvZGUgICAgICAgICA8aW50PiBOQSwgMjYsIE5BLCAzLCBOQSwgTkEsIE5BLCBOQSwgMCwgTkEsIE5BLCBOQSwgTkEsIE5BLCAwLCA2LCBOQSwgTkEsIDIsIDAsIDUsIDgsIDAs4oCmXG4kIE51bWJlck92ZXI4SG91cnNFcGlzb2RlUUYgICAgICAgPGNocj4gXCJ6XCIsIFwiXCIsIFwielwiLCBcIlwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcIlwiLCBcIlwiLCBcInpcIiwgXCJ64oCmXG4kIFBlcmNlbnRhZ2VPdmVyOEhvdXJzRXBpc29kZSAgICAgPGRibD4gTkEsIDAuNSwgTkEsIDAuMSwgTkEsIE5BLCBOQSwgTkEsIDAuMCwgTkEsIE5BLCBOQSwgTkEsIE5BLCAwLjAsIDAuMiwgTkEsIE5BLCAwLjEsIOKAplxuJCBQZXJjZW50YWdlT3ZlcjhIb3Vyc0VwaXNvZGVRRiAgIDxjaHI+IFwielwiLCBcIlwiLCBcInpcIiwgXCJcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwiXCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJcIiwgXCJcIiwgXCJ6XCIsIFwieuKAplxuJCBOdW1iZXJPdmVyMTJIb3Vyc0VwaXNvZGUgICAgICAgIDxpbnQ+IE5BLCAyNCwgTkEsIDEsIE5BLCBOQSwgTkEsIE5BLCAwLCBOQSwgTkEsIE5BLCBOQSwgTkEsIDAsIDEsIE5BLCBOQSwgMCwgMCwgMSwgMCwgMCzigKZcbiQgTnVtYmVyT3ZlcjEySG91cnNFcGlzb2RlUUYgICAgICA8Y2hyPiBcInpcIiwgXCJcIiwgXCJ6XCIsIFwiXCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcIlwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwiXCIsIFwiXCIsIFwielwiLCBcInrigKZcbiQgUGVyY2VudGFnZU92ZXIxMkhvdXJzRXBpc29kZSAgICA8ZGJsPiBOQSwgMC40LCBOQSwgMC4wLCBOQSwgTkEsIE5BLCBOQSwgMC4wLCBOQSwgTkEsIE5BLCBOQSwgTkEsIDAuMCwgMC4wLCBOQSwgTkEsIDAuMCwg4oCmXG4kIFBlcmNlbnRhZ2VPdmVyMTJIb3Vyc0VwaXNvZGVRRiAgPGNocj4gXCJ6XCIsIFwiXCIsIFwielwiLCBcIlwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJcIiwgXCJ6XCIsIFwielwiLCBcInpcIiwgXCJ6XCIsIFwielwiLCBcIlwiLCBcIlwiLCBcInpcIiwgXCJ64oCmXG4ifQ== -->
-<pre><code>Rows: 16,520
-Columns: 25
-$ Month                           &lt;int&gt; 200707, 200707, 200707, 200707, 200707, 200707, 200707, 200707, 200707, 200707, 20…
-$ Country                         &lt;chr&gt; &quot;S92000003&quot;, &quot;S92000003&quot;, &quot;S92000003&quot;, &quot;S92000003&quot;, &quot;S92000003&quot;, &quot;S92000003&quot;, &quot;S92…
-$ HBT                             &lt;chr&gt; &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000015&quot;, &quot;S08000016&quot;, &quot;S08000016&quot;, &quot;S08…
-$ TreatmentLocation               &lt;chr&gt; &quot;A101H&quot;, &quot;A111H&quot;, &quot;A207H&quot;, &quot;A210H&quot;, &quot;B103H&quot;, &quot;B105H&quot;, &quot;B114H&quot;, &quot;B118H&quot;, &quot;B120H&quot;, &quot;…
-$ DepartmentType                  &lt;chr&gt; &quot;Minor Injury Unit or Other&quot;, &quot;Emergency Department&quot;, &quot;Minor Injury Unit or Other&quot;…
-$ NumberOfAttendancesAll          &lt;int&gt; 252, 5414, 92, 3530, 20, 105, 31, 87, 1823, 86, 83, 7, 85, 1189, 2970, 3912, 174, …
-$ NumberWithin4HoursAll           &lt;int&gt; 252, 5290, 92, 3355, 20, 105, 31, 87, 1804, 86, 83, 7, 85, 1167, 2862, 3703, 174, …
-$ NumberOver4HoursAll             &lt;int&gt; 0, 124, 0, 175, 0, 0, 0, 0, 19, 0, 0, 0, 0, 22, 108, 209, 0, 0, 68, 4, 192, 144, 9…
-$ PercentageWithin4HoursAll       &lt;dbl&gt; 100.0, 97.7, 100.0, 95.0, 100.0, 100.0, 100.0, 100.0, 99.0, 100.0, 100.0, 100.0, 1…
-$ NumberOfAttendancesEpisode      &lt;int&gt; NA, 5414, NA, 3530, NA, NA, NA, NA, 1823, NA, NA, NA, NA, NA, 2970, 3912, NA, NA, …
-$ NumberOfAttendancesEpisodeQF    &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…
-$ NumberWithin4HoursEpisode       &lt;int&gt; NA, 5290, NA, 3355, NA, NA, NA, NA, 1804, NA, NA, NA, NA, NA, 2862, 3703, NA, NA, …
-$ NumberWithin4HoursEpisodeQF     &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…
-$ NumberOver4HoursEpisode         &lt;int&gt; NA, 124, NA, 175, NA, NA, NA, NA, 19, NA, NA, NA, NA, NA, 108, 209, NA, NA, 68, 4,…
-$ NumberOver4HoursEpisodeQF       &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…
-$ PercentageWithin4HoursEpisode   &lt;dbl&gt; NA, 97.7, NA, 95.0, NA, NA, NA, NA, 99.0, NA, NA, NA, NA, NA, 96.4, 94.7, NA, NA, …
-$ PercentageWithin4HoursEpisodeQF &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…
-$ NumberOver8HoursEpisode         &lt;int&gt; NA, 26, NA, 3, NA, NA, NA, NA, 0, NA, NA, NA, NA, NA, 0, 6, NA, NA, 2, 0, 5, 8, 0,…
-$ NumberOver8HoursEpisodeQF       &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…
-$ PercentageOver8HoursEpisode     &lt;dbl&gt; NA, 0.5, NA, 0.1, NA, NA, NA, NA, 0.0, NA, NA, NA, NA, NA, 0.0, 0.2, NA, NA, 0.1, …
-$ PercentageOver8HoursEpisodeQF   &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…
-$ NumberOver12HoursEpisode        &lt;int&gt; NA, 24, NA, 1, NA, NA, NA, NA, 0, NA, NA, NA, NA, NA, 0, 1, NA, NA, 0, 0, 1, 0, 0,…
-$ NumberOver12HoursEpisodeQF      &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…
-$ PercentageOver12HoursEpisode    &lt;dbl&gt; NA, 0.4, NA, 0.0, NA, NA, NA, NA, 0.0, NA, NA, NA, NA, NA, 0.0, 0.0, NA, NA, 0.0, …
-$ PercentageOver12HoursEpisodeQF  &lt;chr&gt; &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;z&quot;, &quot;&quot;, &quot;&quot;, &quot;z&quot;, &quot;z…</code></pre>
+<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSBcIm1vbnRoXCIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcImNvdW50cnlcIiAgICAgICAgICAgICAgICAgICAgICAgICAgICBcImhidFwiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuIFs0XSBcInRyZWF0bWVudF9sb2NhdGlvblwiICAgICAgICAgICAgICAgICBcImRlcGFydG1lbnRfdHlwZVwiICAgICAgICAgICAgICAgICAgICBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19hbGxcIiAgICAgICAgIFxuIFs3XSBcIm51bWJlcl93aXRoaW40aG91cnNfYWxsXCIgICAgICAgICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2FsbFwiICAgICAgICAgICAgICBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2FsbFwiICAgICAgIFxuWzEwXSBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19lcGlzb2RlXCIgICAgICBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19lcGlzb2RlX3FmXCIgICBcIm51bWJlcl93aXRoaW40aG91cnNfZXBpc29kZVwiICAgICAgIFxuWzEzXSBcIm51bWJlcl93aXRoaW40aG91cnNfZXBpc29kZV9xZlwiICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2VwaXNvZGVcIiAgICAgICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2VwaXNvZGVfcWZcIiAgICAgIFxuWzE2XSBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2VwaXNvZGVcIiAgICBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2VwaXNvZGVfcWZcIiBcIm51bWJlcl9vdmVyOGhvdXJzX2VwaXNvZGVcIiAgICAgICAgIFxuWzE5XSBcIm51bWJlcl9vdmVyOGhvdXJzX2VwaXNvZGVfcWZcIiAgICAgICBcInBlcmNlbnRhZ2Vfb3Zlcjhob3Vyc19lcGlzb2RlXCIgICAgICBcInBlcmNlbnRhZ2Vfb3Zlcjhob3Vyc19lcGlzb2RlX3FmXCIgIFxuWzIyXSBcIm51bWJlcl9vdmVyMTJob3Vyc19lcGlzb2RlXCIgICAgICAgICBcIm51bWJlcl9vdmVyMTJob3Vyc19lcGlzb2RlX3FmXCIgICAgICBcInBlcmNlbnRhZ2Vfb3ZlcjEyaG91cnNfZXBpc29kZVwiICAgIFxuWzI1XSBcInBlcmNlbnRhZ2Vfb3ZlcjEyaG91cnNfZXBpc29kZV9xZlwiIFxuIn0= -->
+<pre><code> [1] &quot;month&quot;                              &quot;country&quot;                            &quot;hbt&quot;                               
+ [4] &quot;treatment_location&quot;                 &quot;department_type&quot;                    &quot;number_of_attendances_all&quot;         
+ [7] &quot;number_within4hours_all&quot;            &quot;number_over4hours_all&quot;              &quot;percentage_within4hours_all&quot;       
+[10] &quot;number_of_attendances_episode&quot;      &quot;number_of_attendances_episode_qf&quot;   &quot;number_within4hours_episode&quot;       
+[13] &quot;number_within4hours_episode_qf&quot;     &quot;number_over4hours_episode&quot;          &quot;number_over4hours_episode_qf&quot;      
+[16] &quot;percentage_within4hours_episode&quot;    &quot;percentage_within4hours_episode_qf&quot; &quot;number_over8hours_episode&quot;         
+[19] &quot;number_over8hours_episode_qf&quot;       &quot;percentage_over8hours_episode&quot;      &quot;percentage_over8hours_episode_qf&quot;  
+[22] &quot;number_over12hours_episode&quot;         &quot;number_over12hours_episode_qf&quot;      &quot;percentage_over12hours_episode&quot;    
+[25] &quot;percentage_over12hours_episode_qf&quot; </code></pre>
 <!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImRhdGEuZnJhbWUiXSwibnJvdyI6MiwibmNvbCI6MSwic3VtbWFyeSI6eyJEZXNjcmlwdGlvbiI6WyJkZiBbMiDDlyAxXSJdfX0sInJkZiI6Ikg0c0lBQUFBQUFBQUExMVFRVTdETUJEY3VBbFZJd0dWNE1RcEgwZ2tCQWNlVUpBNElDUkVwZDZRbXl5dElWbEhqaVBJNXd1YjFPN0JCOXU3NDUzeGpOOVdtN3Qwa3dMQURPSVo3d21Ya0t6Zm4vSUhnRmh3RTBFTWkvSDg1ZXVyQ1FCWThoTHU0dVpGa1RiWk0zMzFac2pXcEd6RzdhdmRvM0VUMTQ4Tm1oMVNPV1FyYktXeERaSU41Qk9TRFhaTzJvT1gxV244d3c0dEJweUYwVCtGNTUxUGxvNzJSQ2hlMXJJTHhkTktXbGw4R3VaemR3Z29jOTFhcFlsSllneWRCT1RJQk1DeXA5RkpsWmY3bnI3ejIvdnhCV2NIbkQxbjdWUkh4emZGbjlOS25OWVowazRSZXZPMTNHTHRtZ3VPUENVdVdxUDRFMTBVUnJ2Q2FpdjlYRnJxMmlOVE9EajhBelArSWp2c0FRQUEifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["department_type"],"name":[1],"type":["chr"],"align":["left"]}],"data":[{"1":"Minor Injury Unit or Other"},{"1":"Emergency Department"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[2]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2NyZWF0ZSBhIGJhcnBsb3Qgd2l0aCBwZXIgbW9udGggaGF2ZSB0aGUgbnVtYmVyIG9mIGF0dGVuZGFuY2VzIGluIHRvdGFsXG5cbmBgYCJ9 -->
+<pre class="r"><code>#create a barplot with per month have the number of attendances in total
+</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQpHb2FsOiBsb29raW5nIGF0IHdhaXRpbmcgdGltZXMgYXQgQSZFCjEuIE51bWJlcm9mYXR0ZW5kYW5jZXNBbGwKMi4gTnVtYmVyd2l0aGluIDQgaG91cnMKMy4gTnVtYmVyIG92ZXIgNCBob3VycwpgYGB7cn0Kd2FpdGluZ190aW1lcyA8LSByZWFkLmNzdigiZGF0YS9hX2FuZF9lL21vbnRobHlfYWVfYWN0aXZpdHlfMjAyMzA1LmNzdiIpCmBgYAoKYGBge3J9CiMgb3BlbiBsaWJyYXJpZXMKbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoZ2dwbG90MikKCmBgYAoKYGBge3J9CiNleHBsb3JlIGRhdGEKaGVhZCh3YWl0aW5nX3RpbWVzKQpnbGltcHNlKHdhaXRpbmdfdGltZXMpCmBgYAoK</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQpHb2FsOiBsb29raW5nIGF0IHdhaXRpbmcgdGltZXMgYXQgQSZFCjEuIE51bWJlcm9mYXR0ZW5kYW5jZXNBbGwKMi4gTnVtYmVyd2l0aGluIDQgaG91cnMKMy4gTnVtYmVyIG92ZXIgNCBob3VycwpgYGB7cn0Kd2FpdGluZ190aW1lcyA8LSByZWFkLmNzdigiZGF0YS9hX2FuZF9lL21vbnRobHlfYWVfYWN0aXZpdHlfMjAyMzA1LmNzdiIpCmBgYAoKYGBge3J9CiMgb3BlbiBsaWJyYXJpZXMKbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoZ2dwbG90MikKbGlicmFyeShqYW5pdG9yKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKYGBgCgpgYGB7cn0Kd2FpdGluZ190aW1lc18xIDwtIGNsZWFuX25hbWVzKHdhaXRpbmdfdGltZXMpCmBgYAoKYGBge3J9CiNleHBsb3JlIGRhdGEKaGVhZCh3YWl0aW5nX3RpbWVzKQpnbGltcHNlKHdhaXRpbmdfdGltZXMpCnZpZXcod2FpdGluZ190aW1lc18xKQpjb2xuYW1lcyh3YWl0aW5nX3RpbWVzXzEpCmBgYAoKYGBge3J9CndhaXRpbmdfdGltZXNfMSAlPiUgCiAgZGlzdGluY3QoY291bnRyeSkKCndhaXRpbmdfdGltZXNfMSAlPiUgCiAgZGlzdGluY3QoZGVwYXJ0bWVudF90eXBlKQoKCgp3YWl0aW5nX3RpbWVzXzEgJT4lIAogIHNlbGVjdChtb250aCwgbnVtYmVyX29mX2F0dGVuZGFuY2VzX2FsbCkgJT4lIAogIG11dGF0ZShtb250aF9uZXcgPSB5bShtb250aCkpICU+JSAKICBncm91cF9ieShtb250aF9uZXcpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9uZXcsIHkgPSBudW1iZXJfb2ZfYXR0ZW5kYW5jZXNfYWxsKSArCiAgZ2VvbV9iYXIoKQogIAogIApgYGAKCgoKYGBge3J9CiNjcmVhdGUgYSBiYXJwbG90IHdpdGggcGVyIG1vbnRoIGhhdmUgdGhlIG51bWJlciBvZiBhdHRlbmRhbmNlcyBpbiB0b3RhbAoKYGBgCgo=</div>
 
 
 
