@@ -12,6 +12,88 @@ library(lubridate)
 ```
 
 ```{r}
+beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv")
+beds <- clean_names(beds)
+```
 
+```{r}
+head(beds)
+colnames(beds)
+view(beds)
+```
+
+```{r}
+beds %>% 
+  distinct(specialty_name)
+```
+```{r}
+# assuming "all acute" is congragating everything
+beds %>% 
+  filter(specialty_name == "All Acute") %>% 
+  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
+  group_by(quarter) %>% 
+ #filter(hb == "S08000015") %>% 
+  summarise(total_staffed_beds = sum(all_staffed_beddays)) %>% 
+  ggplot() +
+  aes(x = yq(quarter), y = total_staffed_beds) +
+  geom_col()
+```
+```{r}
+# percentages occupancy
+beds %>% 
+  filter(specialty_name == "All Acute") %>% 
+  select(quarter, hb, percentage_occupancy) %>% 
+  group_by(quarter) %>% 
+ #filter(hb == "S08000015") %>% 
+  summarise(average_percentage_occupancy_pq = mean(percentage_occupancy)) %>% 
+  ggplot() +
+  aes(x = yq(quarter), y = average_percentage_occupancy_pq, group = 1) +
+  geom_line()
+
+
+
+
+beds %>% 
+  filter(specialty_name == "All Acute") %>% 
+  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
+  group_by(quarter) %>%
+  ggplot() +
+  aes(x = yq(quarter), y = all_staffed_beddays) %>% 
+  geom_line()
+
+
+
+
+beds %>% 
+  filter(specialty_name == "All Acute") %>% 
+  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
+  group_by(quarter) %>% 
+ #filter(hb == "S08000015") %>% 
+  summarise(total_staffed_beds = sum(all_staffed_beddays)) %>% 
+  ggplot() +
+  aes(x = yq(quarter), y = total_staffed_beds) +
+  geom_col()
+```
+
+```{r}
+beds %>% 
+  filter(specialty_name == "All Acute") %>%
+  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
+  group_by(quarter) %>% 
+  summarise(average_occupancy = mean(percentage_occupancy)) %>% 
+  ggplot() +
+  aes(x = quarter, y = average_occupancy) %>% 
+  geom_line()
+  
+  
+  
+  beds %>% 
+  filter(specialty_name == "All Acute") %>% 
+  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
+  group_by(quarter) %>%
+  ggplot() +
+  aes(x = yq(quarter), y = all_staffed_beddays, group = 1) %>% 
+  geom_line()
+  
 ```
 
