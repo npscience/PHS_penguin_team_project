@@ -1,0 +1,25 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+Goal: looking at waiting times at A&E
+1. NumberofattendancesAll
+2. Numberwithin 4 hours
+3. Number over 4 hours
+```{r}
+waiting_times <- read.csv("data/a_and_e/monthly_ae_activity_202305.csv")
+```
+
+```{r}
+# open libraries
+library(tidyverse)
+library(ggplot2)
+
+```
+
+```{r}
+#explore data
+head(waiting_times)
+glimpse(waiting_times)
+```
+
