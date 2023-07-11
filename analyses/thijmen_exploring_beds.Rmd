@@ -26,6 +26,7 @@ view(beds)
 beds %>% 
   distinct(specialty_name)
 ```
+
 ```{r}
 # assuming "all acute" is congragating everything
 beds %>% 
@@ -97,7 +98,7 @@ beds %>%
   filter(quarter == "2020Q2" | quarter == "2020Q1") %>% 
   group_by(specialty_name, quarter) %>% 
   summarise(average_occupancy_per_q = mean(percentage_occupancy)) %>% 
-  mutate(difference_q1_min_q2 = )
+  mutate(difference_q1_min_q2 = sum(filter(quarter == "2020Q1")-filter(quarter == "2020Q2")))
   summarise(difference_q2_q1 = ) %>% 
   filter(average_percentage_occupancy < 90 & average_percentage_occupancy > 25)
 ```
