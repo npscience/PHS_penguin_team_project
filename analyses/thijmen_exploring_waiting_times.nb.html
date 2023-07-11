@@ -1779,19 +1779,15 @@ library(lubridate)</code></pre>
 <pre class="r"><code>colnames(waiting_times_1)
 </code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSBcIm1vbnRoXCIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcImNvdW50cnlcIiAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuIFszXSBcImhidFwiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcInRyZWF0bWVudF9sb2NhdGlvblwiICAgICAgICAgICAgICAgIFxuIFs1XSBcImRlcGFydG1lbnRfdHlwZVwiICAgICAgICAgICAgICAgICAgICBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19hbGxcIiAgICAgICAgIFxuIFs3XSBcIm51bWJlcl93aXRoaW40aG91cnNfYWxsXCIgICAgICAgICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2FsbFwiICAgICAgICAgICAgIFxuIFs5XSBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2FsbFwiICAgICAgICBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19lcGlzb2RlXCIgICAgIFxuWzExXSBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19lcGlzb2RlX3FmXCIgICBcIm51bWJlcl93aXRoaW40aG91cnNfZXBpc29kZVwiICAgICAgIFxuWzEzXSBcIm51bWJlcl93aXRoaW40aG91cnNfZXBpc29kZV9xZlwiICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2VwaXNvZGVcIiAgICAgICAgIFxuWzE1XSBcIm51bWJlcl9vdmVyNGhvdXJzX2VwaXNvZGVfcWZcIiAgICAgICBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2VwaXNvZGVcIiAgIFxuWzE3XSBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2VwaXNvZGVfcWZcIiBcIm51bWJlcl9vdmVyOGhvdXJzX2VwaXNvZGVcIiAgICAgICAgIFxuWzE5XSBcIm51bWJlcl9vdmVyOGhvdXJzX2VwaXNvZGVfcWZcIiAgICAgICBcInBlcmNlbnRhZ2Vfb3Zlcjhob3Vyc19lcGlzb2RlXCIgICAgIFxuWzIxXSBcInBlcmNlbnRhZ2Vfb3Zlcjhob3Vyc19lcGlzb2RlX3FmXCIgICBcIm51bWJlcl9vdmVyMTJob3Vyc19lcGlzb2RlXCIgICAgICAgIFxuWzIzXSBcIm51bWJlcl9vdmVyMTJob3Vyc19lcGlzb2RlX3FmXCIgICAgICBcInBlcmNlbnRhZ2Vfb3ZlcjEyaG91cnNfZXBpc29kZVwiICAgIFxuWzI1XSBcInBlcmNlbnRhZ2Vfb3ZlcjEyaG91cnNfZXBpc29kZV9xZlwiIFxuIn0= -->
-<pre><code> [1] &quot;month&quot;                              &quot;country&quot;                           
- [3] &quot;hbt&quot;                                &quot;treatment_location&quot;                
- [5] &quot;department_type&quot;                    &quot;number_of_attendances_all&quot;         
- [7] &quot;number_within4hours_all&quot;            &quot;number_over4hours_all&quot;             
- [9] &quot;percentage_within4hours_all&quot;        &quot;number_of_attendances_episode&quot;     
-[11] &quot;number_of_attendances_episode_qf&quot;   &quot;number_within4hours_episode&quot;       
-[13] &quot;number_within4hours_episode_qf&quot;     &quot;number_over4hours_episode&quot;         
-[15] &quot;number_over4hours_episode_qf&quot;       &quot;percentage_within4hours_episode&quot;   
-[17] &quot;percentage_within4hours_episode_qf&quot; &quot;number_over8hours_episode&quot;         
-[19] &quot;number_over8hours_episode_qf&quot;       &quot;percentage_over8hours_episode&quot;     
-[21] &quot;percentage_over8hours_episode_qf&quot;   &quot;number_over12hours_episode&quot;        
-[23] &quot;number_over12hours_episode_qf&quot;      &quot;percentage_over12hours_episode&quot;    
+<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSBcIm1vbnRoXCIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBcImNvdW50cnlcIiAgICAgICAgICAgICAgICAgICAgICAgICAgICBcImhidFwiICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuIFs0XSBcInRyZWF0bWVudF9sb2NhdGlvblwiICAgICAgICAgICAgICAgICBcImRlcGFydG1lbnRfdHlwZVwiICAgICAgICAgICAgICAgICAgICBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19hbGxcIiAgICAgICAgIFxuIFs3XSBcIm51bWJlcl93aXRoaW40aG91cnNfYWxsXCIgICAgICAgICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2FsbFwiICAgICAgICAgICAgICBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2FsbFwiICAgICAgIFxuWzEwXSBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19lcGlzb2RlXCIgICAgICBcIm51bWJlcl9vZl9hdHRlbmRhbmNlc19lcGlzb2RlX3FmXCIgICBcIm51bWJlcl93aXRoaW40aG91cnNfZXBpc29kZVwiICAgICAgIFxuWzEzXSBcIm51bWJlcl93aXRoaW40aG91cnNfZXBpc29kZV9xZlwiICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2VwaXNvZGVcIiAgICAgICAgICBcIm51bWJlcl9vdmVyNGhvdXJzX2VwaXNvZGVfcWZcIiAgICAgIFxuWzE2XSBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2VwaXNvZGVcIiAgICBcInBlcmNlbnRhZ2Vfd2l0aGluNGhvdXJzX2VwaXNvZGVfcWZcIiBcIm51bWJlcl9vdmVyOGhvdXJzX2VwaXNvZGVcIiAgICAgICAgIFxuWzE5XSBcIm51bWJlcl9vdmVyOGhvdXJzX2VwaXNvZGVfcWZcIiAgICAgICBcInBlcmNlbnRhZ2Vfb3Zlcjhob3Vyc19lcGlzb2RlXCIgICAgICBcInBlcmNlbnRhZ2Vfb3Zlcjhob3Vyc19lcGlzb2RlX3FmXCIgIFxuWzIyXSBcIm51bWJlcl9vdmVyMTJob3Vyc19lcGlzb2RlXCIgICAgICAgICBcIm51bWJlcl9vdmVyMTJob3Vyc19lcGlzb2RlX3FmXCIgICAgICBcInBlcmNlbnRhZ2Vfb3ZlcjEyaG91cnNfZXBpc29kZVwiICAgIFxuWzI1XSBcInBlcmNlbnRhZ2Vfb3ZlcjEyaG91cnNfZXBpc29kZV9xZlwiIFxuIn0= -->
+<pre><code> [1] &quot;month&quot;                              &quot;country&quot;                            &quot;hbt&quot;                               
+ [4] &quot;treatment_location&quot;                 &quot;department_type&quot;                    &quot;number_of_attendances_all&quot;         
+ [7] &quot;number_within4hours_all&quot;            &quot;number_over4hours_all&quot;              &quot;percentage_within4hours_all&quot;       
+[10] &quot;number_of_attendances_episode&quot;      &quot;number_of_attendances_episode_qf&quot;   &quot;number_within4hours_episode&quot;       
+[13] &quot;number_within4hours_episode_qf&quot;     &quot;number_over4hours_episode&quot;          &quot;number_over4hours_episode_qf&quot;      
+[16] &quot;percentage_within4hours_episode&quot;    &quot;percentage_within4hours_episode_qf&quot; &quot;number_over8hours_episode&quot;         
+[19] &quot;number_over8hours_episode_qf&quot;       &quot;percentage_over8hours_episode&quot;      &quot;percentage_over8hours_episode_qf&quot;  
+[22] &quot;number_over12hours_episode&quot;         &quot;number_over12hours_episode_qf&quot;      &quot;percentage_over12hours_episode&quot;    
 [25] &quot;percentage_over12hours_episode_qf&quot; </code></pre>
 <!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
