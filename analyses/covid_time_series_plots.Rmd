@@ -32,6 +32,50 @@ With a filter for health board (so we can filter for 1 or multi-select for 1+).
 
 # Hospital admissions
 
+The following three datasets collect data about number of hospital admissions from 2020 to 2023. The number of hospital admissions is here registered weekly. For each of them, we have informations about hb, weekly hospital admissions and average and percentage of hospital admissions during the precovid (period 2018/2019). In addition to that, each of the three files contains informations respectively about demographics of patients, simd quintile and specialty.
+
+```{r}
+ha_demo <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+  clean_names()
+
+ha_simd <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
+  clean_names()
+
+ha_specialty <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_specialty_20230706.csv") %>% 
+  clean_names()
+
+```
+
+### Wrangling data operations.
+
+First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month....
+
+```{r}
+ha_demo %>% 
+  #mutate(month_ending = as.character(week_ending)) %>% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+ha_demo
+```
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
 Starting point: Chiara work on covid/hospital_admissions data
 
 # Length of stay
