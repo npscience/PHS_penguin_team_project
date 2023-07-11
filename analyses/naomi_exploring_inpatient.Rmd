@@ -1,0 +1,93 @@
+---
+title: "Inpatient length of stay"
+output: html_notebook
+---
+
+Q1: how to get to "all acute" in this data (specialties)
+Q2: what's the difference in length of stay for WvS, covid?
+
+# 1. Wrangle for all acute
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+inpatients_specialty <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names()
+```
+```{r}
+head(inpatients_specialty)
+```
+
+```{r}
+inpatients_specialty %>% 
+  group_by(specialty, specialty_name) %>% 
+  summarise(count = n())
+```
+
+Which are acute?
+
+From the [glossary](https://publichealthscotland.scot/publications/acute-hospital-activity-and-nhs-beds-information-quarterly/acute-hospital-activity-and-nhs-beds-information-quarterly-quarter-ending-30-june-2021/glossary/): 
+
+    "'Acute' hospital care includes activity occurring in major teaching hospitals, district general hospitals and community hospitals.
+    
+    Includes services such as consultation with specialist clinicians; emergency treatment; routine, complex and life-saving surgery; specialist diagnostic procedures; close observation; and short-term care of patients.
+    
+    Excludes obstetric services; psychiatric services; long stay care services; and non-consultant led clinics."
+
+And:
+
+    "A specialty is defined as a division of medicine or dentistry covering a specific area of clinical activity. There are two specialty groupings (external website) that most specialties sit in: medical and surgical. The Acute specialty grouping includes the medical and surgery groupings combined."
+
+From the 31 specialties in this dataset, even though some of these specialties deal with longer term care and/or chronic conditions (such as geriatric medicine), we are not excluding any specialties, since they are included in the broad definition of 'acute' hospital care.
+
+# Data --> insights
+
+## Data we have
+
+The data we have is inpatient and day case 
+
+* age and sex - "Age and sex breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients." https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/00c00ecc-b533-426e-a433-42d79bdea5d4
+* deprivation - "Deprivation breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients" https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/4fc640aa-bdd4-4fbe-805b-1da1c8ed6383
+* specialty - "Specialty breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients." https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/c3b4be64-5fb4-4a2f-af41-b0012f0a276a
+
+## Qs to ask
+
+We can look at any of these to see overall activity over time, and look into winter/summer and COVID impacts:
+
+* To what extent are the ‘winter crises’ reported by the media real?
+* How has the Covid-19 pandemic affected provision of acute care in Scotland?
+
+Looking at:
+
+* Temporal: How has this issue changed over time? (Is it getting better or worse?)
+* Geographic: How does this issue differ between areas in Scotland? (Where should efforts be focussed?)
+* Demographic: Who is most affected by this issue? (Who should be targeted with efforts?)
+
+To understand who is most impacted, we can look into age/sex and deprivation.
+
+Some Qs from the brief:
+
+* Are there any demographic groups that are driving the activity?
+* Are there key cohorts of patient (based on their demographics) that drive the overall hospital activity?
+* How significant is deprivation as a driver of hospital activity?
+* Are there specialties that have more stable activity patterns over time and how much of an impact is stability on overall activity?
+* How significant are the differences in hospital activity across the country? Does urban/rural have an impact or is it related to the size and capacity of the health board?
+
+## Hospital activity by season
+
+Look at total activity, by time (quarter / month)
+
+
+
+### Demographic impacted / drivers
+
+Are there key patient groups driving/most affected by any seasonal pattern?
+
+(Where do these cases come from? A&E discharges?)
+
+
+
+
