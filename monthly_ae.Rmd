@@ -7,6 +7,7 @@ output: html_notebook
 library(tidyverse)
 library(janitor)
 library(forcats)
+library(lubridate)
 ```
 
 # Terminology
@@ -96,7 +97,7 @@ Date range: 2018-01 to 2023-05
 unique(discharges$department_type)
 ```
 
-## Demographics ----
+## Attendances, demographics ----
 
 ```{r}
 demographics <- read_csv("data/a_and_e/opendata_monthly_ae_demographics_202305.csv") %>% 
@@ -107,7 +108,84 @@ demographics <- read_csv("data/a_and_e/opendata_monthly_ae_demographics_202305.c
 glimpse(demographics)
 ```
 
-This gives demographics of overall attendances but we can't look at waiting times x demographics 
+This gives demographics of overall attendances but we can't look at waiting times x demographics
+
+### monthly A&E atts by hbt
+
+```{r}
+demographics %>% 
+  group_by(month, hbt) %>% 
+  summarise(total_attendances = sum(number_of_attendances)) %>%
+  mutate(month = ym(month)) %>% 
+  ggplot() +
+  geom_line(aes(x = month, y = total_attendances, colour = hbt)) +
+  labs(x = "Month", y = "Attendances", colour = "Health board",
+       title = "Monthly attendances at A&E") +
+  theme(panel.background = element_blank())
+```
+```{r}
+ggsave("monthly_attendances_A&E_hb.png")
+```
+
+```{r}
+demographics %>% 
+  group_by(month, hbt) %>% 
+  summarise(total_attendances = sum(number_of_attendances)) %>%
+  mutate(month = ym(month)) %>% 
+  filter(month < "2020-01-01") %>% 
+  ggplot() +
+  geom_line(aes(x = month, y = total_attendances, colour = hbt)) +
+  labs(x = "Month", y = "Attendances", colour = "Health board",
+       title = "Monthly attendances at A&E") +
+  theme(panel.background = element_blank())
+```
+
+```{r}
+ggsave("monthly_attendances_A&E_hb_before2020.png")
+```
+
+### monthly A&E atts by depriv
+
+```{r}
+class(demographics$deprivation)
+```
+
+```{r}
+demographics %>% 
+  group_by(month, deprivation) %>% 
+  summarise(total_attendances = sum(number_of_attendances),
+            total_attendances_mil = total_attendances/1000000,
+            deprivation = as.character(deprivation)) %>%
+  ggplot() +
+  geom_col(aes(x = ym(month), y = total_attendances, fill = deprivation),
+           position = "stack") +
+  scale_fill_brewer(palette = "Set1") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Month", y = "Attendances", fill = "Deprivation quintile",
+       title = "Monthly attendances at A&E") +
+  theme(panel.background = element_blank())
+```
+### atts filter options
+
+```{r}
+demographics %>% 
+  filter(hbt == "S08000031") %>% 
+  group_by(month, deprivation) %>% 
+  summarise(total_attendances = sum(number_of_attendances),
+            total_attendances_thous = total_attendances/1000,
+            deprivation = as.character(deprivation)) %>%
+  ggplot() +
+  aes(x = ym(month), y = total_attendances_thous, 
+               colour = deprivation) +
+  geom_line() +
+  geom_point(size = 0.5) +
+  scale_colour_brewer(palette = "Set1") +
+  scale_y_continuous(labels = scales::comma) +
+  labs(x = "Month", y = "Attendances (in 1,000s)", fill = "Deprivation quintile",
+       title = "Monthly attendances at A&E") +
+  theme(panel.background = element_blank())
+```
+
 
 ## Referral ----
 
@@ -190,6 +268,12 @@ inpatient_age_and_sex %>%
 
 2017Q4 to 2020Q1
 
+## inpatient ...
+
+```{r}
+inpatient_specialty <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
+```
+
 
 # Covid
 
@@ -224,6 +308,13 @@ max(covid_age_sex$WeekEnding)
 with a comparator to same week in 2018/2019 (average of the two years)
 
 Can look at emergency admissions and see % variation from 2018/2019 average
+
+## hosp admissins by specialty?
+
+```{r}
+covid_speciality <- read_csv("data/covid/hospital_admissions/hospital_admissions_hb_specialty_20230706.csv")
+```
+
 
 # Treatment wait times
 
