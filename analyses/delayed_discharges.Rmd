@@ -35,13 +35,72 @@ delayed <- delayed %>%
 
 
 
+#### Inspecting the difference over health boards (all ages)
+
 ```{r}
 delayed %>% 
   filter(age_group == "18plus") %>% 
-  group_by(hbt)
   ggplot() +
   aes(x = month_of_delay,
-      y = average_daily_number_of_delayed_beds) +
+      y = average_daily_number_of_delayed_beds,
+      group = hbt, colour = hbt) +
   geom_line()
 ```
+
+
+
+Removing outlier to get a better impression of how the health boards compare
+
+```{r}
+delayed %>% 
+  slice_max(average_daily_number_of_delayed_beds, n = 1)
+```
+
+
+```{r}
+delayed %>% 
+  filter(age_group == "18plus",
+         hbt != "S92000003") %>% 
+  ggplot() +
+  aes(x = month_of_delay,
+      y = average_daily_number_of_delayed_beds,
+      group = hbt, colour = hbt) +
+  geom_line()
+```
+
+most readable graph of the year winner 2023
+
+would be interesting to be able to look at individual health boards reactively as they seem to have
+drastically different patterns to one another
+
+
+
+
+
+#### Difference between age groups
+
+example of difference in ages for single health board
+
+```{r}
+delayed %>% 
+  filter(age_group != "18plus",
+         hbt == "S08000015") %>% 
+  ggplot() +
+  aes(x = month_of_delay,
+      y = average_daily_number_of_delayed_beds,
+      group = age_group, colour = age_group) +
+  geom_line()
+```
+
+
+not super interesting, only shows the difference, maybe a line of changing proportion would be more
+descriptive
+
+```{r}
+delayed %>% 
+  filter(age_group != "18plus") %>% 
+  
+```
+
+
 
