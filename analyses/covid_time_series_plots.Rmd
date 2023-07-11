@@ -1,0 +1,82 @@
+---
+title: "Plots for covid time series"
+output: html_notebook
+---
+
+# Library calls
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(lubridate)
+```
+
+
+# KPIs to explore
+
+* Hospital admissions
+* Bed occupancy
+* Length of stay
+* A&E attendances
+* A&E wait times
+
+# Plots to make
+
+A time series line graph, with date along the bottom (month or quarter, tbc), and KPI measure on y-axis. From 2018(or earlier) until now. **requires data cleaning step to convert month/quarter to datetime class**
+
+Including a line for "all health boards" - tbc whether an average or aggregate for the KPI. **requires data wrangling step to make this summary data**
+_We could make a static plot of all hbs to display alongside an interactive plot to select HBs; such that all HBs is not needed in the input selector._
+
+With a filter for health board (so we can filter for 1 or multi-select for 1+).
+
+# Hospital admissions
+
+Starting point: Chiara work on covid/hospital_admissions data
+
+# Length of stay
+
+Starting point: analyses/naomi_exploring_inpatient.Rmd
+
+```{r}
+# load in data (specialty - also avail: age/sex, deprivation)
+inpatients_specialty <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+
+# generate stays data for all health boards to compare individual hbs to
+all_hbs_stays <- inpatients_specialty %>% 
+  group_by(quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  mutate(hb = "All health boards", .after = quarter)
+
+# select same columns from original df
+stays_per_hb <- inpatients_deprivation %>% 
+  # check group by
+  group_by(hb, quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  select(quarter, hb, stays, length_of_stay, average_length_of_stay)
+
+# combine all_hbs data with individual hbs data
+stays <- bind_rows(all_hbs_stays, stays_per_hb)
+```
+
+
+
+# Bed occupancy
+
+Starting point: analyses/thijmen_exploring_beds.Rmd
+
+
+# A&E attendances
+
+Starting point: one of Naomi's notebooks from Tuesday AM
+
+# A&E wait times
+
+Starting point: one of Chiara/Thijmen's notebooks from Monday
+
