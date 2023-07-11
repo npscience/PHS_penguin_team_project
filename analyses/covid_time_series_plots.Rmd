@@ -83,13 +83,13 @@ Starting point: Chiara work on covid/hospital_admissions data
 Starting point: analyses/naomi_exploring_inpatient.Rmd
 
 ```{r}
-# load in data (specialty - also avail: age/sex, deprivation)
-inpatients_specialty <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+# load in data (deprivation - also avail: age/sex, specialty)
+inpatients_deprivation <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_simd.csv") %>% 
   clean_names() %>% 
   mutate(quarter = zoo::as.yearqtr(quarter))
 
 # generate stays data for all health boards to compare individual hbs to
-all_hbs_stays <- inpatients_specialty %>% 
+all_hbs_stays <- inpatients_deprivation %>% 
   group_by(quarter) %>% 
   summarise(stays = sum(stays),
             length_of_stay = sum(length_of_stay),
@@ -107,6 +107,30 @@ stays_per_hb <- inpatients_deprivation %>%
 
 # combine all_hbs data with individual hbs data
 stays <- bind_rows(all_hbs_stays, stays_per_hb)
+
+# plot ave_length_of_stay over time with hb filter
+# assign to plot_ts_length_stay_filter_hb
+# note scale all health boards == individual HB so keep on same graph
+stays %>% 
+  # filter for multi-select - replace S08000015 with input selector for hb
+  filter(hb %in% c("All health boards","S08000015")) %>% 
+  ggplot() +
+  aes(x = quarter, y = average_length_of_stay, colour = hb) +
+  geom_line() +
+  geom_point() +
+  scale_colour_brewer(type = "qual", palette = "Set1") +
+  labs(x = "\nYear quarter", y = "Average length of stay\n",
+       title = "Length of stay for inpatients and day cases",
+       colour = "Health board") +
+  theme(legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 28),
+        legend.title = element_text(size = 28),
+        plot.title = element_text(size = 32)
+        )
 ```
 
 
