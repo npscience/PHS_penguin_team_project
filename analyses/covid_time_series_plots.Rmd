@@ -48,15 +48,22 @@ ha_specialty <- read_csv("../data/covid/hospital_admissions/hospital_admissions_
 
 ### Wrangling data operations.
 
-First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month....
+First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset sìconsistent with the other datasets.
 
 ```{r}
-ha_demo %>% 
-  #mutate(month_ending = as.character(week_ending)) %>% 
+ha_demo <- ha_demo %>% 
   mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
   mutate(week_ending = ymd(week_ending))
 
-ha_demo
+
+ha_simd <- ha_simd %>% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+
+ha_specialty <- ha_specialty %>% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
+  mutate(week_ending = ymd(week_ending))
 ```
 
 
