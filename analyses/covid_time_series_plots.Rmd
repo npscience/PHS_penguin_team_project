@@ -15,11 +15,12 @@ library(lubridate)
 
 # KPIs to explore
 
-* Hospital admissions
-* Bed occupancy
+* Hospital admissions <--- MVP this (Chiara WIP)
+* Bed occupancy <--- MVP this
 * Length of stay
 * A&E attendances
 * A&E wait times
+* Delayed discharges <--- MVP this
 
 # Plots to make
 
@@ -83,6 +84,7 @@ Starting point: Chiara work on covid/hospital_admissions data
 Starting point: analyses/naomi_exploring_inpatient.Rmd
 
 ```{r}
+# naomi
 # load in data (deprivation - also avail: age/sex, specialty)
 inpatients_deprivation <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_simd.csv") %>% 
   clean_names() %>% 
@@ -144,7 +146,19 @@ Starting point: analyses/thijmen_exploring_beds.Rmd
 
 Starting point: one of Naomi's notebooks from Tuesday AM
 
+```{r}
+# naomi
+# load in data, using demographics file
+monthly_ae_admissions_demographics <- read_csv("../data/a_and_e/opendata_monthly_ae_demographics_202305.csv") %>% 
+  clean_names()
+
+```
+
+
 # A&E wait times
 
 Starting point: one of Chiara/Thijmen's notebooks from Monday
 
+# Delayed discharge
+
+Starting point: Ali's work
