@@ -11,11 +11,13 @@ Q2: what's the difference in length of stay for WvS, covid?
 ```{r}
 library(tidyverse)
 library(janitor)
+library(lubridate)
 ```
 
 ```{r}
 inpatients_specialty <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv") %>% 
-  clean_names()
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
 ```
 ```{r}
 head(inpatients_specialty)
@@ -78,15 +80,173 @@ Some Qs from the brief:
 
 ## Hospital activity by season
 
-Look at total activity, by time (quarter / month)
+Look at total activity, by quarter (this is what it is grouped by)
+
+```{r cleaning}
+inpatients_age_sex <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv") %>% 
+  clean_names()
+
+inpatients_deprivation <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_simd.csv") %>% 
+  clean_names() %>% 
+  # change the quarter column to yearqtr type
+  mutate(quarter = zoo::as.yearqtr(quarter))
+```
+
+Interesting variables:
+
+* admission type
+* sex, age (brackets) OR deprivation quintile
+* episodes, length of episode, average length of episode
+* stays, length of stays, average length of stays
+
+### admission type
+
+```{r}
+inpatients_deprivation %>% 
+  distinct(admission_type)
+```
+
+### stay / spell / episode stats
+
+Specialty data contains length of episode, length of spell
+Deprivation data contains length of episode, length of stay
+Sex-age data contains length of spell, length of stay
+
+From [glossary](https://publichealthscotland.scot/publications/acute-hospital-activity-and-nhs-beds-information-quarterly/acute-hospital-activity-and-nhs-beds-information-quarterly-quarter-ending-30-june-2021/glossary/):
+
+    "Episode
+    An SMR01 episode is generated when a patient is discharged from hospital but also when a patient is transferred between hospitals, significant facilities, specialties or to the care of a different consultant.
+    ...
+    Average length of spell
+    This is the average (mean) number of days that a patient spends in hospital during a specialty spell at a given location. It is calculated by dividing the total length of spell for all inpatients, at a given location, during a quarter by the total number of specialty spells.
+    
+    Average length of stay
+    This is the average (mean) number of days that a patient spends in hospital during a continuous inpatient stay (CIS). It is calculated by dividing the total length of stay for all inpatients during a quarter by the total number of CISs."
+    
+So length of spell is time spent in one specialty. Patient may be transferred between specialties, so length of stay is total (continuous) time in hospital (in 1 or more specialty).
+
+Not sure how length of episode fits in here (not defined in glossary).
+
+Let's look at length of stay first. Length of spell or episode could be interesting if looking at individual specialties.
+
+Q1 v Q3 for seasonality
+
+```{r}
+head(inpatients_deprivation)
+```
+
+```{r wrangling}
+# generate stays data for all health boards to compare individual hbs to
+all_hbs_stays <- inpatients_deprivation %>% 
+  group_by(quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  mutate(hb = "All health boards", .after = quarter)
+
+# select same columns from original df
+stays_per_hb <- inpatients_deprivation %>% 
+  # check group by
+  group_by(hb, quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  select(quarter, hb, stays, length_of_stay, average_length_of_stay)
+
+# combine all_hbs data with individual hbs data
+stays <- bind_rows(all_hbs_stays, stays_per_hb)
+```
 
 
+```{r}
+stays %>% 
+  filter(hb == "All health boards") %>% 
+  ggplot() +
+  aes(x = quarter, y = average_length_of_stay, colour = hb) +
+  geom_line() +
+  geom_point()
+```
 
-### Demographic impacted / drivers
+try to understand what affects length of stay - look at type of admission, specialty
+
+### drivers of length of stay (demographics, specialty)
+
+```{r}
+# average length of stay by admission type
+inpatients_deprivation %>% 
+  filter(average_length_of_stay < 100) %>% 
+  ggplot() +
+  aes(x = admission_type, y = average_length_of_stay) +
+  geom_boxplot()
+```
+
+Admission type doesn't look to change average length of stay that much, just the range within each is different (not specified has longer tail, and wider IQR).
+
+```{r}
+# number of stays per SIMD by admission type over time
+inpatients_deprivation %>%
+  group_by(admission_type, quarter, simd) %>% 
+  summarise(total_stays = sum(stays)) %>% 
+  ggplot() +
+  aes(x = quarter, y = total_stays, colour = admission_type) +
+  geom_line() +
+  facet_wrap( ~ simd, ncol = 3) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank())
+```
+
+### episodes by specialty
+
+```{r}
+inpatients_specialty %>% 
+  group_by(specialty_name) %>% 
+  summarise(episodes = sum(episodes)) %>% 
+  ggplot() +
+  aes(y = specialty_name, x = episodes) +
+  geom_col() +
+  # scale_x_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank())
+```
+
+```{r}
+inpatients_specialty %>% 
+  # filter(specialty_name == "General Medicine") %>%
+  group_by(specialty_name, quarter) %>% 
+  summarise(all_types_episodes = sum(episodes)) %>% 
+  filter(all_types_episodes > 100000) %>% 
+  ggplot() +
+  aes(x = quarter, y = all_types_episodes, colour = specialty_name) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank())
+```
+
+```{r}
+inpatients_specialty %>% 
+  filter(!specialty_name %in% c("General Medicine","General Surgery")) %>%
+  group_by(specialty_name, quarter) %>% 
+  summarise(all_types_episodes = sum(episodes)) %>% 
+  #filter(all_types_episodes > 100000) %>% 
+  ggplot() +
+  aes(x = quarter, y = all_types_episodes, colour = specialty_name) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank()) #+
+  #facet_wrap(~ specialty_name, ncol = 2, scales = "free_y")
+```
+
+
+### who is impacted by W/S / covid patterns
 
 Are there key patient groups driving/most affected by any seasonal pattern?
 
-(Where do these cases come from? A&E discharges?)
+(Where do these cases come from? Look at A&E discharges "admitted to same hospital" from A&E discharge data for same time period)
+
+
 
 
 
