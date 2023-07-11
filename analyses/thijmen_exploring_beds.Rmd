@@ -38,6 +38,8 @@ beds %>%
   aes(x = yq(quarter), y = total_staffed_beds) +
   geom_col()
 ```
+
+
 ```{r}
 # percentages occupancy
 beds %>% 
@@ -50,50 +52,53 @@ beds %>%
   aes(x = yq(quarter), y = average_percentage_occupancy_pq, group = 1) +
   geom_line()
 
+```
 
-
-
-beds %>% 
-  filter(specialty_name == "All Acute") %>% 
-  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
-  group_by(quarter) %>%
-  ggplot() +
-  aes(x = yq(quarter), y = all_staffed_beddays) %>% 
-  geom_line()
-
-
-
+```{r}
+# goal: let's check what major acute specialties are most of interest to us?
 
 beds %>% 
-  filter(specialty_name == "All Acute") %>% 
-  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
-  group_by(quarter) %>% 
+  select(specialty_name, percentage_occupancy, average_available_staffed_beds, average_occupied_beds) %>% 
+  group_by(specialty_name) %>% 
+  summarise(available_min_occupied = mean(average_available_staffed_beds-average_occupied_beds)) %>% 
+  arrange(desc(available_min_occupied))
+
+# shows on average the beds availability over entire time range
+```
+
+```{r}
+# lets create an individual percentage occupancy line for each specialty
+
+beds %>% 
+  #filter(specialty_name == "All Acute") %>% 
+  select(quarter, hb, percentage_occupancy, specialty_name) %>% 
+  group_by(quarter, specialty_name) %>% 
  #filter(hb == "S08000015") %>% 
-  summarise(total_staffed_beds = sum(all_staffed_beddays)) %>% 
+  summarise(average_percentage_occupancy_pq = mean(percentage_occupancy)) %>% 
   ggplot() +
-  aes(x = yq(quarter), y = total_staffed_beds) +
-  geom_col()
+  aes(x = yq(quarter), y = average_percentage_occupancy_pq, group = specialty_name) +
+  geom_line()
+    
+```
+```{r}
+beds %>% 
+  #filter(specialty_name == "All Acute") %>% 
+  select(quarter, percentage_occupancy, specialty_name) %>% 
+  filter(quarter == "2020Q2") %>% 
+  group_by(specialty_name) %>% 
+  summarise(average_percentage_occupancy = mean(percentage_occupancy)) %>% 
+  filter(average_percentage_occupancy < 90 & average_percentage_occupancy > 25)
 ```
 
 ```{r}
 beds %>% 
-  filter(specialty_name == "All Acute") %>%
-  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
-  group_by(quarter) %>% 
-  summarise(average_occupancy = mean(percentage_occupancy)) %>% 
-  ggplot() +
-  aes(x = quarter, y = average_occupancy) %>% 
-  geom_line()
-  
-  
-  
-  beds %>% 
-  filter(specialty_name == "All Acute") %>% 
-  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %>% 
-  group_by(quarter) %>%
-  ggplot() +
-  aes(x = yq(quarter), y = all_staffed_beddays, group = 1) %>% 
-  geom_line()
-  
+  #filter(specialty_name == "All Acute") %>% 
+  select(quarter, percentage_occupancy, specialty_name) %>% 
+  filter(quarter == "2020Q2" | quarter == "2020Q1") %>% 
+  group_by(specialty_name, quarter) %>% 
+  summarise(average_occupancy_per_q = mean(percentage_occupancy)) %>% 
+  mutate(difference_q1_min_q2 = )
+  summarise(difference_q2_q1 = ) %>% 
+  filter(average_percentage_occupancy < 90 & average_percentage_occupancy > 25)
 ```
 
