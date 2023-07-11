@@ -264,8 +264,207 @@ head(ha_specialty)
 ```
 
 
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = week_ending, y = number_admissions) +
+  geom_line()
+```
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = week_ending, y = number_admissions, fill = hb) +
+  geom_col(position = "dodge")
+```
 
 
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  filter(hb == "S08000022") %>% 
+  ggplot() +
+  aes(x = week_ending, y = number_admissions, fill = hb) +
+  geom_col(position = "dodge", show.legend = FALSE)
+```
+
+
+
+```{r}
+ha_demo <- ha_demo %>% 
+  mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+```
+
+
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions) +
+  geom_col()
+```
+
+
+
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions, fill = age_group) +
+  geom_col()
+```
+
+
+```{r}
+ha_simd <- ha_simd %>% 
+   mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+  
+```
+
+
+
+```{r}
+ha_simd %>% 
+mutate(year = year(ymd(week_ending))) %>%
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions, group = simd_quintile, colour= as.character(simd_quintile)) +
+  geom_line()
+```
+
+```{r}
+ha_simd %>% 
+mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  filter(simd_quintile == 3) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions) +
+  geom_col()
+```
+
+
+```{r}
+ha_specialty <- ha_specialty %>% 
+  mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+```
+
+```{r}
+ha_specialty %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  filter(specialty %in% c("Cardiology", "Surgey", "Medical (incl. Cardiology & Cancer)")) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions, fill = specialty) +
+  geom_col(position = "dodge")
+```
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  pivot_longer(
+    cols = c("number_admissions", "average20182019"),
+      names_to = "covid_vs_precovid",
+    values_to = "admissions"
+  ) %>% 
+  #filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = admissions, fill = covid_vs_precovid)+
+  geom_col(position = "dodge")
+```
+
+
+
+```{r}
+ha_demo <- ha_demo %>% 
+  mutate(year = str_sub(year(ymd(week_ending)))) %>%
+  mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+
+ha_demo
+```
+
+
+```{r}
+ha_demo <- ha_demo %>% 
+  mutate(month_ending = as.character(week_ending)) %>% 
+  mutate(month_ending_date = ym(str_sub(month_ending, start = 1, end = 6)), .after = month) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+ha_demo
+```
+
+
+
+
+```{r}
+ha_demo %>% 
+  group_by(month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions) +
+  geom_line()
+```
+
+
+```{r}
+ha_demo %>% 
+  group_by(hb, month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions, group = hb, colour = hb) +
+  geom_line()
+```
+
+```{r}
+ha_simd <- ha_simd %>% 
+  mutate(month_ending = as.character(week_ending)) %>% 
+  mutate(month_ending_date = ym(str_sub(month_ending, start = 1, end = 6)), .after = month) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+```
+
+
+```{r}
+ha_simd %>% 
+  group_by(simd_quintile,month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions, group = simd_quintile, colour = simd_quintile) +
+  geom_line()
+```
+
+```{r}
+ha_specialty <- ha_specialty %>% 
+  mutate(month_ending = as.character(week_ending)) %>% 
+  mutate(month_ending_date = ym(str_sub(month_ending, start = 1, end = 6)), .after = month) %>% 
+  mutate(week_ending = ymd(week_ending))
+```
+
+
+```{r}
+ha_specialty %>% 
+   #filter(specialty %in% c("Cardiology", "Surgery", "Medical (incl. Cardiology & Cancer)")) %>% 
+  group_by(specialty,month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions, group = specialty, colour = specialty) +
+  geom_line()
+```
+
+
+
+```{r}
+ha_demo %>% 
+  distinct(month)
+```
 
 
 
