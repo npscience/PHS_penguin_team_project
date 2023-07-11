@@ -193,10 +193,10 @@ inpatient_age_and_sex %>%
 
 # Covid
 
-## Admissions age, sex
+## Hospital admissions during covid by age, sex
 
 ```{r}
-covid_age_sex <- read_csv("data/covid/hospital_admissions_hb_agesex_20230706.csv")
+covid_age_sex <- read_csv("data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv")
 ```
 
 ```{r}
@@ -226,5 +226,75 @@ with a comparator to same week in 2018/2019 (average of the two years)
 Can look at emergency admissions and see % variation from 2018/2019 average
 
 # Treatment wait times
+
+```{r}
+performance_completed_treatment_waits <- read_csv("data/treatment_waiting_times/sot_performance_completed_waits_mar23.csv") %>% 
+  clean_names()
+```
+
+```{r}
+# patient types
+performance_completed_treatment_waits %>% 
+  summarise(count = n(), .by = patient_type)
+```
+
+```{r}
+performance_completed_treatment_waits %>% 
+  summarise(count = n(), .by = specialty)
+```
+
+```{r}
+specialty_codes <- read_csv("data/reference_lookup_tables/specialty-reference.csv") %>% 
+  clean_names()
+
+specialty_codes %>% 
+  filter(specialty_name == "All Acute")
+```
+
+
+```{r}
+performance_completed_treatment_waits <- performance_completed_treatment_waits %>% 
+  left_join(specialty_codes, by = "specialty") 
+```
+
+### which specialties are acute?
+
+https://publichealthscotland.scot/publications/acute-hospital-activity-and-nhs-beds-information-quarterly/acute-hospital-activity-and-nhs-beds-information-quarterly-quarter-ending-30-june-2021/glossary/
+
+"Excludes obstetric services; psychiatric services; long stay care services; and non-consultant led clinics."
+
+```{r}
+# top 10 by number of rows
+performance_completed_treatment_waits %>% 
+  group_by(specialty, specialty_name) %>% 
+  summarise(count = n()) %>% 
+  arrange(desc(count))
+```
+
+```{r}
+# sum of waits over 12 weeks for each specialty
+performance_completed_treatment_waits %>% 
+  group_by(hbt, specialty_name) %>% 
+  summarise(sum_waits_over_12_weeks = sum(over12weeks),
+            prop_waits_over_12_weeks = sum_waits_over_12_weeks / number_of_waits) %>% 
+  ggplot() +
+  geom_col(aes(x = sum_waits_over_12_weeks, y = hbt))
+```
+
+### time
+filter for speciality
+look over time
+
+```{r}
+performance_completed_treatment_waits %>% 
+  summarise(sum)
+```
+
+
+
+```{r}
+distribution_completed_treatment_waits <- read_csv("data/treatment_waiting_times/sot_distribution_of_completed_waits_mar23.csv") %>% 
+  clean_names()
+```
 
 
