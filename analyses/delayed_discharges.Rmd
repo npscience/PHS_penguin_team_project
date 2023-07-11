@@ -1,0 +1,47 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(janitor)
+```
+
+
+```{r}
+delayed <- clean_names(read_csv("delayed-discharge-beddays-health-board.csv"))
+```
+
+Initial clean:  not interested in delay reasons,
+                remove qualifier rows
+
+```{r}
+delayed <- delayed %>% 
+  filter(reason_for_delay == "All Delay Reasons") %>% 
+  select(month_of_delay,
+         hbt,
+         age_group,
+         number_of_delayed_bed_days,
+         average_daily_number_of_delayed_beds)
+```
+
+
+```{r}
+delayed <- delayed %>% 
+  mutate(month_of_delay = ym(month_of_delay))
+```
+
+
+
+```{r}
+delayed %>% 
+  filter(age_group == "18plus") %>% 
+  group_by(hbt)
+  ggplot() +
+  aes(x = month_of_delay,
+      y = average_daily_number_of_delayed_beds) +
+  geom_line()
+```
+
