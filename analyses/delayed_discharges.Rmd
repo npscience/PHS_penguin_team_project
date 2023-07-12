@@ -195,3 +195,57 @@ t.test(test_before$number_of_delayed_bed_days,
        conf.level = 0.95)
 ```
 
+
+
+
+
+mean before and after covid
+
+```{r}
+means_before <- delayed %>% 
+  filter(age_group == "18plus",
+         month_of_delay < "2020-01-01",
+         reason_for_delay == "All Delay Reasons"
+         ) %>% 
+  summarise(mean = mean(average_daily_number_of_delayed_beds), .by = hbt)
+```
+
+
+```{r}
+means_after <- delayed %>% 
+  filter(age_group == "18plus",
+         month_of_delay >= "2022-01-01",
+         reason_for_delay == "All Delay Reasons") %>% 
+   summarise(mean = mean(average_daily_number_of_delayed_beds), .by = hbt)
+```
+
+
+```{r}
+mean_diff <- inner_join(means_before, means_after, by = "hbt") %>% 
+  mutate(mean_diff = mean.y - mean.x, HB = hbt)
+```
+
+
+
+```{r}
+map <- read_csv("../data/cleaned_data/hospital_locations_clean.csv")
+```
+
+```{r}
+map_means <- left_join(map, mean_diff, by = "HB")
+```
+
+
+
+```{r}
+leaflet(map_means) %>% 
+  addTiles() %>% 
+  addCircleMarkers(lng = ~ longitude,
+             lat = ~ latitude,
+             weight = 0,
+             fillColor = ~ ifelse(mean_diff > 0, "blue", "red"),
+             fillOpacity = ~ abs(mean_diff)/300,
+             popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
+             )
+```
+
