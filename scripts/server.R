@@ -5,7 +5,7 @@ server <- function(input, output, session) {
   
   output$occupancy_heatmap <- renderLeaflet({
     hospital_location_occupancy %>% 
-      filter(hb == input$covid_hb) %>% 
+      filter(hb == input$hb) %>% 
       leaflet() %>% 
       addTiles() %>% 
       addCircleMarkers(lng = ~ longitude,
@@ -24,7 +24,7 @@ server <- function(input, output, session) {
   output$occupancy_ts <- renderPlot({
     occupancy_per_hb %>% 
       # filter for hb, always show "all of scotland" = S92000003
-      filter(hb %in% c("S92000003", input$covid_hb)) %>% 
+      filter(hb %in% c("S92000003", input$hb)) %>% 
       ggplot() +
       aes(x = quarter, y = percentage_occupancy, colour = hb) +
       geom_line() +
