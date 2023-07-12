@@ -20,15 +20,15 @@ library(lubridate)
 ```
 
 ```{r}
-waiting_times <- clean_names(waiting_times)
+waiting_times_1 <- clean_names(waiting_times)
 ```
 
 ```{r}
 #explore data
 head(waiting_times)
 glimpse(waiting_times)
-view(waiting_times)
-colnames(waiting_times)
+view(waiting_times_1)
+colnames(waiting_times_1)
 ```
 
 ```{r}
@@ -63,118 +63,14 @@ waiting_times_1 %>%
   geom_line()
 ```
 
-```{r}
-# Goal: lets check seasonality in waiting time data: 
-# compare July and January for each year to start
-
-waiting_times_1 %>% 
-  select(month, hbt, number_of_attendances_all) %>% 
-  # filter for at end 01 (january) and at end 07 (july)
-  mutate(right_month = if_else(
-                        str_detect(month, "01$|07$"), TRUE, FALSE), .before = hbt) %>% 
-  filter(right_month == TRUE) %>%
-  group_by(month, hbt) %>% 
-  summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
-  mutate(year = str_sub(month, start = 1, end = 4), .after = month) %>% 
-  ggplot() +
-  aes(x = ym(month), y = total_number_attendances_all, group = hbt) +
-    geom_col(aes(fill = hbt), position = "dodge") +
-  facet_wrap(~ hbt, scales = "free")
-```
 
 ```{r}
-# so we see a difference between january and july for each year across the HB's
-# let's calculate significance
-
-#first create the sample datasets you want to compare (january vs july)
-test_january <- 
+# check all 2020 months in more detail given the weird spikes
 waiting_times_1 %>% 
   select(month, hbt, number_of_attendances_all) %>% 
-  # filter for at end 01 (january) and at end 07 (july)
-  mutate(right_month = if_else(
-                        str_detect(month, "01$|07$"), TRUE, FALSE), .before = hbt) %>% 
-  filter(right_month == TRUE) %>%
-  group_by(month, hbt) %>% 
-  summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
-  mutate(year = str_sub(month, start = 1, end = 4), .after = month) %>% 
-  mutate(month_nr = str_sub(month, start = 5, end = 6), .after = month) %>% 
-  filter(month_nr == "01") %>% 
-  filter(year < 2020) %>% 
-  ungroup() %>% 
-  select(total_number_attendances_all)
+  filter(month == str_detect(month, "^2020"))
 
-test_july <- 
-waiting_times_1 %>% 
-  select(month, hbt, number_of_attendances_all) %>% 
-  # filter for at end 01 (january) and at end 07 (july)
-  mutate(right_month = if_else(
-                        str_detect(month, "01$|07$"), TRUE, FALSE), .before = hbt) %>% 
-  filter(right_month == TRUE) %>%
-  group_by(month, hbt) %>% 
-  summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
-  mutate(year = str_sub(month, start = 1, end = 4), .after = month) %>% 
-  mutate(month_nr = str_sub(month, start = 5, end = 6), .after = month) %>% 
-  filter(month_nr == "07") %>% 
-  filter(year < 2020) %>% 
-  ungroup() %>% 
-  select(total_number_attendances_all)
-  
-# now run the actual test
-t.test(test_january$total_number_attendances_all,
-       test_july$total_number_attendances_all,
-       alternative = "two.sided",
-       paired = FALSE,
-       conf.level = 0.95)
 ```
-
-
-```{r}
-# let's do the same as above but than for one HB that seem to show an extreme summer/winter dif
-
-test_january_HB28 <- 
-waiting_times_1 %>% 
-  select(month, hbt, number_of_attendances_all) %>% 
-  # filter for at end 01 (january) and at end 07 (july)
-  mutate(right_month = if_else(
-                        str_detect(month, "01$|07$"), TRUE, FALSE), .before = hbt) %>% 
-  filter(right_month == TRUE) %>%
-  group_by(month, hbt) %>% 
-  summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
-  mutate(year = str_sub(month, start = 1, end = 4), .after = month) %>% 
-  mutate(month_nr = str_sub(month, start = 5, end = 6), .after = month) %>% 
-  filter(month_nr == "01") %>% 
-  filter(year < 2020) %>% 
-  filter(hbt == "S08000028") %>% 
-  ungroup() %>% 
-  select(total_number_attendances_all)
-
-test_july_HB28 <- 
-waiting_times_1 %>% 
-  select(month, hbt, number_of_attendances_all) %>% 
-  # filter for at end 01 (january) and at end 07 (july)
-  mutate(right_month = if_else(
-                        str_detect(month, "01$|07$"), TRUE, FALSE), .before = hbt) %>% 
-  filter(right_month == TRUE) %>%
-  group_by(month, hbt) %>% 
-  summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
-  mutate(year = str_sub(month, start = 1, end = 4), .after = month) %>% 
-  mutate(month_nr = str_sub(month, start = 5, end = 6), .after = month) %>% 
-  filter(month_nr == "07") %>% 
-  filter(year < 2020) %>% 
-  filter(hbt == "S08000028") %>% 
-  ungroup() %>% 
-  select(total_number_attendances_all)
-  
-# now run the actual test
-t.test(test_january_HB28$total_number_attendances_all,
-       test_july_HB28$total_number_attendances_all,
-       alternative = "two.sided",
-       paired = FALSE,
-       conf.level = 0.95)
-```
-
-
-
 
 ```{r}
 # create a line for waiting times less than 4 hours and over 4 hours
@@ -189,119 +85,9 @@ waiting_times_1 %>%
   geom_line(aes(y = total_number_within4hrs), colour = "indianred") +
   geom_line(aes(y = total_number_over4hrs), colour = "springgreen4")
 
-```
-
-# From here official!
-# From here official!
-# Create final plot for dashboard and run statistical test "summer vs. winter"
-```{r}
-# lets first create a barplot comparing summer/winter per year for attendances
-
-#1. create variable for season
-season_name <- setNames(rep(c("winter", "spring", "summer", "autumn"), each = 3),
-                        month.name)
-
-# 2. create table specifying season
-attendances_ae <- waiting_times %>% 
-  select(month, hbt, number_of_attendances_all) %>% 
-  #let's add a column indicating season
-  mutate(month_label = month(
-                      ym(month), label = TRUE, abbr = FALSE), 
-         .before = hbt) %>% 
-  mutate(season = season_name[month_label], .before = hbt) %>% 
-  # create a  year column, 
-  mutate(year = year(ym(month)), .before = hbt) %>% 
-  # create a "fake" year for december, to make sure that december of previous year falls in next year for correct grouping
-  mutate(year = if_else(month_label == "December", year+1, year)) %>% 
-  mutate(season = if_else(month_label == "December", "winter", season)) %>%  
-  mutate(season = if_else(month_label == "March", "spring", season)) %>% 
-  mutate(season = if_else(month_label == "June", "summer", season)) %>% 
-  mutate(season = if_else(month_label == "September", "autumn", season)) %>% 
-  # create a column to later filter right season!
-  mutate(right_season = if_else(
-                        str_detect(season, "winter|summer"), TRUE, FALSE),
-         .before = hbt) 
-
-
-# 3.
-#lets create a table with a yearly average per hb per season, for each year:
-avg_yearperseason_hb <- attendances_ae %>% 
-  select(year, hbt, number_of_attendances_all) %>% 
-  group_by(year, hbt) %>% 
-  summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
-  filter(hbt == "S08000028")
-
-# 4. lets create a table as input for the ggplot
-input_table_ggplot_attendances <- attendances_ae %>% 
-  filter(right_season == TRUE) %>% 
-  group_by(year, season, hbt) %>% 
-  summarise(total_attendances = sum(number_of_attendances_all)) %>%
-  filter(year < 2020 & year > 2007) %>% 
-  filter(hbt == "S08000028")
-
-# 5. lets create the ggplot combining both datasets
-ggplot() +
-  geom_col(data = input_table_ggplot_attendances, 
-           aes(
-    x = year, 
-    y = total_attendances, 
-    fill = season),
-           position = "dodge", col = "white") +
-  geom_line(data = avg_yearperseason_hb, 
-            aes(
-    x = year, 
-    y = average_season_year))
-  
-
-
-# create plot per healthboard, split per season
-attendances_ae %>% 
-  filter(right_season == TRUE) %>% 
-  group_by(year, season, hbt) %>% 
-  summarise(total_attendances = sum(number_of_attendances_all)) %>%
-  filter(year < 2020 & year > 2007) %>% 
-  filter(hbt == "S08000028") %>% 
-  ggplot() +
-  aes(x = year, y = total_attendances, fill = season) +
-  geom_col(position = "dodge", col = "white")
-
 
 
 ```
 
-```{r}
-# Do statistical test
-# create variables
-test_summer <- attendances_ae %>% 
-  filter(year < 2020 & year > 2007) %>% 
-  filter(hbt == "S08000028") %>% 
-  filter(season == "summer") %>% 
-  group_by(season, year) %>% 
-  summarise(total_attendances = sum(number_of_attendances_all)) %>%
-  ungroup() %>% 
-  select(total_attendances)
 
-test_winter <- attendances_ae %>% 
-  filter(year < 2020 & year > 2007) %>% 
-  filter(hbt == "S08000028") %>% 
-  filter(season == "winter") %>% 
-  group_by(season, year) %>% 
-  summarise(total_attendances = sum(number_of_attendances_all)) %>%
-  ungroup() %>% 
-  select(total_attendances)
-
-# do final hypothesis test
-t.test(test_summer$total_attendances,
-       test_winter$total_attendances,
-       alternative = "two.sided",
-       paired = FALSE,
-       conf.level = 0.95)
-```
-
-
-# Now do similar, but for waiting times after 4 hrs
-
-```{r}
-
-```
 
