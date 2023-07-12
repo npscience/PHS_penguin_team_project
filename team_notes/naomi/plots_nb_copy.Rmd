@@ -10,6 +10,7 @@ library(tidyverse)
 library(ggplot2)
 library(janitor)
 library(lubridate)
+library(leaflet)
 ```
 
 
