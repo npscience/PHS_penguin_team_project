@@ -69,15 +69,84 @@ ha_specialty <- ha_specialty %>%
 
 
 
-```{r}
+This first plot represent the average of hospital admissions from the beginning of the Covid emergency until now, distinguishing between any selected health board and all Scotland.
 
+```{r}
+ha_demo_all <- ha_demo %>% 
+  mutate(hb = "Scotland")
+
+ha_demo_all_hb <- bind_rows(ha_demo, ha_demo_all)
+
+ha_demo_all_hb %>% 
+  filter(hb %in% c("S08000015", "Scotland")) %>% 
+  group_by(hb, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+  geom_line()
 ```
 
+The following plot shows still average of admissions in hospital, distinguish between any selected health board and all Scotland, for any selected simd quintile.
+
+
+```{r}
+ha_simd_all <- ha_simd %>% 
+  mutate(hb = "Scotland")
+
+ha_simd_all_hb <- bind_rows(ha_simd, ha_simd_all)
 
 
 
+ha_simd_all_hb %>% 
+  filter(hb %in% c("S08000015", "Scotland"), simd_quintile == 3) %>% 
+  group_by(hb, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+  geom_line()
+```
+
+The following plot shows the average of admissions for any selected health board and all Scotland per specialty. 
 
 
+```{r}
+ha_specialty_all <- ha_specialty %>% 
+  mutate(hb = "Scotland")
+
+ha_specialty_all_hb <- bind_rows(ha_specialty, ha_specialty_all)
+
+
+
+ha_specialty_all_hb %>% 
+  filter(hb %in% c("S08000017", "Scotland"), specialty == "Cardiology") %>% 
+  group_by(hb,month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+  geom_line()
+```
+
+```{r}
+ha_demo_all_hb %>% 
+  filter(hb %in% c("S08000015", "Scotland"), sex %in% c("Female", "Male")) %>%
+  group_by(hb, sex, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+  geom_line()+
+  facet_wrap(~sex)
+```
+  
+
+```{r}
+ha_demo_all_hb %>% 
+  filter(hb %in% c("S08000015", "Scotland")) %>% 
+  group_by(hb, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+  geom_line()
+```
 
 
 
