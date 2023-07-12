@@ -22,7 +22,7 @@ server <- function(input, output, session) {
   # assign to plot_ts_occupancy_filter_hb
   # note scale all health boards == individual HB so keep on same graph
   output$occupancy_ts <- renderPlot({
-    occupancy %>% 
+    occupancy_by_hb %>% 
       # filter for multi-select - replace S08000015 with input selector for hb
       filter(hb %in% c("All health boards", input$covid_hb)) %>% 
       ggplot() +
