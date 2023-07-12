@@ -217,6 +217,58 @@ stays %>%
 
 Starting point: analyses/thijmen_exploring_beds.Rmd
 
+```{r}
+# naomi
+# load in data
+beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+
+# generate occupancy data for all health boards to compare individual hbs to
+all_hbs_occupancy <- beds %>% 
+  group_by(quarter) %>% 
+  summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays),
+         hb = "All health boards", .after = quarter)
+
+
+# select same columns from original df
+occupancy_per_hb <- beds %>% 
+  group_by(hb, quarter) %>% 
+ summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays))
+
+# combine all_hbs data with individual hbs data
+occupancy <- bind_rows(all_hbs_occupancy, occupancy_per_hb)
+
+# plot ave_length_of_stay over time with hb filter
+# assign to plot_ts_occupancy_filter_hb
+# note scale all health boards == individual HB so keep on same graph
+occupancy %>% 
+  # filter for multi-select - replace S08000015 with input selector for hb
+  filter(hb %in% c("All health boards","S08000015", "S08000025")) %>% 
+  ggplot() +
+  aes(x = quarter, y = percentage_occupancy, colour = hb) +
+  geom_line() +
+  geom_point() +
+  scale_colour_brewer(type = "qual", palette = "Set1") +
+  labs(x = "\nYear quarter", y = "Percentage occupancy\n",
+       title = "Percentage occupancy (hospital beds)",
+       colour = "Health board") +
+  theme(legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 28),
+        legend.title = element_text(size = 28),
+        plot.title = element_text(size = 32)
+        )
+```
+
+
 
 # A&E attendances
 
