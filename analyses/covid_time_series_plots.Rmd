@@ -119,13 +119,13 @@ The following plot shows the average of admissions for any selected health board
 
 
 
-ha_specialty %>% 
-  filter(hb %in% c("S08000017", "Scotland"), specialty == "Cardiology") %>% 
-  group_by(hb,month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
-  geom_line()
+#ha_specialty %>% 
+ # filter(hb %in% c("S08000017", "Scotland"), specialty == "Cardiology") %>% 
+  #group_by(hb,month_ending_date) %>% 
+  #summarise(mean_admissions = mean(number_admissions)) %>% 
+  #ggplot() +
+#  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+#  geom_line()
 ```
 
 ```{r}
@@ -296,6 +296,73 @@ occupancy %>%
         legend.title = element_text(size = 28),
         plot.title = element_text(size = 32)
         )
+```
+
+
+## heatmap for occupancy
+
+* is there hospitals in the data? yes
+* need to collapse value for all specialties to get to one value per location; what will "all of scotland" map look like??
+
+```{r}
+library(leaflet)
+library(shiny)
+
+ # load in hospitals data
+## hospitals for map
+hospitals <- read_csv("../data/map/hospital_locations_clean.csv")
+
+### colour palette for hospitals on map
+pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
+                     "red","indianred", "maroon", "brown",
+                     "springgreen", "springgreen2", "springgreen3", "springgreen4",
+                     "gold", "goldenrod", "yellow", "orange"),
+                   domain = unique(hospitals$HB))
+
+```
+
+
+```{r}
+# raw data to use
+beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+```
+```{r}
+# data prep script for occupancy heatmap
+most_recent_quarter <- beds %>% 
+  arrange(desc(quarter)) %>% 
+  head(1) %>% 
+  pull(quarter)
+
+hospitals_lookup <- hospitals %>% 
+  clean_names() %>% 
+  select(location, location_name, longitude, latitude)
+
+hospital_occupancy <- beds %>% 
+  filter(quarter == most_recent_quarter) %>% 
+  group_by(location, hb) %>% 
+  summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays)) 
+
+hospital_location_occupancy <- hospital_occupancy %>% 
+  left_join(hospitals_lookup)
+```
+
+
+```{r}
+# show hospitals on map, currently coloured by hb
+hospital_location_occupancy %>% 
+      filter(hb == "S08000031") %>% 
+      leaflet() %>% 
+      addTiles() %>% 
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 1,
+                       popup = ~ paste(location_name, br(), "Board:", hb),
+                       color = ~ percentage_occupancy
+      )
 ```
 
 
