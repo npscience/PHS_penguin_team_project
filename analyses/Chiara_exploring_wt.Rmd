@@ -233,6 +233,7 @@ head(demo_covid_boarder)
 
 
 
+<<<<<<< Updated upstream
 ## Covid Hospital Admissions:
 
 
@@ -461,11 +462,7 @@ ha_specialty %>%
 
 
 
-```{r}
-ha_specialty %>% 
-  mutate(year = year(ymd(week_ending))) %>% 
-    distinct(year)
-```
+
 
 
 
