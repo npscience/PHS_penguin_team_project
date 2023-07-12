@@ -12,14 +12,13 @@ library(leaflet) # for maps
 library(sf) # if using geometry
 
 # data wrangling ----
-## IMPROVE: put data wrangling into scripts -> just read in prepared data file here
 
 ## load in data
 # for maps
 hospitals <- read_csv("../data/cleaned_data/hospital_locations_clean.csv") 
 
 # for occupancy middle plot
-occupancy_by_hb <- read_csv("../data/cleaned_data/occupancy_by_hb.csv") %>% 
+occupancy_per_hb <- read_csv("../data/cleaned_data/occupancy_per_hb.csv") %>% 
   mutate(quarter = zoo::as.yearqtr(quarter))
 
 ### colour palette for hospitals on map
@@ -31,5 +30,5 @@ pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
 
 # lists for selectors ----
 
-hbs_list <- sort(unique(occupancy_by_hb$hb)) # used on both pages for now
+hbs_list <- sort(unique(occupancy_per_hb$hb)) # used on both pages for now
 covid_kpi_list <- c("Hospital admissions", "Percantage bed occupancy", "Delayed discharges")
