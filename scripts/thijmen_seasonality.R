@@ -132,6 +132,7 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   
+  
   # create the plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
@@ -154,7 +155,7 @@ server <- function(input, output, session) {
     demo_attendances_season %>% 
       filter(right_season == TRUE) %>% 
       filter(year < 2020 & year > 2007) %>% 
-      filter(hbt == "S08000028") %>% 
+      filter(hbt == input$season_hb) %>% 
       select(year, season, hbt, deprivation, number_of_attendances) %>% 
       group_by(year, season, hbt, deprivation) %>% 
       summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
@@ -170,7 +171,7 @@ server <- function(input, output, session) {
     demo_attendances_season %>% 
       filter(right_season == TRUE) %>% 
       filter(year < 2020 & year > 2007) %>% 
-      filter(hbt == "S08000028") %>% 
+      filter(hbt == input$season_hb) %>% 
       select(year, season, hbt, age, number_of_attendances) %>% 
       group_by(year, season, hbt, age) %>% 
       summarise(total_per_age = sum(number_of_attendances)) %>% 
