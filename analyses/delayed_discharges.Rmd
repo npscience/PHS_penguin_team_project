@@ -199,4 +199,3 @@ t.test(test_before$number_of_delayed_bed_days,
        paired = FALSE,
        conf.level = 0.95)
 ```
-

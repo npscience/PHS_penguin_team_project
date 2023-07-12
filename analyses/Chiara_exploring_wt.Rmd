@@ -1,0 +1,470 @@
+---
+title: "Analysis of the Data"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+```
+
+```{r}
+waiting_time_data <- read_csv("../data/a_and_e/monthly_ae_waitingtimes_202303.csv") %>% 
+  clean_names()
+```
+```{r}
+head(waiting_time_data)
+```
+
+```{r}
+dim(waiting_time_data)
+```
+
+```{r}
+names(waiting_time_data)
+```
+
+**hbt** is a 9-digit codes for health board of treatment.
+
+**treatment_location** is a code that represent the 'speciality department'?
+
+```{r}
+glimpse(waiting_time_data)
+```
+
+```{r}
+waiting_time_data %>% 
+  mutate(quarter = str_c(str_sub(month, start = 1, end = 4), case_when(
+        str_sub(month, start = 5, end = 6) %in% c("01", "02", "03") ~ "Q1",
+            str_sub(month, start = 5, end = 6) %in% c("04", "05", "06") ~ "Q2",
+            str_sub(month, start = 5, end = 6) %in% c("07", "08", "09") ~ "Q3",
+            str_sub(month, start = 5, end = 6) %in% c("10", "11", "12") ~ "Q4" 
+  )), .after = month)
+```
+
+
+
+```{r}
+wt_data <- waiting_time_data %>% 
+  mutate(month = as.character(month)) %>% 
+  mutate(
+    year = as.numeric(str_sub(month, start = 1, end = 4)), .after = month,
+    month = as.numeric(str_sub(month, start = 5, end = 6))
+  )
+```
+
+```{r}
+waiting_time_data %>%
+  distinct(department_type)
+```
+
+```{r}
+waiting_time_data %>% 
+ distinct(month)
+```
+
+```{r}
+wt_data %>% 
+  filter(year == "2020") %>% 
+  group_by(month) %>% 
+  summarise(
+    mean_w_target = mean(number_meeting_target_aggregate, na.rm = TRUE),
+    mean_w_8hrs = mean(attendance_greater8hrs, na.rm = TRUE),
+    mean_12_hrs = mean(attendance_greater12hrs, na.rm = TRUE),
+    n_attendances = mean(number_of_attendances_aggregate)
+  ) %>% 
+  pivot_longer(cols = c("mean_w_target", "mean_w_8hrs", "mean_12_hrs")) %>% 
+  ggplot() +
+  aes(x = month, y = n_attendances)
+```
+
+
+```{r}
+wt_data %>% 
+  filter(year == "2019") %>% 
+  group_by(month) %>% 
+  pivot_longer(c("number_meeting_target_aggregate", "attendance_greater8hrs", "attendance_greater12hrs"),
+               names_to = "attendance_times",
+               values_to = "number_of_attendances") %>% 
+ # summarise(n_attendances = sum(number))
+  ggplot() +
+  aes(x =  month, y = number_of_attendances, fill = attendance_times) +
+  geom_col(position = "dodge")
+```
+
+```{r}
+5290 + 26 + 24
+```
+```{r}
+5414 - 5340
+```
+
+
+
+```{r}
+wt_data %>% 
+  filter(year == "2020") %>% 
+  group_by(department_type) %>% 
+  pivot_longer(c("number_meeting_target_aggregate", "attendance_greater8hrs", "attendance_greater12hrs"),
+               names_to = "attendance_times",
+               values_to = "number_of_attendances") %>% 
+  filter(attendance_times == "attendance_greater8hrs")
+```
+
+
+```{r}
+demographic_data <- read_csv("../data/a_and_e/opendata_monthly_ae_demographics_202305.csv") %>% 
+  clean_names()
+```
+```{r}
+head(demographic_data)
+```
+
+
+```{r}
+daily_covid_by_demo <- read_csv("../data/covid/covid_stats/daily_covid_admissions_20230705 (1).csv") %>% 
+  clean_names()
+
+head(daily_covid_by_demo)
+```
+
+
+```{r}
+total_cases_by_demo %>% 
+  mutate(date = ymd(date))
+```
+
+
+
+
+
+
+```{r}
+demographic_data <- demographic_data %>% 
+  mutate(month = as.character(month)) %>% 
+  mutate(
+    year = as.numeric(str_sub(month, start = 1, end = 4)), .after = month,
+    month = as.numeric(str_sub(month, start = 5, end = 6))
+  )
+
+head(demographic_data)
+```
+
+
+```{r}
+daily_covid_by_demo <- daily_covid_by_demo %>% 
+  mutate(quarter = str_c(str_sub(date, start = 1, end = 4), case_when(
+        str_sub(date, start = 5, end = 6) %in% c("01", "02", "03") ~ "Q1",
+            str_sub(date, start = 5, end = 6) %in% c("04", "05", "06") ~ "Q2",
+            str_sub(date, start = 5, end = 6) %in% c("07", "08", "09") ~ "Q3",
+            str_sub(date, start = 5, end = 6) %in% c("10", "11", "12") ~ "Q4" 
+  )))
+```
+
+
+```{r}
+daily_covid_by_demo %>%
+  #group_by(number_admitted)
+  ggplot() +
+  aes(x = date, y = number_admitted, colour = number_admitted) +
+  geom_point()
+```
+```{r}
+daily_covid_by_demo %>%
+  #group_by(number_admitted)
+  ggplot() +
+  aes(x = quarter, y = number_admitted, fill = seven_day_average) +
+  geom_col(position = "dodge")
+```
+
+
+```{r}
+daily_covid_by_demo %>% 
+  mutate(date = ymd(date)) %>% 
+  ggplot() +
+  aes(x = date, y = seven_day_average) +
+  geom_line()
+      
+```
+
+
+
+
+
+```{r}
+daily_covid_by_demo %>% 
+  mutate(date = ymd(date)) %>% 
+  ggplot() +
+  aes(x = quarter, y = seven_day_average) +
+  geom_col()
+      
+```
+
+
+
+```{r}
+daily_covid_by_demo %>% 
+  filter(seven_day_average > number_admitted)
+```
+
+
+
+```{r}
+daily_covid_by_demo %>% 
+  mutate(quarter = str_c(str_sub(date, start = 1, end = 4), case_when(
+        str_sub(date, start = 5, end = 6) %in% c("01", "02", "03") ~ "Q1",
+            str_sub(date, start = 5, end = 6) %in% c("04", "05", "06") ~ "Q2",
+            str_sub(date, start = 5, end = 6) %in% c("07", "08", "09") ~ "Q3",
+            str_sub(date, start = 5, end = 6) %in% c("10", "11", "12") ~ "Q4" 
+  )))
+```
+
+
+
+
+```{r}
+demo_covid_boarder <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+  clean_names()
+
+head(demo_covid_boarder)
+```
+
+
+
+<<<<<<< Updated upstream
+## Covid Hospital Admissions:
+
+
+```{r}
+ha_demo <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+  clean_names()
+
+ha_simd <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
+  clean_names()
+
+ha_specialty <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_specialty_20230706.csv") %>% 
+  clean_names()
+
+```
+
+
+
+```{r}
+head(ha_demo)
+```
+
+```{r}
+head(ha_simd)
+```
+
+
+```{r}
+head(ha_specialty)
+```
+
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = week_ending, y = number_admissions) +
+  geom_line()
+```
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = week_ending, y = number_admissions, fill = hb) +
+  geom_col(position = "dodge")
+```
+
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  filter(hb == "S08000022") %>% 
+  ggplot() +
+  aes(x = week_ending, y = number_admissions, fill = hb) +
+  geom_col(position = "dodge", show.legend = FALSE)
+```
+
+
+
+```{r}
+ha_demo <- ha_demo %>% 
+  mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+```
+
+
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions) +
+  geom_col()
+```
+
+
+
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions, fill = age_group) +
+  geom_col()
+```
+
+
+```{r}
+ha_simd <- ha_simd %>% 
+   mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+  
+```
+
+
+
+```{r}
+ha_simd %>% 
+mutate(year = year(ymd(week_ending))) %>%
+  filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions, group = simd_quintile, colour= as.character(simd_quintile)) +
+  geom_line()
+```
+
+```{r}
+ha_simd %>% 
+mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  filter(simd_quintile == 3) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions) +
+  geom_col()
+```
+
+
+```{r}
+ha_specialty <- ha_specialty %>% 
+  mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+```
+
+```{r}
+ha_specialty %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  filter(year == 2020) %>% 
+  filter(specialty %in% c("Cardiology", "Surgey", "Medical (incl. Cardiology & Cancer)")) %>% 
+  ggplot() +
+  aes(x = month, y = number_admissions, fill = specialty) +
+  geom_col(position = "dodge")
+```
+
+```{r}
+ha_demo %>% 
+  mutate(year = year(ymd(week_ending))) %>% 
+  pivot_longer(
+    cols = c("number_admissions", "average20182019"),
+      names_to = "covid_vs_precovid",
+    values_to = "admissions"
+  ) %>% 
+  #filter(year == 2020) %>% 
+  ggplot() +
+  aes(x = month, y = admissions, fill = covid_vs_precovid)+
+  geom_col(position = "dodge")
+```
+
+
+
+```{r}
+ha_demo <- ha_demo %>% 
+  mutate(year = str_sub(year(ymd(week_ending)))) %>%
+  mutate(month = str_sub(month(ymd(week_ending))), .after = week_ending)
+
+ha_demo
+```
+
+
+```{r}
+ha_demo <- ha_demo %>% 
+  mutate(month_ending = as.character(week_ending)) %>% 
+  mutate(month_ending_date = ym(str_sub(month_ending, start = 1, end = 6)), .after = month) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+ha_demo
+```
+
+
+
+
+```{r}
+ha_demo %>% 
+  group_by(month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions) +
+  geom_line()
+```
+
+
+```{r}
+ha_demo %>% 
+  group_by(hb, month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions, group = hb, colour = hb) +
+  geom_line()
+```
+
+```{r}
+ha_simd <- ha_simd %>% 
+  mutate(month_ending = as.character(week_ending)) %>% 
+  mutate(month_ending_date = ym(str_sub(month_ending, start = 1, end = 6)), .after = month) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+```
+
+
+```{r}
+ha_simd %>% 
+  group_by(simd_quintile,month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions, group = simd_quintile, colour = simd_quintile) +
+  geom_line()
+```
+
+```{r}
+ha_specialty <- ha_specialty %>% 
+  mutate(month_ending = as.character(week_ending)) %>% 
+  mutate(month_ending_date = ym(str_sub(month_ending, start = 1, end = 6)), .after = month) %>% 
+  mutate(week_ending = ymd(week_ending))
+```
+
+
+```{r}
+ha_specialty %>% 
+   #filter(specialty %in% c("Cardiology", "Surgery", "Medical (incl. Cardiology & Cancer)")) %>% 
+  group_by(specialty,month_ending_date) %>% 
+  summarise(sum_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = sum_admissions, group = specialty, colour = specialty) +
+  geom_line()
+```
+
+
+
+
+
+
+
+
+
