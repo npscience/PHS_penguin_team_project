@@ -1,3 +1,5 @@
+# global -----
+
 library(shiny)
 library(tidyverse)
 library(bslib)
@@ -36,9 +38,10 @@ occupancy <- bind_rows(all_hbs_occupancy, occupancy_per_hb)
 
 # lists for selectors ----
 
-# hbs_list
-hbs_list <- sort(unique(occupancy$hb))
+hbs_list <- sort(unique(occupancy$hb)) # used on both pages for now
+covid_kpi_list <- c("Occupancy", "Something else")
 
+# UI -----
 ui <- fluidPage(
   theme = bs_theme(bootswatch = "simplex"),
   
@@ -80,10 +83,18 @@ ui <- fluidPage(
              
              fluidRow(
                # select hb(s)
+               column(width = 6,
                selectInput(inputId = "covid_hb",
                            label = tags$b("Which health board(s)?"),
                            choices = hbs_list,
                            selected = "S08000015")
+               ),
+               column(width = 6,
+                      selectInput(inputId = "covid_kpi",
+                                  label = tags$b("Which metric?"),
+                                  choices = covid_kpi_list,
+                                  selected = "Bed occupancy")
+               ),
              ),
              
              fluidRow(
@@ -98,6 +109,7 @@ ui <- fluidPage(
   )
 )
 
+# server -----
 server <- function(input, output, session) {
   
   # input$covid_hb
