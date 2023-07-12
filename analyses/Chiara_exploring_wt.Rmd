@@ -131,6 +131,11 @@ head(daily_covid_by_demo)
 ```
 
 
+```{r}
+total_cases_by_demo %>% 
+  mutate(date = ymd(date))
+```
+
 
 
 

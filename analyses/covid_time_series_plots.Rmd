@@ -1,8 +1,6 @@
 ---
 title: "Plots for covid time series"
-output:
-  html_document:
-    df_print: paged
+output: html_notebook
 ---
 
 # Library calls
@@ -51,12 +49,12 @@ ha_specialty <- read_csv("../data/covid/hospital_admissions/hospital_admissions_
 
 ### Wrangling data operations.
 
-First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset consistent with the other datasets.
+First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset sìconsistent with the other datasets.
 
 ```{r}
 ha_demo <- ha_demo %>% 
   mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
-  mutate(week_ending = ymd(week_ending)) 
+  mutate(week_ending = ymd(week_ending))
 
 
 ha_simd <- ha_simd %>% 
@@ -71,107 +69,10 @@ ha_specialty <- ha_specialty %>%
 
 
 
-This first plot represent the average of hospital admissions from the beginning of the Covid emergency until now, distinguishing between any selected health board and all Scotland.
-
-```{r}
-ha_demo <- ha_demo %>% 
-mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
-
-
-ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland")) %>% 
-  group_by(hb, month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
-  geom_line()
-```
-
-The following plot shows still average of admissions in hospital, distinguish between any selected health board and all Scotland, for any selected simd quintile.
-
-
-```{r}
-ha_simd <- ha_simd %>% 
-  mutate(hb = if_else(hb == "S92000003", "Scotland", hb))
-
-
-
-
-ha_simd %>% 
-  filter(hb %in% c("S08000015")) %>% 
-  group_by(simd_quintile, month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = simd_quintile, colour = simd_quintile) +
-  geom_line()
-```
-
-
-
-
-
-
-The following plot shows the average of admissions for any selected health board and all Scotland per specialty. 
-
-
 ```{r}
 
-
-
-
-#ha_specialty %>% 
- # filter(hb %in% c("S08000017", "Scotland"), specialty == "Cardiology") %>% 
-  #group_by(hb,month_ending_date) %>% 
-  #summarise(mean_admissions = mean(number_admissions)) %>% 
-  #ggplot() +
-#  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
-#  geom_line()
 ```
 
-```{r}
-ha_demo %>% 
-  filter(hb %in% c("S08000015"), age_group != "All ages") %>%
-  group_by(age_group, month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = age_group, colour = age_group) +
-  geom_line()
-```
-```{r}
-ha_demo <- ha_demo %>% 
-  mutate(age = case_when(
-    
-    age_group == "Under 5"~ "Under 5",
-  
-    age_group %in% c("15 - 44", "45 - 64")~"5 - 64",
-    
-    
-    age_group %in% c("65 - 74", "75 - 84", "85 and over")~"over 65",
-    
-     age_group == "5 - 14"~ "5 - 64",
-    
-    
-    age_group == "All ages"~"All ages" 
-  ),
-   
-  
-  .after = age_group)
-  
-  
-  
-  
-```
-
-
-```{r}
-ha_demo %>% 
-  filter(hb %in% c("S08000015"), age != "All ages") %>%
-  group_by(age, month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
-  geom_line()
-```
 
 
 
@@ -247,6 +148,8 @@ stays %>%
 
 Starting point: analyses/thijmen_exploring_beds.Rmd
 
+## plot occupancy hb v scotland on ts
+
 ```{r}
 # naomi
 # load in data
@@ -286,18 +189,17 @@ occupancy %>%
   scale_colour_brewer(type = "qual", palette = "Set1") +
   labs(x = "\nYear quarter", y = "Percentage occupancy\n",
        title = "Percentage occupancy (hospital beds)",
-       colour = "Health board") +
-  theme(legend.position = "bottom",
-        panel.background = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        panel.grid.minor.y = element_blank(),
-        axis.text = element_text(size = 20),
-        axis.title = element_text(size = 28),
-        legend.title = element_text(size = 28),
-        plot.title = element_text(size = 32)
-        )
+       colour = "Health board") #+
+  # theme(legend.position = "bottom",
+  #       panel.background = element_blank(),
+  #       panel.grid.minor.x = element_blank(),
+  #       panel.grid.minor.y = element_blank(),
+  #       axis.text = element_text(size = 20),
+  #       axis.title = element_text(size = 28),
+  #       legend.title = element_text(size = 28),
+  #       plot.title = element_text(size = 32)
+  #       )
 ```
-
 
 ## heatmap for occupancy
 
@@ -364,7 +266,6 @@ hospital_location_occupancy %>%
                        color = ~ percentage_occupancy
       )
 ```
-
 
 
 # A&E attendances
