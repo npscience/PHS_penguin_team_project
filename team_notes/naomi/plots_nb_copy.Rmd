@@ -1,0 +1,290 @@
+---
+title: "Plots for covid time series"
+output: html_notebook
+---
+
+# Library calls
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(lubridate)
+```
+
+
+# KPIs to explore
+
+* Hospital admissions <--- MVP this (Chiara WIP)
+* Bed occupancy <--- MVP this
+* Length of stay
+* A&E attendances
+* A&E wait times
+* Delayed discharges <--- MVP this
+
+# Plots to make
+
+A time series line graph, with date along the bottom (month or quarter, tbc), and KPI measure on y-axis. From 2018(or earlier) until now. **requires data cleaning step to convert month/quarter to datetime class**
+
+Including a line for "all health boards" - tbc whether an average or aggregate for the KPI. **requires data wrangling step to make this summary data**
+_We could make a static plot of all hbs to display alongside an interactive plot to select HBs; such that all HBs is not needed in the input selector._
+
+With a filter for health board (so we can filter for 1 or multi-select for 1+).
+
+# Hospital admissions
+
+The following three datasets collect data about number of hospital admissions from 2020 to 2023. The number of hospital admissions is here registered weekly. For each of them, we have informations about hb, weekly hospital admissions and average and percentage of hospital admissions during the precovid (period 2018/2019). In addition to that, each of the three files contains informations respectively about demographics of patients, simd quintile and specialty.
+
+```{r}
+ha_demo <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+  clean_names()
+
+ha_simd <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
+  clean_names()
+
+ha_specialty <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_specialty_20230706.csv") %>% 
+  clean_names()
+
+```
+
+### Wrangling data operations.
+
+First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset sìconsistent with the other datasets.
+
+```{r}
+ha_demo <- ha_demo %>% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+
+ha_simd <- ha_simd %>% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
+  mutate(week_ending = ymd(week_ending))
+
+
+ha_specialty <- ha_specialty %>% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
+  mutate(week_ending = ymd(week_ending))
+```
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+Starting point: Chiara work on covid/hospital_admissions data
+
+# Length of stay
+
+Starting point: analyses/naomi_exploring_inpatient.Rmd
+
+```{r}
+# naomi
+# load in data (deprivation - also avail: age/sex, specialty)
+inpatients_deprivation <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_simd.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+
+# generate stays data for all health boards to compare individual hbs to
+all_hbs_stays <- inpatients_deprivation %>% 
+  group_by(quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  mutate(hb = "All health boards", .after = quarter)
+
+# select same columns from original df
+stays_per_hb <- inpatients_deprivation %>% 
+  # check group by
+  group_by(hb, quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  select(quarter, hb, stays, length_of_stay, average_length_of_stay)
+
+# combine all_hbs data with individual hbs data
+stays <- bind_rows(all_hbs_stays, stays_per_hb)
+
+# plot ave_length_of_stay over time with hb filter
+# assign to plot_ts_length_stay_filter_hb
+# note scale all health boards == individual HB so keep on same graph
+stays %>% 
+  # filter for multi-select - replace S08000015 with input selector for hb
+  filter(hb %in% c("All health boards","S08000015")) %>% 
+  ggplot() +
+  aes(x = quarter, y = average_length_of_stay, colour = hb) +
+  geom_line() +
+  geom_point() +
+  scale_colour_brewer(type = "qual", palette = "Set1") +
+  labs(x = "\nYear quarter", y = "Average length of stay\n",
+       title = "Length of stay for inpatients and day cases",
+       colour = "Health board") +
+  theme(legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 28),
+        legend.title = element_text(size = 28),
+        plot.title = element_text(size = 32)
+        )
+```
+
+
+
+# Bed occupancy
+
+Starting point: analyses/thijmen_exploring_beds.Rmd
+
+## plot occupancy hb v scotland on ts
+
+```{r}
+# naomi
+# load in data
+beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+
+# generate occupancy data for all health boards to compare individual hbs to
+all_hbs_occupancy <- beds %>% 
+  group_by(quarter) %>% 
+  summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays),
+         hb = "All health boards", .after = quarter)
+
+
+# select same columns from original df
+occupancy_per_hb <- beds %>% 
+  group_by(hb, quarter) %>% 
+ summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays))
+
+# combine all_hbs data with individual hbs data
+occupancy <- bind_rows(all_hbs_occupancy, occupancy_per_hb)
+
+# plot ave_length_of_stay over time with hb filter
+# assign to plot_ts_occupancy_filter_hb
+# note scale all health boards == individual HB so keep on same graph
+occupancy %>% 
+  # filter for multi-select - replace S08000015 with input selector for hb
+  filter(hb %in% c("All health boards","S08000015", "S08000025")) %>% 
+  ggplot() +
+  aes(x = quarter, y = percentage_occupancy, colour = hb) +
+  geom_line() +
+  geom_point() +
+  scale_colour_brewer(type = "qual", palette = "Set1") +
+  labs(x = "\nYear quarter", y = "Percentage occupancy\n",
+       title = "Percentage occupancy (hospital beds)",
+       colour = "Health board") #+
+  # theme(legend.position = "bottom",
+  #       panel.background = element_blank(),
+  #       panel.grid.minor.x = element_blank(),
+  #       panel.grid.minor.y = element_blank(),
+  #       axis.text = element_text(size = 20),
+  #       axis.title = element_text(size = 28),
+  #       legend.title = element_text(size = 28),
+  #       plot.title = element_text(size = 32)
+  #       )
+```
+
+## heatmap for occupancy
+
+* is there hospitals in the data? yes
+* need to collapse value for all specialties to get to one value per location; what will "all of scotland" map look like??
+
+```{r}
+library(leaflet)
+library(shiny)
+
+ # load in hospitals data
+## hospitals for map
+hospitals <- read_csv("../data/map/hospital_locations_clean.csv")
+
+### colour palette for hospitals on map
+pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
+                     "red","indianred", "maroon", "brown",
+                     "springgreen", "springgreen2", "springgreen3", "springgreen4",
+                     "gold", "goldenrod", "yellow", "orange"),
+                   domain = unique(hospitals$HB))
+
+```
+
+
+```{r}
+# raw data to use
+beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+```
+```{r}
+# data prep script for occupancy heatmap
+most_recent_quarter <- beds %>% 
+  arrange(desc(quarter)) %>% 
+  head(1) %>% 
+  pull(quarter)
+
+hospitals_lookup <- hospitals %>% 
+  clean_names() %>% 
+  select(location, location_name, longitude, latitude)
+
+hospital_occupancy <- beds %>% 
+  filter(quarter == most_recent_quarter) %>% 
+  group_by(location, hb) %>% 
+  summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays)) 
+
+hospital_location_occupancy <- hospital_occupancy %>% 
+  left_join(hospitals_lookup)
+```
+
+
+```{r}
+# show hospitals on map, currently coloured by hb
+hospital_location_occupancy %>% 
+      filter(hb == "S08000031") %>% 
+      leaflet() %>% 
+      addTiles() %>% 
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 1,
+                       popup = ~ paste(location_name, br(), "Board:", hb),
+                       color = ~ percentage_occupancy
+      )
+```
+
+
+# A&E attendances
+
+Starting point: one of Naomi's notebooks from Tuesday AM
+
+```{r}
+# naomi
+# load in data, using demographics file
+monthly_ae_admissions_demographics <- read_csv("../data/a_and_e/opendata_monthly_ae_demographics_202305.csv") %>% 
+  clean_names()
+
+```
+
+
+# A&E wait times
+
+Starting point: one of Chiara/Thijmen's notebooks from Monday
+
+# Delayed discharge
+
+Starting point: Ali's work
