@@ -112,6 +112,45 @@ ha_demo %>%
   geom_line()
 ```
 
+```{r}
+map <- read_csv("../data/cleaned_data/hospital_locations_clean.csv") %>% 
+  clean_names()
+```
+
+
+```{r}
+ha_demo %>% 
+  group_by(hb) %>% 
+  summarise(mean_adm = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = hb, y = mean_adm, fill = hb) +
+  geom_col()
+```
+
+
+
+
+```{r}
+ha_demo %>% 
+  filter(month_ending_date == "2023-06-01") %>% 
+  group_by(hb) %>%
+  summarise(mean_adm = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = hb, y = mean_adm, fill = hb) +
+  geom_col()
+```
+
+
+```{r}
+ha_for_join <- ha_demo %>% 
+  group_by(hb) %>% 
+  summarise(mean_adm = mean(number_admissions))
+```
+
+
+```{r}
+join_ha_map <- full_join(map, ha_for_join, by = "hb")
+```
 
 
 
