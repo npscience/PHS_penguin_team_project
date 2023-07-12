@@ -54,7 +54,7 @@ First of all, I create a column called 'month_ending_date', which I want have a 
 ```{r}
 ha_demo <- ha_demo %>% 
   mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
-  mutate(week_ending = ymd(week_ending))
+  mutate(week_ending = ymd(week_ending)) 
 
 
 ha_simd <- ha_simd %>% 
@@ -62,15 +62,92 @@ ha_simd <- ha_simd %>%
   mutate(week_ending = ymd(week_ending))
 
 
-ha_specialty <- ha_specialty %>% 
-  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
-  mutate(week_ending = ymd(week_ending))
+
+#Since, the heal board code 'Scotland' correspond to the entire Scotland, I am going to mutate it in 'Scotland' for clarity.
+
+
+ha_demo <- ha_demo %>% 
+  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
+
+ha_simd <- ha_simd %>% 
+  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
+
+#Finally, I am going to create a new column for dividing the age_groups into different age groups I am more interested in.
+
+ha_demo <- ha_demo %>% 
+  mutate(age = case_when(
+    
+    age_group == "Under 5"~ "Under 5",
+    
+    age_group %in% c("15 - 44", "45 - 64")~"5 - 64",
+    
+    
+    age_group %in% c("65 - 74", "75 - 84", "85 and over")~"over 65",
+    
+    age_group == "5 - 14"~ "5 - 64",
+    
+    
+    age_group == "All ages"~"All ages" 
+  ),
+  
+  
+  .after = age_group)
+
+
+
+
+
+
+
 ```
 
 
 
 ```{r}
+ha_demo %>% 
+  filter(hb %in% c("S08000015", "Scotland")) %>% 
+  group_by(hb, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+  geom_line()
+```
 
+
+
+
+
+```{r}
+ha_simd %>% 
+  filter(hb %in% c("S08000015")) %>% 
+  group_by(simd_quintile, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = simd_quintile, colour = simd_quintile) +
+  geom_line()
+```
+
+
+
+```{r}
+ha_demo %>% 
+  filter(hb %in% c("S08000015", "Scotland"), age_group != "All ages") %>%
+  group_by(age_group, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = age_group, colour = age_group) +
+  geom_line()
+```
+
+
+```{r}
+ha_demo %>% 
+  filter(hb %in% c("S08000015", "Scotland"), age != "All ages") %>%
+  group_by(age, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
+  geom_line()
 ```
 
 
