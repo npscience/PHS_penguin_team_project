@@ -298,3 +298,10 @@ t.test(test_summer$total_attendances,
        conf.level = 0.95)
 ```
 
+
+# Now do similar, but for waiting times after 4 hrs
+
+```{r}
+
+```
+
