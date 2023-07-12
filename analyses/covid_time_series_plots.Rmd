@@ -187,16 +187,16 @@ occupancy %>%
   scale_colour_brewer(type = "qual", palette = "Set1") +
   labs(x = "\nYear quarter", y = "Percentage occupancy\n",
        title = "Percentage occupancy (hospital beds)",
-       colour = "Health board") #+
-  # theme(legend.position = "bottom",
-  #       panel.background = element_blank(),
-  #       panel.grid.minor.x = element_blank(),
-  #       panel.grid.minor.y = element_blank(),
-  #       axis.text = element_text(size = 20),
-  #       axis.title = element_text(size = 28),
-  #       legend.title = element_text(size = 28),
-  #       plot.title = element_text(size = 32)
-  #       )
+       colour = "Health board") +
+  theme(legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text = element_text(size = 20),
+        axis.title = element_text(size = 28),
+        legend.title = element_text(size = 28),
+        plot.title = element_text(size = 32)
+        )
 ```
 
 
