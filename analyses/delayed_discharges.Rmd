@@ -49,6 +49,11 @@ delayed_no_reason <- delayed_no_reason %>%
 ```
 
 
+```{r}
+unique(delayed$hbt)
+```
+
+
 
 #### Inspecting the difference over health boards (all ages)
 
@@ -120,8 +125,8 @@ prop_change <- delayed_no_reason %>%
 
 ```{r}
 prop_change %>% 
-  filter(age_group == "75plus",
-         hbt == "S08000020") %>% 
+  filter(age_group == "18-74",
+         hbt == "S08000015") %>% 
   ggplot() +
   aes(x = month_of_delay, y = prop) +
   geom_line()
