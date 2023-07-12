@@ -302,6 +302,55 @@ t.test(test_summer$total_attendances,
 # Now do similar, but for waiting times after 4 hrs
 
 ```{r}
+#2B create table specifying season for waiting times
+waiting_ae <- waiting_times %>% 
+  select(month, hbt, percentage_within4hours_all) %>% 
+  #let's add a column indicating season
+  mutate(month_label = month(
+                      ym(month), label = TRUE, abbr = FALSE), 
+         .before = hbt) %>% 
+  mutate(season = season_name[month_label], .before = hbt) %>% 
+  # create a  year column, 
+  mutate(year = year(ym(month)), .before = hbt) %>% 
+  # create a "fake" year for december, to make sure that december of previous year falls in next year for correct grouping
+  mutate(year = if_else(month_label == "December", year+1, year)) %>% 
+  mutate(season = if_else(month_label == "December", "winter", season)) %>%  
+  mutate(season = if_else(month_label == "March", "spring", season)) %>% 
+  mutate(season = if_else(month_label == "June", "summer", season)) %>% 
+  mutate(season = if_else(month_label == "September", "autumn", season)) %>% 
+  # create a column to later filter right season!
+  mutate(right_season = if_else(
+                        str_detect(season, "winter|summer"), TRUE, FALSE),
+         .before = hbt) 
+
+# 3B.
+#lets create a table with a yearly average per hb per season, for each year:
+waitingtime_avg_yearperseason_hb <- waiting_ae %>% 
+  select(year, hbt, percentage_within4hours_all) %>% 
+  group_by(year, hbt) %>% 
+  summarise(average_ofwaits_season_year = sum(percentage_within4hours_all)/4) %>% 
+  filter(hbt == "S08000028")
+
+# 4B. lets create a table as input for the ggplot
+input_table_ggplot_waits <- waiting_ae %>% 
+  filter(right_season == TRUE) %>% 
+  group_by(year, season, hbt) %>% 
+  summarise(percentage_episodes_waits = mean(percentage_within4hours_all)) %>%
+  filter(year < 2020 & year > 2007) %>% 
+  filter(hbt == "S08000028")
+
+# 5B. lets create the ggplot combining both datasets
+ggplot() +
+  geom_col(data = input_table_ggplot_waits, 
+           aes(
+    x = year, 
+    y = percentage_episodes_waits, 
+    fill = season),
+           position = "dodge", col = "white") +
+  geom_line(data = waitingtime_avg_yearperseason_hb, 
+            aes(
+    x = year, 
+    y = average_ofwaits_season_year))
 
 ```
 
