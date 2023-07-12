@@ -12,8 +12,13 @@ library(sf) # if using geometry
 # data wrangling ----
 ## IMPROVE: put data wrangling into scripts -> just read in prepared data file here
 
-## hospitals for map
-hospitals <- read_csv("../data/map/hospital_locations_clean.csv")
+## load in data
+# for maps
+hospitals <- read_csv("../data/cleaned_data/hospital_locations_clean.csv") 
+
+# for occupancy middle plot
+occupancy_by_hb <- read_csv("../data/cleaned_data/occupancy_by_hb.csv") %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
 
 ### colour palette for hospitals on map
 pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
@@ -22,31 +27,7 @@ pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
                      "gold", "goldenrod", "yellow", "orange"),
                    domain = unique(hospitals$HB))
 
-## bed occupancy
-# load in data
-beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
-  clean_names() %>% 
-  mutate(quarter = zoo::as.yearqtr(quarter))
-
-# generate occupancy data for all health boards to compare individual hbs to
-all_hbs_occupancy <- beds %>% 
-  group_by(quarter) %>% 
-  summarise(total_occupied_beddays = sum(total_occupied_beddays),
-            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
-  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays),
-         hb = "All health boards", .after = quarter)
-
-# select same columns from original df
-occupancy_per_hb <- beds %>% 
-  group_by(hb, quarter) %>% 
-  summarise(total_occupied_beddays = sum(total_occupied_beddays),
-            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
-  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays))
-
-# combine all_hbs data with individual hbs data
-occupancy <- bind_rows(all_hbs_occupancy, occupancy_per_hb)
-
 # lists for selectors ----
 
-hbs_list <- sort(unique(occupancy$hb)) # used on both pages for now
-covid_kpi_list <- c("Occupancy", "Something else")
+hbs_list <- sort(unique(occupancy_by_hb$hb)) # used on both pages for now
+covid_kpi_list <- c("Hospital admissions", "Percantage bed occupancy", "Delayed discharges")
