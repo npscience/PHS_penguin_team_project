@@ -50,5 +50,20 @@ occupancy <- bind_rows(all_hbs_occupancy, occupancy_per_hb)
 
 # lists for selectors ----
 
-hbs_list <- sort(unique(occupancy$hb)) # used on both pages for now
+hbs_list <- c("Ayrshire and Arran" = "S08000015",
+              "Borders" = "S08000016",
+              "Dumfries and Galloway" = "S08000017",
+              "Forth Valley" = "S08000019",
+              "Grampian" = "S08000020",
+              "Highland" = "S08000022",
+              "Lothian" = "S08000024",
+              "Orkney" = "S08000025",
+              "Shetland" = "S08000026",
+              "Western Isles" = "S08000028",
+              "Fife" = "S08000029",
+              "Tayside" = "S08000030",
+              "Greater Glasgow and Clyde" = "S08000031",
+              "Lanarkshire" = "S08000032",
+              "All Scotland" = "S92000003",
+              "The Golden Jubilee National Hospital" = "SB0801") # used on both pages for now
 covid_kpi_list <- c("Occupancy", "Something else")
