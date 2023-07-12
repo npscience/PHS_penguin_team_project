@@ -229,6 +229,7 @@ avg_yearperseason_hb <- attendances_ae %>%
   select(year, hbt, number_of_attendances_all) %>% 
   group_by(year, hbt) %>% 
   summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
+  filter(year < 2020 & year > 2007) %>%
   filter(hbt == "S08000028")
 
 # 4. lets create a table as input for the ggplot

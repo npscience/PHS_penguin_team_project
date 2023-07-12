@@ -12,6 +12,14 @@ library(lubridate)
 ```
 
 ```{r}
-demo_attendances <- 
+demo_attendances <- read.csv("../data/a_and_e/opendata_monthly_ae_demographics_202305.csv")
+```
+
+```{r}
+view(demo_attendances)
+```
+
+```{r}
+# lets add some additional 
 ```
 
