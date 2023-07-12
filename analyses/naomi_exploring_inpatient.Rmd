@@ -1,0 +1,253 @@
+---
+title: "Inpatient length of stay"
+output: html_notebook
+---
+
+Q1: how to get to "all acute" in this data (specialties)
+Q2: what's the difference in length of stay for WvS, covid?
+
+# 1. Wrangle for all acute
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+```
+
+```{r}
+inpatients_specialty <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+```
+```{r}
+head(inpatients_specialty)
+```
+
+```{r}
+inpatients_specialty %>% 
+  group_by(specialty, specialty_name) %>% 
+  summarise(count = n())
+```
+
+Which are acute?
+
+From the [glossary](https://publichealthscotland.scot/publications/acute-hospital-activity-and-nhs-beds-information-quarterly/acute-hospital-activity-and-nhs-beds-information-quarterly-quarter-ending-30-june-2021/glossary/): 
+
+    "'Acute' hospital care includes activity occurring in major teaching hospitals, district general hospitals and community hospitals.
+    
+    Includes services such as consultation with specialist clinicians; emergency treatment; routine, complex and life-saving surgery; specialist diagnostic procedures; close observation; and short-term care of patients.
+    
+    Excludes obstetric services; psychiatric services; long stay care services; and non-consultant led clinics."
+
+And:
+
+    "A specialty is defined as a division of medicine or dentistry covering a specific area of clinical activity. There are two specialty groupings (external website) that most specialties sit in: medical and surgical. The Acute specialty grouping includes the medical and surgery groupings combined."
+
+From the 31 specialties in this dataset, even though some of these specialties deal with longer term care and/or chronic conditions (such as geriatric medicine), we are not excluding any specialties, since they are included in the broad definition of 'acute' hospital care.
+
+# Data --> insights
+
+## Data we have
+
+The data we have is inpatient and day case 
+
+* age and sex - "Age and sex breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients." https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/00c00ecc-b533-426e-a433-42d79bdea5d4
+* deprivation - "Deprivation breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients" https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/4fc640aa-bdd4-4fbe-805b-1da1c8ed6383
+* specialty - "Specialty breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients." https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/c3b4be64-5fb4-4a2f-af41-b0012f0a276a
+
+## Qs to ask
+
+We can look at any of these to see overall activity over time, and look into winter/summer and COVID impacts:
+
+* To what extent are the ‘winter crises’ reported by the media real?
+* How has the Covid-19 pandemic affected provision of acute care in Scotland?
+
+Looking at:
+
+* Temporal: How has this issue changed over time? (Is it getting better or worse?)
+* Geographic: How does this issue differ between areas in Scotland? (Where should efforts be focussed?)
+* Demographic: Who is most affected by this issue? (Who should be targeted with efforts?)
+
+To understand who is most impacted, we can look into age/sex and deprivation.
+
+Some Qs from the brief:
+
+* Are there any demographic groups that are driving the activity?
+* Are there key cohorts of patient (based on their demographics) that drive the overall hospital activity?
+* How significant is deprivation as a driver of hospital activity?
+* Are there specialties that have more stable activity patterns over time and how much of an impact is stability on overall activity?
+* How significant are the differences in hospital activity across the country? Does urban/rural have an impact or is it related to the size and capacity of the health board?
+
+## Hospital activity by season
+
+Look at total activity, by quarter (this is what it is grouped by)
+
+```{r cleaning}
+inpatients_age_sex <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv") %>% 
+  clean_names()
+
+inpatients_deprivation <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_simd.csv") %>% 
+  clean_names() %>% 
+  # change the quarter column to yearqtr type
+  mutate(quarter = zoo::as.yearqtr(quarter))
+```
+
+Interesting variables:
+
+* admission type
+* sex, age (brackets) OR deprivation quintile
+* episodes, length of episode, average length of episode
+* stays, length of stays, average length of stays
+
+### admission type
+
+```{r}
+inpatients_deprivation %>% 
+  distinct(admission_type)
+```
+
+### stay / spell / episode stats
+
+Specialty data contains length of episode, length of spell
+Deprivation data contains length of episode, length of stay
+Sex-age data contains length of spell, length of stay
+
+From [glossary](https://publichealthscotland.scot/publications/acute-hospital-activity-and-nhs-beds-information-quarterly/acute-hospital-activity-and-nhs-beds-information-quarterly-quarter-ending-30-june-2021/glossary/):
+
+    "Episode
+    An SMR01 episode is generated when a patient is discharged from hospital but also when a patient is transferred between hospitals, significant facilities, specialties or to the care of a different consultant.
+    ...
+    Average length of spell
+    This is the average (mean) number of days that a patient spends in hospital during a specialty spell at a given location. It is calculated by dividing the total length of spell for all inpatients, at a given location, during a quarter by the total number of specialty spells.
+    
+    Average length of stay
+    This is the average (mean) number of days that a patient spends in hospital during a continuous inpatient stay (CIS). It is calculated by dividing the total length of stay for all inpatients during a quarter by the total number of CISs."
+    
+So length of spell is time spent in one specialty. Patient may be transferred between specialties, so length of stay is total (continuous) time in hospital (in 1 or more specialty).
+
+Not sure how length of episode fits in here (not defined in glossary).
+
+Let's look at length of stay first. Length of spell or episode could be interesting if looking at individual specialties.
+
+Q1 v Q3 for seasonality
+
+```{r}
+head(inpatients_deprivation)
+```
+
+```{r wrangling}
+# generate stays data for all health boards to compare individual hbs to
+all_hbs_stays <- inpatients_deprivation %>% 
+  group_by(quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  mutate(hb = "All health boards", .after = quarter)
+
+# select same columns from original df
+stays_per_hb <- inpatients_deprivation %>% 
+  # check group by
+  group_by(hb, quarter) %>% 
+  summarise(stays = sum(stays),
+            length_of_stay = sum(length_of_stay),
+            average_length_of_stay = length_of_stay / stays) %>% 
+  select(quarter, hb, stays, length_of_stay, average_length_of_stay)
+
+# combine all_hbs data with individual hbs data
+stays <- bind_rows(all_hbs_stays, stays_per_hb)
+```
+
+
+```{r}
+stays %>% 
+  filter(hb == "All health boards") %>% 
+  ggplot() +
+  aes(x = quarter, y = average_length_of_stay, colour = hb) +
+  geom_line() +
+  geom_point()
+```
+
+try to understand what affects length of stay - look at type of admission, specialty
+
+### drivers of length of stay (demographics, specialty)
+
+```{r}
+# average length of stay by admission type
+inpatients_deprivation %>% 
+  filter(average_length_of_stay < 100) %>% 
+  ggplot() +
+  aes(x = admission_type, y = average_length_of_stay) +
+  geom_boxplot()
+```
+
+Admission type doesn't look to change average length of stay that much, just the range within each is different (not specified has longer tail, and wider IQR).
+
+```{r}
+# number of stays per SIMD by admission type over time
+inpatients_deprivation %>%
+  group_by(admission_type, quarter, simd) %>% 
+  summarise(total_stays = sum(stays)) %>% 
+  ggplot() +
+  aes(x = quarter, y = total_stays, colour = admission_type) +
+  geom_line() +
+  facet_wrap( ~ simd, ncol = 3) +
+  scale_y_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank())
+```
+
+### episodes by specialty
+
+```{r}
+inpatients_specialty %>% 
+  group_by(specialty_name) %>% 
+  summarise(episodes = sum(episodes)) %>% 
+  ggplot() +
+  aes(y = specialty_name, x = episodes) +
+  geom_col() +
+  # scale_x_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank())
+```
+
+```{r}
+inpatients_specialty %>% 
+  # filter(specialty_name == "General Medicine") %>%
+  group_by(specialty_name, quarter) %>% 
+  summarise(all_types_episodes = sum(episodes)) %>% 
+  filter(all_types_episodes > 100000) %>% 
+  ggplot() +
+  aes(x = quarter, y = all_types_episodes, colour = specialty_name) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank())
+```
+
+```{r}
+inpatients_specialty %>% 
+  filter(!specialty_name %in% c("General Medicine","General Surgery")) %>%
+  group_by(specialty_name, quarter) %>% 
+  summarise(all_types_episodes = sum(episodes)) %>% 
+  #filter(all_types_episodes > 100000) %>% 
+  ggplot() +
+  aes(x = quarter, y = all_types_episodes, colour = specialty_name) +
+  geom_line() +
+  scale_y_continuous(labels = scales::comma_format()) +
+  theme(legend.position = "bottom",
+        panel.background = element_blank()) #+
+  #facet_wrap(~ specialty_name, ncol = 2, scales = "free_y")
+```
+
+
+### who is impacted by W/S / covid patterns
+
+Are there key patient groups driving/most affected by any seasonal pattern?
+
+(Where do these cases come from? Look at A&E discharges "admitted to same hospital" from A&E discharge data for same time period)
+
+
+
+
+
+
