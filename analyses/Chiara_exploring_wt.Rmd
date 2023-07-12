@@ -461,10 +461,6 @@ ha_specialty %>%
 
 
 
-```{r}
-ha_demo %>% 
-  distinct(month)
-```
 
 
 
