@@ -1,11 +1,13 @@
 # global -----
 
 library(shiny)
+
 library(tidyverse)
-library(bslib)
-library(plotly)
 library(janitor)
 library(lubridate)
+
+library(bslib)
+library(plotly)
 library(leaflet) # for maps
 library(sf) # if using geometry
 
