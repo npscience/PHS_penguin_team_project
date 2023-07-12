@@ -12,6 +12,16 @@ library(sf) # if using geometry
 # data wrangling ----
 ## IMPROVE: put data wrangling into scripts -> just read in prepared data file here
 
+## hospitals for map
+hospitals <- read_csv("../data/map/hospital_locations_clean.csv")
+
+### colour palette for hospitals on map
+pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
+                     "red","indianred", "maroon", "brown",
+                     "springgreen", "springgreen2", "springgreen3", "springgreen4",
+                     "gold", "goldenrod", "yellow", "orange"),
+                   domain = unique(hospitals$HB))
+
 ## bed occupancy
 # load in data
 beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
@@ -84,10 +94,10 @@ ui <- fluidPage(
              fluidRow(
                # select hb(s)
                column(width = 6,
-               selectInput(inputId = "covid_hb",
-                           label = tags$b("Which health board(s)?"),
-                           choices = hbs_list,
-                           selected = "S08000015")
+                      selectInput(inputId = "covid_hb",
+                                  label = tags$b("Which health board(s)?"),
+                                  choices = hbs_list,
+                                  selected = "S08000015")
                ),
                column(width = 6,
                       selectInput(inputId = "covid_kpi",
@@ -98,10 +108,10 @@ ui <- fluidPage(
              ),
              
              fluidRow(
-               column(width = 6,
-                      plotOutput("occupancy_heatmap")
+               column(width = 4,
+                      leafletOutput("occupancy_heatmap")
                ),
-               column(width = 6,
+               column(width = 8,
                       plotOutput("occupancy_ts")
                )
              )
@@ -112,9 +122,20 @@ ui <- fluidPage(
 # server -----
 server <- function(input, output, session) {
   
-  # input$covid_hb
+  # output$occupancy_heatmap ----
   
-  # output$occupancy_heatmap
+  output$occupancy_heatmap <- renderLeaflet({
+    hospitals %>% 
+      #filter(HB == input$covid_hb) %>% 
+      leaflet() %>% 
+      addTiles() %>% 
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 1,
+                       popup = ~ paste(Location, br(), "Board:", HB),
+                       color = ~pal(HB)
+      )
+  })
   
   # output$occupancy_ts ----
   
