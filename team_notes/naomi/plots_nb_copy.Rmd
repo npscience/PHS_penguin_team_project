@@ -25,8 +25,6 @@ library(leaflet)
 
 # Plots to make
 
-A time series line graph, with date along the bottom (month or quarter, tbc), and KPI measure on y-axis. From 2018(or earlier) until now. **requires data cleaning step to convert month/quarter to datetime class**
-
 Including a line for "all health boards" - tbc whether an average or aggregate for the KPI. **requires data wrangling step to make this summary data**
 _We could make a static plot of all hbs to display alongside an interactive plot to select HBs; such that all HBs is not needed in the input selector._
 
