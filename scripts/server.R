@@ -4,15 +4,15 @@ server <- function(input, output, session) {
   # output$occupancy_heatmap ----
   
   output$occupancy_heatmap <- renderLeaflet({
-    hospitals %>% 
-      filter(HB == input$covid_hb) %>% 
+    hospital_location_occupancy %>% 
+      filter(hb == input$covid_hb) %>% 
       leaflet() %>% 
       addTiles() %>% 
       addCircleMarkers(lng = ~ longitude,
                        lat = ~ latitude,
                        weight = 1,
-                       popup = ~ paste(Location, br(), "Board:", HB),
-                       color = ~pal(HB)
+                       popup = ~ paste(location_name, br(), "Board:", hb),
+                       color = ~ percentage_occupancy
       )
   })
   
