@@ -87,9 +87,10 @@ beds %>%
   aes(x = yq(quarter), y = percentage_occupancy) +
   geom_col() +
   facet_wrap(~ hb)
+  
+
 
 ```
-
 ```{r}
 # do the same as above but compare Q2-Q4
 beds %>% 
