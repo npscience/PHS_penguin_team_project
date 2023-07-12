@@ -12,6 +12,3 @@ delayed <- delayed %>%
   mutate(month_of_delay = ym(month_of_delay))
 
 write_csv(delayed, "cleaned_data/delayed.csv")
-
-
-## HI THERE NAOMI
