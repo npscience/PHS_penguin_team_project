@@ -51,7 +51,7 @@ ha_specialty <- read_csv("../data/covid/hospital_admissions/hospital_admissions_
 
 ### Wrangling data operations.
 
-First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset sìconsistent with the other datasets.
+First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset consistent with the other datasets.
 
 ```{r}
 ha_demo <- ha_demo %>% 
@@ -74,12 +74,11 @@ ha_specialty <- ha_specialty %>%
 This first plot represent the average of hospital admissions from the beginning of the Covid emergency until now, distinguishing between any selected health board and all Scotland.
 
 ```{r}
-ha_demo_all <- ha_demo %>% 
-  mutate(hb = "Scotland")
+ha_demo <- ha_demo %>% 
+mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
 
-ha_demo_all_hb <- bind_rows(ha_demo, ha_demo_all)
 
-ha_demo_all_hb %>% 
+ha_demo %>% 
   filter(hb %in% c("S08000015", "Scotland")) %>% 
   group_by(hb, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
@@ -92,14 +91,13 @@ The following plot shows still average of admissions in hospital, distinguish be
 
 
 ```{r}
-ha_simd_all <- ha_simd %>% 
-  mutate(hb = "Scotland")
-
-ha_simd_all_hb <- bind_rows(ha_simd, ha_simd_all)
+ha_simd <- ha_simd %>% 
+  mutate(hb = if_else(hb == "S92000003", "Scotland", hb))
 
 
 
-ha_simd_all_hb %>% 
+
+ha_simd %>% 
   filter(hb %in% c("S08000015")) %>% 
   group_by(simd_quintile, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
@@ -107,13 +105,6 @@ ha_simd_all_hb %>%
   aes(x = month_ending_date, y = mean_admissions, group = simd_quintile, colour = simd_quintile) +
   geom_line()
 ```
-
-```{r}
-
-```
-
-
-
 
 
 
@@ -124,14 +115,11 @@ The following plot shows the average of admissions for any selected health board
 
 
 ```{r}
-ha_specialty_all <- ha_specialty %>% 
-  mutate(hb = "Scotland")
-
-ha_specialty_all_hb <- bind_rows(ha_specialty, ha_specialty_all)
 
 
 
-ha_specialty_all_hb %>% 
+
+ha_specialty %>% 
   filter(hb %in% c("S08000017", "Scotland"), specialty == "Cardiology") %>% 
   group_by(hb,month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
@@ -141,8 +129,8 @@ ha_specialty_all_hb %>%
 ```
 
 ```{r}
-ha_demo_all_hb %>% 
-  filter(hb %in% c("S08000015")) %>%
+ha_demo %>% 
+  filter(hb %in% c("S08000015"), age_group != "All ages") %>%
   group_by(age_group, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
@@ -150,7 +138,7 @@ ha_demo_all_hb %>%
   geom_line()
 ```
 ```{r}
-ha_demo_all_hb <- ha_demo_all_hb %>% 
+ha_demo <- ha_demo %>% 
   mutate(age = case_when(
     
     age_group == "Under 5"~ "Under 5",
@@ -176,7 +164,7 @@ ha_demo_all_hb <- ha_demo_all_hb %>%
 
 
 ```{r}
-ha_demo_all_hb %>% 
+ha_demo %>% 
   filter(hb %in% c("S08000015"), age != "All ages") %>%
   group_by(age, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
@@ -189,16 +177,6 @@ ha_demo_all_hb %>%
 
 
 
-
-```{r}
-ha_demo_all_hb %>% 
-  filter(hb %in% c("S08000015", "Scotland")) %>% 
-  group_by(hb, month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
-  geom_line()
-```
 
 
 
