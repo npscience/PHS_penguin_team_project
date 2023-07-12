@@ -71,7 +71,7 @@ ui <- fluidPage(
                
                # select hb(s)
                selectInput(inputId = "season_hb",
-                           label = tags$b("Which health board(s)?"),
+                           label = tags$b("Which health board?"),
                            choices = hbs_list,
                            selected = "S08000015")
              ),
@@ -126,7 +126,7 @@ server <- function(input, output, session) {
   
   output$occupancy_heatmap <- renderLeaflet({
     hospitals %>% 
-      #filter(HB == input$covid_hb) %>% 
+      filter(HB == input$covid_hb) %>% 
       leaflet() %>% 
       addTiles() %>% 
       addCircleMarkers(lng = ~ longitude,
