@@ -25,9 +25,9 @@ waiting_times <- clean_names(waiting_times)
 
 ```{r}
 #explore data
-head(waiting_times_1)
+head(waiting_times)
 glimpse(waiting_times)
-view(waiting_times_1)
+view(waiting_times)
 colnames(waiting_times)
 ```
 
@@ -191,6 +191,8 @@ waiting_times_1 %>%
 
 ```
 
+# From here official!
+# From here official!
 # Create final plot for dashboard and run statistical test "summer vs. winter"
 ```{r}
 # lets first create a barplot comparing summer/winter per year for attendances
@@ -199,6 +201,7 @@ waiting_times_1 %>%
 season_name <- setNames(rep(c("winter", "spring", "summer", "autumn"), each = 3),
                         month.name)
 
+# 2. create table specifying season
 attendances_ae <- waiting_times %>% 
   select(month, hbt, number_of_attendances_all) %>% 
   #let's add a column indicating season
@@ -217,7 +220,39 @@ attendances_ae <- waiting_times %>%
   # create a column to later filter right season!
   mutate(right_season = if_else(
                         str_detect(season, "winter|summer"), TRUE, FALSE),
-         .before = hbt)
+         .before = hbt) 
+
+
+# 3.
+#lets create a table with a yearly average per hb per season, for each year:
+avg_yearperseason_hb <- attendances_ae %>% 
+  select(year, hbt, number_of_attendances_all) %>% 
+  group_by(year, hbt) %>% 
+  summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
+  filter(hbt == "S08000028")
+
+# 4. lets create a table as input for the ggplot
+input_table_ggplot_attendances <- attendances_ae %>% 
+  filter(right_season == TRUE) %>% 
+  group_by(year, season, hbt) %>% 
+  summarise(total_attendances = sum(number_of_attendances_all)) %>%
+  filter(year < 2020 & year > 2007) %>% 
+  filter(hbt == "S08000028")
+
+# 5. lets create the ggplot combining both datasets
+ggplot() +
+  geom_col(data = input_table_ggplot_attendances, 
+           aes(
+    x = year, 
+    y = total_attendances, 
+    fill = season),
+           position = "dodge", col = "white") +
+  geom_line(data = avg_yearperseason_hb, 
+            aes(
+    x = year, 
+    y = average_season_year))
+  
+
 
 # create plot per healthboard, split per season
 attendances_ae %>% 
@@ -230,6 +265,11 @@ attendances_ae %>%
   aes(x = year, y = total_attendances, fill = season) +
   geom_col(position = "dodge", col = "white")
 
+
+
+```
+
+```{r}
 # Do statistical test
 # create variables
 test_summer <- attendances_ae %>% 
@@ -256,6 +296,5 @@ t.test(test_summer$total_attendances,
        alternative = "two.sided",
        paired = FALSE,
        conf.level = 0.95)
-
 ```
 
