@@ -247,6 +247,8 @@ stays %>%
 
 Starting point: analyses/thijmen_exploring_beds.Rmd
 
+## plot occupancy hb v scotland on ts
+
 ```{r}
 # naomi
 # load in data
@@ -298,6 +300,41 @@ occupancy %>%
         )
 ```
 
+## heatmap for occupancy
+
+is there hospitals in the data?
+
+```{r}
+library(leaflet)
+library(shiny)
+
+ # load in hospitals data
+## hospitals for map
+hospitals <- read_csv("../data/map/hospital_locations_clean.csv")
+
+### colour palette for hospitals on map
+pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
+                     "red","indianred", "maroon", "brown",
+                     "springgreen", "springgreen2", "springgreen3", "springgreen4",
+                     "gold", "goldenrod", "yellow", "orange"),
+                   domain = unique(hospitals$HB))
+
+```
+
+
+```{r}
+# show hospitals on map, currently coloured by hb
+hospitals %>% 
+      #filter(HB == "") %>% 
+      leaflet() %>% 
+      addTiles() %>% 
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 1,
+                       popup = ~ paste(Location, br(), "Board:", HB),
+                       color = ~pal(HB)
+      )
+```
 
 
 # A&E attendances

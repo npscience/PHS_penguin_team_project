@@ -1682,17 +1682,23 @@ overflow-y: auto;
 border: 1px solid #ddd;
 border-radius: 4px;
 }
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+content: "";
 font-family: 'Glyphicons Halflings';
 display: inline-block;
 padding: 10px;
 border-right: 1px solid #ddd;
 }
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-content: "\e258";
-font-family: 'Glyphicons Halflings';
+content: "";
 border: none;
+}
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+content: "";
+font-family: 'Glyphicons Halflings';
+display: inline-block;
+padding: 10px;
+border-right: 1px solid #ddd;
 }
 .tabset-dropdown > .nav-tabs > li.active {
 display: block;
@@ -1752,231 +1758,39 @@ display: none;
 
 
 <!-- rnb-text-begin -->
+<p>The mighty map</p>
+<p>colours are just to exemplify health board distinction packages:
+shiny, leaflet</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBvcGVuIGxpYnJhcmllc1xubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGdncGxvdDIpXG5saWJyYXJ5KGphbml0b3IpXG5saWJyYXJ5KGx1YnJpZGF0ZSlcbmBgYCJ9 -->
-<pre class="r"><code># open libraries
-library(tidyverse)
-library(ggplot2)
-library(janitor)
-library(lubridate)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaG9zcGl0YWxzIDwtIHJlYWRfY3N2KFwiLi4vZGF0YS9tYXAvaG9zcGl0YWxfbG9jYXRpb25zX2NsZWFuLmNzdlwiKVxuYGBgIn0= -->
+<pre class="r"><code>hospitals &lt;- read_csv(&quot;../data/map/hospital_locations_clean.csv&quot;)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmVkcyA8LSByZWFkX2NzdihcIi4uL2RhdGEvYmVkc19ieV9uaHNfYm9hcmRfb2ZfdHJlYXRtZW50X2FuZF9zcGVjaWFsdHkuY3N2XCIpXG5iZWRzIDwtIGNsZWFuX25hbWVzKGJlZHMpXG5gYGAifQ== -->
-<pre class="r"><code>beds &lt;- read_csv(&quot;../data/beds_by_nhs_board_of_treatment_and_specialty.csv&quot;)
-beds &lt;- clean_names(beds)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGVhZChiZWRzKVxuY29sbmFtZXMoYmVkcylcbnZpZXcoYmVkcylcbmBgYCJ9 -->
-<pre class="r"><code>head(beds)
-colnames(beds)
-view(beds)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmVkcyAlPiUgXG4gIGRpc3RpbmN0KHNwZWNpYWx0eV9uYW1lKVxuYGBgIn0= -->
-<pre class="r"><code>beds %&gt;% 
-  distinct(specialty_name)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhc3N1bWluZyBcImFsbCBhY3V0ZVwiIGlzIGNvbmdyYWdhdGluZyBldmVyeXRoaW5nXG5iZWRzICU+JSBcbiAgZmlsdGVyKHNwZWNpYWx0eV9uYW1lID09IFwiQWxsIEFjdXRlXCIpICU+JSBcbiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhbGxfc3RhZmZlZF9iZWRkYXlzLCBwZXJjZW50YWdlX29jY3VwYW5jeSkgJT4lIFxuICBncm91cF9ieShxdWFydGVyKSAlPiUgXG4gI2ZpbHRlcihoYiA9PSBcIlMwODAwMDAxNVwiKSAlPiUgXG4gIHN1bW1hcmlzZSh0b3RhbF9zdGFmZmVkX2JlZHMgPSBzdW0oYWxsX3N0YWZmZWRfYmVkZGF5cykpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHlxKHF1YXJ0ZXIpLCB5ID0gdG90YWxfc3RhZmZlZF9iZWRzKSArXG4gIGdlb21fY29sKClcbmBgYCJ9 -->
-<pre class="r"><code># assuming &quot;all acute&quot; is congragating everything
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, percentage_occupancy) %&gt;% 
-  group_by(quarter) %&gt;% 
- #filter(hb == &quot;S08000015&quot;) %&gt;% 
-  summarise(total_staffed_beds = sum(all_staffed_beddays)) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = total_staffed_beds) +
-  geom_col()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBwZXJjZW50YWdlcyBvY2N1cGFuY3lcbmJlZHMgJT4lIFxuICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gXCJBbGwgQWN1dGVcIikgJT4lIFxuICBzZWxlY3QocXVhcnRlciwgaGIsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgXG4gIGdyb3VwX2J5KHF1YXJ0ZXIpICU+JSBcbiAjZmlsdGVyKGhiID09IFwiUzA4MDAwMDE1XCIpICU+JSBcbiAgc3VtbWFyaXNlKGF2ZXJhZ2VfcGVyY2VudGFnZV9vY2N1cGFuY3lfcHEgPSBtZWFuKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSkgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0geXEocXVhcnRlciksIHkgPSBhdmVyYWdlX3BlcmNlbnRhZ2Vfb2NjdXBhbmN5X3BxLCBncm91cCA9IDEpICtcbiAgZ2VvbV9saW5lKClcblxuYGBgIn0= -->
-<pre class="r"><code># percentages occupancy
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, percentage_occupancy) %&gt;% 
-  group_by(quarter) %&gt;% 
- #filter(hb == &quot;S08000015&quot;) %&gt;% 
-  summarise(average_percentage_occupancy_pq = mean(percentage_occupancy)) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = average_percentage_occupancy_pq, group = 1) +
-  geom_line()
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmVkcyAlPiUgXG4gIGZpbHRlcihzcGVjaWFsdHlfbmFtZSA9PSBcIkFsbCBBY3V0ZVwiKSAlPiUgXG4gIGhlYWQoKVxuICBkaXN0aW5jdChzcGVjaWFsdHlfbmFtZV9xZilcbmBgYCJ9 -->
-<pre class="r"><code>beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  head()
-  distinct(specialty_name_qf)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIEdvYWwgZGF5IDI6XG4jIC0+IEZvY3VzIG9uIGFsbF9hY3V0ZSBhbmQgY2hlY2sgd2hhdCBjYW4gYmUgcmV0cmlldmVkIGZyb20gdGhlIGRhdGFzZXQgdG8gYW5zd2VyOlxuIyBlZmZlY3Qgb2YgY292aWQgb24gYmVkIG9jY3VwYW5jeVxuXG5iZWRzICU+JSBcbiAgZmlsdGVyKHNwZWNpYWx0eV9uYW1lID09IFwiQWxsIEFjdXRlXCIpICU+JSBcbiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhbGxfc3RhZmZlZF9iZWRkYXlzLCB0b3RhbF9vY2N1cGllZF9iZWRkYXlzLCBcbiAgICAgICAgIGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcywgYXZlcmFnZV9vY2N1cGllZF9iZWRzLCBwZXJjZW50YWdlX29jY3VwYW5jeSkgJT4lIFxuICAjIGxldHMgZm9jdXMgb24gcGVyY2V0bmFnZSBvY2N1cGFuY3kgZm9yIG5vd1xuICAjIGNhbGN1bGF0ZSBhZ2FpbjogcGVyY2VudGFnZSBvY2N1cGFuY3kgPSAoYXNiIC8gYW9iKSAqIDEwMFxuICBzZWxlY3QocXVhcnRlciwgaGIsIGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcywgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzKSAlPiUgXG4gIGdyb3VwX2J5KHF1YXJ0ZXIsIGhiKSAlPiUgXG4gIHN1bW1hcmlzZShjYWxfYXZlcmFnZV9vY2N1cGllZF9iZWRzID0gbWVhbihhdmVyYWdlX29jY3VwaWVkX2JlZHMpLFxuICAgICAgICAgICAgY2FsX2F2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcyA9IG1lYW4oYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzKSkgJT4lIFxuICBtdXRhdGUocGVyY2VudGFnZV9vY2N1cGFuY3kgPSBjYWxfYXZlcmFnZV9vY2N1cGllZF9iZWRzL2NhbF9hdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMpICU+JSBcbiAgI3Zpc3VhbGlzZSBzZWFzb25hbGl0eVxuICBtdXRhdGUocmlnaHRfcXVhcnRlciA9IGlmX2Vsc2UoXG4gICAgICAgICAgICAgICAgICAgICAgICBzdHJfZGV0ZWN0KHF1YXJ0ZXIsIFwiUTEkfFEzJFwiKSwgVFJVRSwgRkFMU0UpLCAuYmVmb3JlID0gaGIpICU+JSBcbiAgZmlsdGVyKHJpZ2h0X3F1YXJ0ZXIgPT0gVFJVRSkgJT4lXG4gIHNlbGVjdChxdWFydGVyLCBoYiwgcGVyY2VudGFnZV9vY2N1cGFuY3kpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHlxKHF1YXJ0ZXIpLCB5ID0gcGVyY2VudGFnZV9vY2N1cGFuY3kpICtcbiAgZ2VvbV9jb2woKSArXG4gIGZhY2V0X3dyYXAofiBoYilcblxuYGBgIn0= -->
-<pre class="r"><code>### Goal day 2:
-# -&gt; Focus on all_acute and check what can be retrieved from the dataset to answer:
-# effect of covid on bed occupancy
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucGFsIDwtIGNvbG9yRmFjdG9yKGMoXCJuYXZ5XCIsIFwiYmx1ZVwiLCBcInN0ZWVsYmx1ZVwiLCBcInNreWJsdWVcIixcbiAgICAgICAgICAgICAgICAgICAgIFwicmVkXCIsXCJpbmRpYW5yZWRcIiwgXCJtYXJvb25cIiwgXCJicm93blwiLFxuICAgICAgICAgICAgICAgICAgICAgXCJzcHJpbmdncmVlblwiLCBcInNwcmluZ2dyZWVuMlwiLCBcInNwcmluZ2dyZWVuM1wiLCBcInNwcmluZ2dyZWVuNFwiLFxuICAgICAgICAgICAgICAgICAgICAgXCJnb2xkXCIsIFwiZ29sZGVucm9kXCIsIFwieWVsbG93XCIsIFwib3JhbmdlXCIpLFxuICAgICAgICAgICAgICAgICAgIGRvbWFpbiA9IHVuaXF1ZShob3NwaXRhbHMkSEIpKVxuXG5sZWFmbGV0KGhvc3BpdGFscykgJT4lIFxuICBhZGRUaWxlcygpICU+JSBcbiAgYWRkQ2lyY2xlTWFya2VycyhsbmcgPSB+IGxvbmdpdHVkZSxcbiAgICAgICAgICAgICBsYXQgPSB+IGxhdGl0dWRlLFxuICAgICAgICAgICAgIHdlaWdodCA9IDEsXG4gICAgICAgICAgICAgcG9wdXAgPSB+IHBhc3RlKExvY2F0aW9uLCBicigpLCBcIkJvYXJkOlwiLCBIQiksXG4gICAgICAgICAgICAgY29sb3IgPSB+cGFsKEhCKVxuICApXG5gYGAifQ== -->
+<pre class="r"><code>pal &lt;- colorFactor(c(&quot;navy&quot;, &quot;blue&quot;, &quot;steelblue&quot;, &quot;skyblue&quot;,
+                     &quot;red&quot;,&quot;indianred&quot;, &quot;maroon&quot;, &quot;brown&quot;,
+                     &quot;springgreen&quot;, &quot;springgreen2&quot;, &quot;springgreen3&quot;, &quot;springgreen4&quot;,
+                     &quot;gold&quot;, &quot;goldenrod&quot;, &quot;yellow&quot;, &quot;orange&quot;),
+                   domain = unique(hospitals$HB))
 
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, total_occupied_beddays, 
-         average_available_staffed_beds, average_occupied_beds, percentage_occupancy) %&gt;% 
-  # lets focus on percetnage occupancy for now
-  # calculate again: percentage occupancy = (asb / aob) * 100
-  select(quarter, hb, average_occupied_beds, average_available_staffed_beds) %&gt;% 
-  group_by(quarter, hb) %&gt;% 
-  summarise(cal_average_occupied_beds = mean(average_occupied_beds),
-            cal_average_available_staffed_beds = mean(average_available_staffed_beds)) %&gt;% 
-  mutate(percentage_occupancy = cal_average_occupied_beds/cal_average_available_staffed_beds) %&gt;% 
-  #visualise seasonality
-  mutate(right_quarter = if_else(
-                        str_detect(quarter, &quot;Q1$|Q3$&quot;), TRUE, FALSE), .before = hb) %&gt;% 
-  filter(right_quarter == TRUE) %&gt;%
-  select(quarter, hb, percentage_occupancy) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = percentage_occupancy) +
-  geom_col() +
-  facet_wrap(~ hb)
-</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBkbyB0aGUgc2FtZSBhcyBhYm92ZSBidXQgY29tcGFyZSBRMi1RNFxuYmVkcyAlPiUgXG4gIGZpbHRlcihzcGVjaWFsdHlfbmFtZSA9PSBcIkFsbCBBY3V0ZVwiKSAlPiUgXG4gIHNlbGVjdChxdWFydGVyLCBoYiwgYWxsX3N0YWZmZWRfYmVkZGF5cywgdG90YWxfb2NjdXBpZWRfYmVkZGF5cywgXG4gICAgICAgICBhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMsIGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcywgcGVyY2VudGFnZV9vY2N1cGFuY3kpICU+JSBcbiAgIyBsZXRzIGZvY3VzIG9uIHBlcmNldG5hZ2Ugb2NjdXBhbmN5IGZvciBub3dcbiAgIyBjYWxjdWxhdGUgYWdhaW46IHBlcmNlbnRhZ2Ugb2NjdXBhbmN5ID0gKGFzYiAvIGFvYikgKiAxMDBcbiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykgJT4lIFxuICBncm91cF9ieShxdWFydGVyLCBoYikgJT4lIFxuICBzdW1tYXJpc2UoY2FsX2F2ZXJhZ2Vfb2NjdXBpZWRfYmVkcyA9IG1lYW4oYXZlcmFnZV9vY2N1cGllZF9iZWRzKSxcbiAgICAgICAgICAgIGNhbF9hdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMgPSBtZWFuKGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykpICU+JSBcbiAgbXV0YXRlKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5ID0gY2FsX2F2ZXJhZ2Vfb2NjdXBpZWRfYmVkcy9jYWxfYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzKSAlPiUgXG4gICN2aXN1YWxpc2Ugc2Vhc29uYWxpdHlcbiAgbXV0YXRlKHJpZ2h0X3F1YXJ0ZXIgPSBpZl9lbHNlKFxuICAgICAgICAgICAgICAgICAgICAgICAgc3RyX2RldGVjdChxdWFydGVyLCBcIlEyJHxRNCRcIiksIFRSVUUsIEZBTFNFKSwgLmJlZm9yZSA9IGhiKSAlPiUgXG4gIGZpbHRlcihyaWdodF9xdWFydGVyID09IFRSVUUpICU+JVxuICBzZWxlY3QocXVhcnRlciwgaGIsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSArXG4gIGdlb21fY29sKCkgK1xuICBmYWNldF93cmFwKH4gaGIpXG5gYGAifQ== -->
-<pre class="r"><code># do the same as above but compare Q2-Q4
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, total_occupied_beddays, 
-         average_available_staffed_beds, average_occupied_beds, percentage_occupancy) %&gt;% 
-  # lets focus on percetnage occupancy for now
-  # calculate again: percentage occupancy = (asb / aob) * 100
-  select(quarter, hb, average_occupied_beds, average_available_staffed_beds) %&gt;% 
-  group_by(quarter, hb) %&gt;% 
-  summarise(cal_average_occupied_beds = mean(average_occupied_beds),
-            cal_average_available_staffed_beds = mean(average_available_staffed_beds)) %&gt;% 
-  mutate(percentage_occupancy = cal_average_occupied_beds/cal_average_available_staffed_beds) %&gt;% 
-  #visualise seasonality
-  mutate(right_quarter = if_else(
-                        str_detect(quarter, &quot;Q2$|Q4$&quot;), TRUE, FALSE), .before = hb) %&gt;% 
-  filter(right_quarter == TRUE) %&gt;%
-  select(quarter, hb, percentage_occupancy) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = percentage_occupancy) +
-  geom_col() +
-  facet_wrap(~ hb)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBoZXJlIGxpbmUgcGxvdCBwZXIgSEIgb3ZlciBlbnRpcmUgdGltZSBsZW5ndGhcbmJlZHMgJT4lIFxuICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gXCJBbGwgQWN1dGVcIikgJT4lIFxuICBzZWxlY3QocXVhcnRlciwgaGIsIGFsbF9zdGFmZmVkX2JlZGRheXMsIHRvdGFsX29jY3VwaWVkX2JlZGRheXMsIFxuICAgICAgICAgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgXG4gICMgbGV0cyBmb2N1cyBvbiBwZXJjZXRuYWdlIG9jY3VwYW5jeSBmb3Igbm93XG4gICMgY2FsY3VsYXRlIGFnYWluOiBwZXJjZW50YWdlIG9jY3VwYW5jeSA9IChhc2IgLyBhb2IpICogMTAwXG4gIHNlbGVjdChxdWFydGVyLCBoYiwgYXZlcmFnZV9vY2N1cGllZF9iZWRzLCBhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMpICU+JSBcbiAgZ3JvdXBfYnkocXVhcnRlciwgaGIpICU+JSBcbiAgc3VtbWFyaXNlKGNhbF9hdmVyYWdlX29jY3VwaWVkX2JlZHMgPSBtZWFuKGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcyksXG4gICAgICAgICAgICBjYWxfYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzID0gbWVhbihhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMpKSAlPiUgXG4gIG11dGF0ZShwZXJjZW50YWdlX29jY3VwYW5jeSA9IGNhbF9hdmVyYWdlX29jY3VwaWVkX2JlZHMvY2FsX2F2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykgJT4lIFxuICAjdmlzdWFsaXNlIGNvdmlkXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHBlcmNlbnRhZ2Vfb2NjdXBhbmN5LCBjb2xvdXIgPSBoYikgK1xuICBnZW9tX2xpbmUoKVxuICBcblxuICBcbmBgYCJ9 -->
-<pre class="r"><code># here line plot per HB over entire time length
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, total_occupied_beddays, 
-         average_available_staffed_beds, average_occupied_beds, percentage_occupancy) %&gt;% 
-  # lets focus on percetnage occupancy for now
-  # calculate again: percentage occupancy = (asb / aob) * 100
-  select(quarter, hb, average_occupied_beds, average_available_staffed_beds) %&gt;% 
-  group_by(quarter, hb) %&gt;% 
-  summarise(cal_average_occupied_beds = mean(average_occupied_beds),
-            cal_average_available_staffed_beds = mean(average_available_staffed_beds)) %&gt;% 
-  mutate(percentage_occupancy = cal_average_occupied_beds/cal_average_available_staffed_beds) %&gt;% 
-  #visualise covid
-  ggplot() +
-  aes(x = yq(quarter), y = percentage_occupancy, colour = hb) +
-  geom_line()
-  
-
-  </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHNcbmJlZHMgJT4lIFxuICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gXCJBbGwgQWN1dGVcIikgJT4lIFxuICBzZWxlY3QocXVhcnRlciwgaGIsIGFsbF9zdGFmZmVkX2JlZGRheXMsIHRvdGFsX29jY3VwaWVkX2JlZGRheXMsIFxuICAgICAgICAgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgXG4gIGdyb3VwX2J5KHF1YXJ0ZXIsIGhiKSAlPiUgXG4gIHN1bW1hcmlzZShhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMgPSBtZWFuKGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHlxKHF1YXJ0ZXIpLCB5ID0gYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzLCBjb2xvdXIgPSBoYikgK1xuICBnZW9tX2xpbmUoKVxuYGBgIn0= -->
-<pre class="r"><code># average_available_staffed_beds
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, total_occupied_beddays, 
-         average_available_staffed_beds, average_occupied_beds, percentage_occupancy) %&gt;% 
-  group_by(quarter, hb) %&gt;% 
-  summarise(average_available_staffed_beds = mean(average_available_staffed_beds)) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = average_available_staffed_beds, colour = hb) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhbGxfc3RhZmZlZF9iZWRkYXlzXG5iZWRzICU+JSBcbiAgZmlsdGVyKHNwZWNpYWx0eV9uYW1lID09IFwiQWxsIEFjdXRlXCIpICU+JSBcbiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhbGxfc3RhZmZlZF9iZWRkYXlzLCB0b3RhbF9vY2N1cGllZF9iZWRkYXlzLCBcbiAgICAgICAgIGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcywgYXZlcmFnZV9vY2N1cGllZF9iZWRzLCBwZXJjZW50YWdlX29jY3VwYW5jeSkgJT4lIFxuICBncm91cF9ieShxdWFydGVyLCBoYikgJT4lIFxuICBzdW1tYXJpc2UodG90YWxfc3RhZmZlZF9iZWRkYXlzID0gc3VtKGFsbF9zdGFmZmVkX2JlZGRheXMpKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHRvdGFsX3N0YWZmZWRfYmVkZGF5cywgY29sb3VyID0gaGIpICtcbiAgZ2VvbV9saW5lKClcbmBgYCJ9 -->
-<pre class="r"><code># all_staffed_beddays
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, total_occupied_beddays, 
-         average_available_staffed_beds, average_occupied_beds, percentage_occupancy) %&gt;% 
-  group_by(quarter, hb) %&gt;% 
-  summarise(total_staffed_beddays = sum(all_staffed_beddays)) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = total_staffed_beddays, colour = hb) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyB0b3RhbF9vY2N1cGllZF9iZWRkYXlzXG5iZWRzICU+JSBcbiAgZmlsdGVyKHNwZWNpYWx0eV9uYW1lID09IFwiQWxsIEFjdXRlXCIpICU+JSBcbiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhbGxfc3RhZmZlZF9iZWRkYXlzLCB0b3RhbF9vY2N1cGllZF9iZWRkYXlzLCBcbiAgICAgICAgIGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcywgYXZlcmFnZV9vY2N1cGllZF9iZWRzLCBwZXJjZW50YWdlX29jY3VwYW5jeSkgJT4lIFxuICBncm91cF9ieShxdWFydGVyLCBoYikgJT4lIFxuICBzdW1tYXJpc2Uoc3VtX29jY3VwaWVkX2JlZGRheXMgPSBzdW0odG90YWxfb2NjdXBpZWRfYmVkZGF5cykpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHlxKHF1YXJ0ZXIpLCB5ID0gc3VtX29jY3VwaWVkX2JlZGRheXMsIGNvbG91ciA9IGhiKSArXG4gIGdlb21fbGluZSgpXG5gYGAifQ== -->
-<pre class="r"><code># total_occupied_beddays
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, total_occupied_beddays, 
-         average_available_staffed_beds, average_occupied_beds, percentage_occupancy) %&gt;% 
-  group_by(quarter, hb) %&gt;% 
-  summarise(sum_occupied_beddays = sum(total_occupied_beddays)) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = sum_occupied_beddays, colour = hb) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBhdmVyYWdlX29jY3VwaWVkX2JlZHNcbmJlZHMgJT4lIFxuICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gXCJBbGwgQWN1dGVcIikgJT4lIFxuICBzZWxlY3QocXVhcnRlciwgaGIsIGFsbF9zdGFmZmVkX2JlZGRheXMsIHRvdGFsX29jY3VwaWVkX2JlZGRheXMsIFxuICAgICAgICAgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgXG4gIGdyb3VwX2J5KHF1YXJ0ZXIsIGhiKSAlPiUgXG4gIHN1bW1hcmlzZSh0b3RhbF9hdmVyYWdlX29jY3VwaWVkX2JlZHMgPSBtZWFuKGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcykpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IHlxKHF1YXJ0ZXIpLCB5ID0gdG90YWxfYXZlcmFnZV9vY2N1cGllZF9iZWRzLCBjb2xvdXIgPSBoYikgK1xuICBnZW9tX2xpbmUoKVxuYGBgIn0= -->
-<pre class="r"><code># average_occupied_beds
-beds %&gt;% 
-  filter(specialty_name == &quot;All Acute&quot;) %&gt;% 
-  select(quarter, hb, all_staffed_beddays, total_occupied_beddays, 
-         average_available_staffed_beds, average_occupied_beds, percentage_occupancy) %&gt;% 
-  group_by(quarter, hb) %&gt;% 
-  summarise(total_average_occupied_beds = mean(average_occupied_beds)) %&gt;% 
-  ggplot() +
-  aes(x = yq(quarter), y = total_average_occupied_beds, colour = hb) +
-  geom_line()</code></pre>
+leaflet(hospitals) %&gt;% 
+  addTiles() %&gt;% 
+  addCircleMarkers(lng = ~ longitude,
+             lat = ~ latitude,
+             weight = 1,
+             popup = ~ paste(Location, br(), &quot;Board:&quot;, HB),
+             color = ~pal(HB)
+  )</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3J9CiMgb3BlbiBsaWJyYXJpZXMKbGlicmFyeSh0aWR5dmVyc2UpCmxpYnJhcnkoZ2dwbG90MikKbGlicmFyeShqYW5pdG9yKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKYGBgCgpgYGB7cn0KYmVkcyA8LSByZWFkX2NzdigiLi4vZGF0YS9iZWRzX2J5X25oc19ib2FyZF9vZl90cmVhdG1lbnRfYW5kX3NwZWNpYWx0eS5jc3YiKQpiZWRzIDwtIGNsZWFuX25hbWVzKGJlZHMpCmBgYAoKYGBge3J9CmhlYWQoYmVkcykKY29sbmFtZXMoYmVkcykKdmlldyhiZWRzKQpgYGAKCmBgYHtyfQpiZWRzICU+JSAKICBkaXN0aW5jdChzcGVjaWFsdHlfbmFtZSkKYGBgCgpgYGB7cn0KIyBhc3N1bWluZyAiYWxsIGFjdXRlIiBpcyBjb25ncmFnYXRpbmcgZXZlcnl0aGluZwpiZWRzICU+JSAKICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gIkFsbCBBY3V0ZSIpICU+JSAKICBzZWxlY3QocXVhcnRlciwgaGIsIGFsbF9zdGFmZmVkX2JlZGRheXMsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgCiAgZ3JvdXBfYnkocXVhcnRlcikgJT4lIAogI2ZpbHRlcihoYiA9PSAiUzA4MDAwMDE1IikgJT4lIAogIHN1bW1hcmlzZSh0b3RhbF9zdGFmZmVkX2JlZHMgPSBzdW0oYWxsX3N0YWZmZWRfYmVkZGF5cykpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHRvdGFsX3N0YWZmZWRfYmVkcykgKwogIGdlb21fY29sKCkKYGBgCgoKYGBge3J9CiMgcGVyY2VudGFnZXMgb2NjdXBhbmN5CmJlZHMgJT4lIAogIGZpbHRlcihzcGVjaWFsdHlfbmFtZSA9PSAiQWxsIEFjdXRlIikgJT4lIAogIHNlbGVjdChxdWFydGVyLCBoYiwgcGVyY2VudGFnZV9vY2N1cGFuY3kpICU+JSAKICBncm91cF9ieShxdWFydGVyKSAlPiUgCiAjZmlsdGVyKGhiID09ICJTMDgwMDAwMTUiKSAlPiUgCiAgc3VtbWFyaXNlKGF2ZXJhZ2VfcGVyY2VudGFnZV9vY2N1cGFuY3lfcHEgPSBtZWFuKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSkgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IHlxKHF1YXJ0ZXIpLCB5ID0gYXZlcmFnZV9wZXJjZW50YWdlX29jY3VwYW5jeV9wcSwgZ3JvdXAgPSAxKSArCiAgZ2VvbV9saW5lKCkKCmBgYAoKYGBge3J9CmJlZHMgJT4lIAogIGZpbHRlcihzcGVjaWFsdHlfbmFtZSA9PSAiQWxsIEFjdXRlIikgJT4lIAogIGhlYWQoKQogIGRpc3RpbmN0KHNwZWNpYWx0eV9uYW1lX3FmKQpgYGAKCmBgYHtyfQojIyMgR29hbCBkYXkgMjoKIyAtPiBGb2N1cyBvbiBhbGxfYWN1dGUgYW5kIGNoZWNrIHdoYXQgY2FuIGJlIHJldHJpZXZlZCBmcm9tIHRoZSBkYXRhc2V0IHRvIGFuc3dlcjoKIyBlZmZlY3Qgb2YgY292aWQgb24gYmVkIG9jY3VwYW5jeQoKYmVkcyAlPiUgCiAgZmlsdGVyKHNwZWNpYWx0eV9uYW1lID09ICJBbGwgQWN1dGUiKSAlPiUgCiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhbGxfc3RhZmZlZF9iZWRkYXlzLCB0b3RhbF9vY2N1cGllZF9iZWRkYXlzLCAKICAgICAgICAgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgCiAgIyBsZXRzIGZvY3VzIG9uIHBlcmNldG5hZ2Ugb2NjdXBhbmN5IGZvciBub3cKICAjIGNhbGN1bGF0ZSBhZ2FpbjogcGVyY2VudGFnZSBvY2N1cGFuY3kgPSAoYXNiIC8gYW9iKSAqIDEwMAogIHNlbGVjdChxdWFydGVyLCBoYiwgYXZlcmFnZV9vY2N1cGllZF9iZWRzLCBhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMpICU+JSAKICBncm91cF9ieShxdWFydGVyLCBoYikgJT4lIAogIHN1bW1hcmlzZShjYWxfYXZlcmFnZV9vY2N1cGllZF9iZWRzID0gbWVhbihhdmVyYWdlX29jY3VwaWVkX2JlZHMpLAogICAgICAgICAgICBjYWxfYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzID0gbWVhbihhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMpKSAlPiUgCiAgbXV0YXRlKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5ID0gY2FsX2F2ZXJhZ2Vfb2NjdXBpZWRfYmVkcy9jYWxfYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzKSAlPiUgCiAgI3Zpc3VhbGlzZSBzZWFzb25hbGl0eQogIG11dGF0ZShyaWdodF9xdWFydGVyID0gaWZfZWxzZSgKICAgICAgICAgICAgICAgICAgICAgICAgc3RyX2RldGVjdChxdWFydGVyLCAiUTEkfFEzJCIpLCBUUlVFLCBGQUxTRSksIC5iZWZvcmUgPSBoYikgJT4lIAogIGZpbHRlcihyaWdodF9xdWFydGVyID09IFRSVUUpICU+JQogIHNlbGVjdChxdWFydGVyLCBoYiwgcGVyY2VudGFnZV9vY2N1cGFuY3kpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSArCiAgZ2VvbV9jb2woKSArCiAgZmFjZXRfd3JhcCh+IGhiKQoKYGBgCgpgYGB7cn0KIyBkbyB0aGUgc2FtZSBhcyBhYm92ZSBidXQgY29tcGFyZSBRMi1RNApiZWRzICU+JSAKICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gIkFsbCBBY3V0ZSIpICU+JSAKICBzZWxlY3QocXVhcnRlciwgaGIsIGFsbF9zdGFmZmVkX2JlZGRheXMsIHRvdGFsX29jY3VwaWVkX2JlZGRheXMsIAogICAgICAgICBhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMsIGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcywgcGVyY2VudGFnZV9vY2N1cGFuY3kpICU+JSAKICAjIGxldHMgZm9jdXMgb24gcGVyY2V0bmFnZSBvY2N1cGFuY3kgZm9yIG5vdwogICMgY2FsY3VsYXRlIGFnYWluOiBwZXJjZW50YWdlIG9jY3VwYW5jeSA9IChhc2IgLyBhb2IpICogMTAwCiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykgJT4lIAogIGdyb3VwX2J5KHF1YXJ0ZXIsIGhiKSAlPiUgCiAgc3VtbWFyaXNlKGNhbF9hdmVyYWdlX29jY3VwaWVkX2JlZHMgPSBtZWFuKGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcyksCiAgICAgICAgICAgIGNhbF9hdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMgPSBtZWFuKGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykpICU+JSAKICBtdXRhdGUocGVyY2VudGFnZV9vY2N1cGFuY3kgPSBjYWxfYXZlcmFnZV9vY2N1cGllZF9iZWRzL2NhbF9hdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMpICU+JSAKICAjdmlzdWFsaXNlIHNlYXNvbmFsaXR5CiAgbXV0YXRlKHJpZ2h0X3F1YXJ0ZXIgPSBpZl9lbHNlKAogICAgICAgICAgICAgICAgICAgICAgICBzdHJfZGV0ZWN0KHF1YXJ0ZXIsICJRMiR8UTQkIiksIFRSVUUsIEZBTFNFKSwgLmJlZm9yZSA9IGhiKSAlPiUgCiAgZmlsdGVyKHJpZ2h0X3F1YXJ0ZXIgPT0gVFJVRSkgJT4lCiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBwZXJjZW50YWdlX29jY3VwYW5jeSkgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IHlxKHF1YXJ0ZXIpLCB5ID0gcGVyY2VudGFnZV9vY2N1cGFuY3kpICsKICBnZW9tX2NvbCgpICsKICBmYWNldF93cmFwKH4gaGIpCmBgYAoKCgoKYGBge3J9CiMgaGVyZSBsaW5lIHBsb3QgcGVyIEhCIG92ZXIgZW50aXJlIHRpbWUgbGVuZ3RoCmJlZHMgJT4lIAogIGZpbHRlcihzcGVjaWFsdHlfbmFtZSA9PSAiQWxsIEFjdXRlIikgJT4lIAogIHNlbGVjdChxdWFydGVyLCBoYiwgYWxsX3N0YWZmZWRfYmVkZGF5cywgdG90YWxfb2NjdXBpZWRfYmVkZGF5cywgCiAgICAgICAgIGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcywgYXZlcmFnZV9vY2N1cGllZF9iZWRzLCBwZXJjZW50YWdlX29jY3VwYW5jeSkgJT4lIAogICMgbGV0cyBmb2N1cyBvbiBwZXJjZXRuYWdlIG9jY3VwYW5jeSBmb3Igbm93CiAgIyBjYWxjdWxhdGUgYWdhaW46IHBlcmNlbnRhZ2Ugb2NjdXBhbmN5ID0gKGFzYiAvIGFvYikgKiAxMDAKICBzZWxlY3QocXVhcnRlciwgaGIsIGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcywgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzKSAlPiUgCiAgZ3JvdXBfYnkocXVhcnRlciwgaGIpICU+JSAKICBzdW1tYXJpc2UoY2FsX2F2ZXJhZ2Vfb2NjdXBpZWRfYmVkcyA9IG1lYW4oYXZlcmFnZV9vY2N1cGllZF9iZWRzKSwKICAgICAgICAgICAgY2FsX2F2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcyA9IG1lYW4oYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzKSkgJT4lIAogIG11dGF0ZShwZXJjZW50YWdlX29jY3VwYW5jeSA9IGNhbF9hdmVyYWdlX29jY3VwaWVkX2JlZHMvY2FsX2F2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykgJT4lIAogICN2aXN1YWxpc2UgY292aWQKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHBlcmNlbnRhZ2Vfb2NjdXBhbmN5LCBjb2xvdXIgPSBoYikgKwogIGdlb21fbGluZSgpCiAgCgogIApgYGAKCmBgYHtyfQojIGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcwpiZWRzICU+JSAKICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gIkFsbCBBY3V0ZSIpICU+JSAKICBzZWxlY3QocXVhcnRlciwgaGIsIGFsbF9zdGFmZmVkX2JlZGRheXMsIHRvdGFsX29jY3VwaWVkX2JlZGRheXMsIAogICAgICAgICBhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMsIGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcywgcGVyY2VudGFnZV9vY2N1cGFuY3kpICU+JSAKICBncm91cF9ieShxdWFydGVyLCBoYikgJT4lIAogIHN1bW1hcmlzZShhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMgPSBtZWFuKGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcykpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IGF2ZXJhZ2VfYXZhaWxhYmxlX3N0YWZmZWRfYmVkcywgY29sb3VyID0gaGIpICsKICBnZW9tX2xpbmUoKQpgYGAKYGBge3J9CiMgYWxsX3N0YWZmZWRfYmVkZGF5cwpiZWRzICU+JSAKICBmaWx0ZXIoc3BlY2lhbHR5X25hbWUgPT0gIkFsbCBBY3V0ZSIpICU+JSAKICBzZWxlY3QocXVhcnRlciwgaGIsIGFsbF9zdGFmZmVkX2JlZGRheXMsIHRvdGFsX29jY3VwaWVkX2JlZGRheXMsIAogICAgICAgICBhdmVyYWdlX2F2YWlsYWJsZV9zdGFmZmVkX2JlZHMsIGF2ZXJhZ2Vfb2NjdXBpZWRfYmVkcywgcGVyY2VudGFnZV9vY2N1cGFuY3kpICU+JSAKICBncm91cF9ieShxdWFydGVyLCBoYikgJT4lIAogIHN1bW1hcmlzZSh0b3RhbF9zdGFmZmVkX2JlZGRheXMgPSBzdW0oYWxsX3N0YWZmZWRfYmVkZGF5cykpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHRvdGFsX3N0YWZmZWRfYmVkZGF5cywgY29sb3VyID0gaGIpICsKICBnZW9tX2xpbmUoKQpgYGAKCmBgYHtyfQojIHRvdGFsX29jY3VwaWVkX2JlZGRheXMKYmVkcyAlPiUgCiAgZmlsdGVyKHNwZWNpYWx0eV9uYW1lID09ICJBbGwgQWN1dGUiKSAlPiUgCiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhbGxfc3RhZmZlZF9iZWRkYXlzLCB0b3RhbF9vY2N1cGllZF9iZWRkYXlzLCAKICAgICAgICAgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgCiAgZ3JvdXBfYnkocXVhcnRlciwgaGIpICU+JSAKICBzdW1tYXJpc2Uoc3VtX29jY3VwaWVkX2JlZGRheXMgPSBzdW0odG90YWxfb2NjdXBpZWRfYmVkZGF5cykpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSB5cShxdWFydGVyKSwgeSA9IHN1bV9vY2N1cGllZF9iZWRkYXlzLCBjb2xvdXIgPSBoYikgKwogIGdlb21fbGluZSgpCmBgYApgYGB7cn0KIyBhdmVyYWdlX29jY3VwaWVkX2JlZHMKYmVkcyAlPiUgCiAgZmlsdGVyKHNwZWNpYWx0eV9uYW1lID09ICJBbGwgQWN1dGUiKSAlPiUgCiAgc2VsZWN0KHF1YXJ0ZXIsIGhiLCBhbGxfc3RhZmZlZF9iZWRkYXlzLCB0b3RhbF9vY2N1cGllZF9iZWRkYXlzLCAKICAgICAgICAgYXZlcmFnZV9hdmFpbGFibGVfc3RhZmZlZF9iZWRzLCBhdmVyYWdlX29jY3VwaWVkX2JlZHMsIHBlcmNlbnRhZ2Vfb2NjdXBhbmN5KSAlPiUgCiAgZ3JvdXBfYnkocXVhcnRlciwgaGIpICU+JSAKICBzdW1tYXJpc2UodG90YWxfYXZlcmFnZV9vY2N1cGllZF9iZWRzID0gbWVhbihhdmVyYWdlX29jY3VwaWVkX2JlZHMpKSAlPiUgCiAgZ2dwbG90KCkgKwogIGFlcyh4ID0geXEocXVhcnRlciksIHkgPSB0b3RhbF9hdmVyYWdlX29jY3VwaWVkX2JlZHMsIGNvbG91ciA9IGhiKSArCiAgZ2VvbV9saW5lKCkKYGBgCgoKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKCgoKCgoKVGhlIG1pZ2h0eSBtYXAKCmNvbG91cnMgYXJlIGp1c3QgdG8gZXhlbXBsaWZ5IGhlYWx0aCBib2FyZCBkaXN0aW5jdGlvbgpwYWNrYWdlczogc2hpbnksIGxlYWZsZXQKCgoKYGBge3J9Cmhvc3BpdGFscyA8LSByZWFkX2NzdigiLi4vZGF0YS9tYXAvaG9zcGl0YWxfbG9jYXRpb25zX2NsZWFuLmNzdiIpCmBgYAoKCgpgYGB7cn0KcGFsIDwtIGNvbG9yRmFjdG9yKGMoIm5hdnkiLCAiYmx1ZSIsICJzdGVlbGJsdWUiLCAic2t5Ymx1ZSIsCiAgICAgICAgICAgICAgICAgICAgICJyZWQiLCJpbmRpYW5yZWQiLCAibWFyb29uIiwgImJyb3duIiwKICAgICAgICAgICAgICAgICAgICAgInNwcmluZ2dyZWVuIiwgInNwcmluZ2dyZWVuMiIsICJzcHJpbmdncmVlbjMiLCAic3ByaW5nZ3JlZW40IiwKICAgICAgICAgICAgICAgICAgICAgImdvbGQiLCAiZ29sZGVucm9kIiwgInllbGxvdyIsICJvcmFuZ2UiKSwKICAgICAgICAgICAgICAgICAgIGRvbWFpbiA9IHVuaXF1ZShob3NwaXRhbHMkSEIpKQoKbGVhZmxldChob3NwaXRhbHMpICU+JSAKICBhZGRUaWxlcygpICU+JSAKICBhZGRDaXJjbGVNYXJrZXJzKGxuZyA9IH4gbG9uZ2l0dWRlLAogICAgICAgICAgICAgbGF0ID0gfiBsYXRpdHVkZSwKICAgICAgICAgICAgIHdlaWdodCA9IDEsCiAgICAgICAgICAgICBwb3B1cCA9IH4gcGFzdGUoTG9jYXRpb24sIGJyKCksICJCb2FyZDoiLCBIQiksCiAgICAgICAgICAgICBjb2xvciA9IH5wYWwoSEIpCiAgKQpgYGAKCg==</div>
 
 
 
@@ -2023,7 +1837,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("thijmen_exploring_beds.Rmd");
+  window.initializeSourceEmbed("hospital_map.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>
