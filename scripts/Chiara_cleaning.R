@@ -64,7 +64,7 @@ ha_demo <- ha_demo %>%
 
 
 
-
+write_csv(ha_demo, "../PHS_penguin_team_project/team_notes/Chiara_notes/da_demo_clean")
 
 
 
