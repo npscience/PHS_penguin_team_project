@@ -137,6 +137,10 @@ age_colours <- c("Under 5" = "greenyellow",
                  "over 65" = "darkgreen"
                 )
 
+# thijmen's 7 age groups
+
+# thijmen's 6 simd levels
+
 # show summer v winter
 season_colours <- c("summer" = "goldenrod1",
                     "winter" = "steelblue1")

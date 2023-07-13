@@ -38,7 +38,7 @@ server <- function(input, output, session) {
       aes(x = quarter, y = percentage_occupancy, colour = hb) +
       geom_line() +
       geom_point() +
-      scale_colour_brewer(type = "qual", palette = "Set1") +
+      scale_colour_manual(values = scot_hb_colours) +
       labs(x = "\nYear quarter", y = "Percentage occupancy\n",
            title = "Percentage occupancy (hospital beds)",
            colour = "Health board") +
@@ -83,7 +83,8 @@ server <- function(input, output, session) {
       labs(title = "Number of A&E attendances per year, per season",
            subtitle = "line indicating average number of attendances per season per year",
            x = "\nYear", y = "Total attendances\n",
-           fill = "Season")
+           fill = "Season") +
+      scale_fill_manual(values = season_colours)
     
   })
   
