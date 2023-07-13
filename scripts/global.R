@@ -132,3 +132,15 @@ demo_attendances_season <- demo_attendances %>%
 locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
 
 #thijmen end
+
+
+#Chiara data
+
+ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
+join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
+
+
+
+
+
+
