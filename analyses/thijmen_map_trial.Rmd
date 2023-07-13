@@ -1,0 +1,43 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+# open libraries
+library(tidyverse)
+library(ggplot2)
+library(janitor)
+library(lubridate)
+library(leaflet)
+```
+
+
+```{r}
+# open datafiles
+waiting_times <- read.csv("../data/a_and_e/monthly_ae_activity_202305.csv")
+waiting_times <- clean_names(waiting_times)
+
+locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
+```
+
+
+```{r}
+#map trial
+waiting_times %>% 
+  rename("Location" = "treatment_location") %>% 
+  left_join(locations, by = "Location") %>% 
+  filter(hbt == "S08000015") %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillOpacity = 0.9,
+                   popup = ~ paste(department_type))
+```
+
+```{r}
+
+```
+
