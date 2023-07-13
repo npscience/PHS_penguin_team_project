@@ -61,6 +61,7 @@ waiting_times_1 %>%
   ggplot() +
   aes(x = ym(month), y = total_number_attendances_all) +
   geom_line()
+
 ```
 
 ```{r}
@@ -352,6 +353,37 @@ ggplot() +
             aes(
     x = year, 
     y = average_ofwaits_season_year))
+
+```
+
+```{r}
+locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
+head(locations)
+
+
+```
+
+```{r}
+head(waiting_times)
+```
+```{r}
+colnames(waiting_times)
+
+waiting_times %>% 
+  rename("Location" = "treatment_location") %>% 
+  left_join(locations, by = "Location") %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~colorNumeric('RdYlGn', mean_adm)
+                   (mean_adm),
+                   fillOpacity = 0.9))
+
+
+
+
 
 ```
 

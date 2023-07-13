@@ -98,7 +98,8 @@ demo_attendances_season <- demo_attendances %>%
     str_detect(season, "winter|summer"), TRUE, FALSE),
     .before = hbt) 
 
-
+##### Load in data for leaflet map
+locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
 
 
 ui <- fluidPage(
@@ -115,7 +116,7 @@ ui <- fluidPage(
   
   fluidRow(
     column(width = 6,
-#           leafletOutput("attendance_season_heatmap")
+           leafletOutput("attendance_season_heatmap")
     ),
     column(width = 6,
            plotOutput("plot_season")
@@ -207,17 +208,19 @@ server <- function(input, output, session) {
   })
   
   # Thijmen - output map leaflet plot
-#  output$attendance_season_heatmap <- renderLeaflet({
-#    hospital_location_occupancy %>% 
-#      filter(hb == input$covid_hb) %>% 
-#      leaflet() %>% 
-#      addTiles() %>% 
-#      addCircleMarkers(lng = ~ longitude,
-#                       lat = ~ latitude,
-#                       weight = 1,
-#                       popup = ~ paste(location_name, br(), "Board:", hb),
-#                       color = ~ percentage_occupancy
-#      )
+  output$attendance_season_heatmap <- renderLeaflet({
+    waiting_times %>% 
+      rename("Location" = "treatment_location") %>% 
+      left_join(locations, by = "Location") %>% 
+      filter(hbt == input$season_hb) %>% 
+      leaflet() %>% 
+      addProviderTiles(providers$Stamen.TonerLite) %>%
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 0,
+                       fillOpacity = 0.9,
+                       popup = ~ paste(department_type))
+  })
   
 }
   
