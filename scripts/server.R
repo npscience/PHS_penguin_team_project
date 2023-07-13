@@ -140,4 +140,65 @@ server <- function(input, output, session) {
   })
   #Thijmen end
   
+  
+  # Chiara plots start
+  output$admissions_heatmap <- renderLeaflet({
+    join_ha_map %>% 
+      leaflet() %>% 
+      addProviderTiles(providers$Stamen.TonerLite) %>%
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 0,
+                       fillColor = ~colorNumeric('RdYlGn', mean_adm)
+                       (mean_adm),
+                       fillOpacity = 0.9
+                       #popup = ~ paste( br(), "Board:", HB, br(), round(mean_diff, 0))
+      )
+  })
+  
+  
+  output$admissions_ts <- renderPlot({
+    ha_demo %>% 
+      filter(hb %in% c(input$hb, "S92000003")) %>% 
+      group_by(hb, month_ending_date) %>% 
+      summarise(mean_admissions = mean(number_admissions)) %>% 
+      ggplot() +
+      aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+      geom_line(show.legend = FALSE) +
+      labs(
+        x = "\ntime",
+        y = "average monthly hospital admissions\n"
+      )
+  })
+  
+  
+  
+  
+  output$admissions_plot <- renderPlot({
+    ha_demo %>% 
+      filter(hb %in% c(input$hb), age != "All ages") %>%
+      group_by(age, month_ending_date) %>% 
+      summarise(mean_admissions = mean(number_admissions)) %>% 
+      ggplot() +
+      aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
+      geom_line() +
+      labs(
+        x = "\ntime",
+        y = "average monthly hospital admissions\n"
+      )
+  })
+  
+  
+  
+  
+  
+  
+  
+  # Chiara plots end
+  
+  
+  
+  
+  
+  
 }

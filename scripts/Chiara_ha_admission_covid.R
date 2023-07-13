@@ -50,16 +50,16 @@ ui <- fluidPage(
   
  fluidRow(
     column(width = 4,
-           leafletOutput("map")
+           leafletOutput("admissions_heatmap")
   ),
   
   column(
     width = 4,
-    plotOutput("ha_admissions")
+    plotOutput("admissions_ts")
   ),
   
   column(width = 4,
-         plotOutput("age_ha_covid"))
+         plotOutput("admissions_plot"))
  
   
   ),
@@ -79,7 +79,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
-  output$map <- renderLeaflet({
+  output$admissions_heatmap <- renderLeaflet({
     join_ha_map %>% 
       leaflet() %>% 
       addProviderTiles(providers$Stamen.TonerLite) %>%
@@ -94,7 +94,7 @@ server <- function(input, output, session) {
   })
   
   
-  output$ha_admissions <- renderPlot({
+  output$admissions_ts <- renderPlot({
     ha_demo %>% 
       filter(hb %in% c(input$hb, "S92000003")) %>% 
       group_by(hb, month_ending_date) %>% 
@@ -111,7 +111,7 @@ server <- function(input, output, session) {
   
   
   
-  output$age_ha_covid <- renderPlot({
+  output$admissions_plot <- renderPlot({
     ha_demo %>% 
       filter(hb %in% c(input$hb), age != "All ages") %>%
       group_by(age, month_ending_date) %>% 
