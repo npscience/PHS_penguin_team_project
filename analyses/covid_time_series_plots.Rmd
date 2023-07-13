@@ -248,7 +248,7 @@ ha_demo %>%
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "S92000003"), age != "All ages") %>%
+  filter(hb %in% c("S08000015"), age != "All ages") %>%
   group_by(age, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
