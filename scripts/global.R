@@ -79,7 +79,7 @@ occupancy_heatmap_all <- hospital_location_occupancy %>%
   ) %>% 
   setView(-3.524194, 57.786499, zoom = 5.6)
 
-########### thijmen
+########### thijmen ----
 #### Create dataset including season terminology for summer/winter difference
 
 # Open datafile and clean names
@@ -146,13 +146,31 @@ locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
 #thijmen end
 
 
-#Chiara data
+#Chiara data ----
 
 ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
 join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
 
 
+# Ali ----
 
+delayed <- clean_names(read_csv("../data/cleaned_data/delayed.csv"))
+map_means <- read_csv("../data/cleaned_data/delayed_map_means.csv")
 
+# static map
 
+map_plot <- map_means %>% 
+  filter(HB != "SB0802",
+         HB != "SB0801") %>% 
+  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~colorNumeric('RdYlGn', -185:185)
+                   (-mean_diff),
+                   fillOpacity = 0.9,
+                   popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
+  )
 
