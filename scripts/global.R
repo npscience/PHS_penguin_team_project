@@ -48,7 +48,7 @@ occupancy_pal <- colorNumeric(
 
 ## static plot to show all of scotland
 occupancy_heatmap_all <- hospital_location_occupancy %>% 
-  leaflet(options = leafletOptions(zoomSnap = 0.05, zoomDelta = 0.05)) %>% 
+  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>% 
   addCircleMarkers(lng = ~ longitude,
                    lat = ~ latitude,
@@ -58,7 +58,7 @@ occupancy_heatmap_all <- hospital_location_occupancy %>%
                    popup = ~ paste(location_name, br(), "Board:", hb),
                    color = ~ occupancy_pal(percentage_occupancy)
   ) %>% 
-  setView(lng = -56.4907, lat = 4.2026, zoom = 0.05)
+  setView(-3.524194, 57.786499, zoom = 5.6)
 
 ## [old] colour palette for hospitals on map
 pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
