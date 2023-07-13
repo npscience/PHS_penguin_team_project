@@ -96,6 +96,8 @@ server <- function(input, output, session) {
       filter(year < 2020 & year > 2007) %>% 
       filter(hbt == input$hb) %>% 
       select(year, season, hbt, deprivation, number_of_attendances) %>% 
+      mutate(deprivation = as.character(deprivation)) %>%
+      replace_na(list(deprivation = "unknown")) %>% 
       group_by(year, season, hbt, deprivation) %>% 
       summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
       ggplot() +
