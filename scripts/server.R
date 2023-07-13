@@ -1,18 +1,27 @@
 # server -----
 server <- function(input, output, session) {
   
-  # output$occupancy_heatmap ----
+  # output$occupancy_heatmap_all ----
+  # static, shows all of scotland
+  output$occupancy_heatmap_all <- renderLeaflet({
+    occupancy_heatmap_all
+  })
   
+  
+  # output$occupancy_heatmap ----
+  # reactive to hb selector
   output$occupancy_heatmap <- renderLeaflet({
     hospital_location_occupancy %>% 
-      filter(hb == input$covid_hb) %>% 
+      filter(hb == input$hb) %>% 
       leaflet() %>% 
-      addTiles() %>% 
+      addProviderTiles(providers$Stamen.TonerLite) %>% 
       addCircleMarkers(lng = ~ longitude,
                        lat = ~ latitude,
                        weight = 1,
+                       radius = 5,
+                       fillOpacity = 1,
                        popup = ~ paste(location_name, br(), "Board:", hb),
-                       color = ~ percentage_occupancy
+                       color = ~ occupancy_pal(percentage_occupancy)
       )
   })
   
@@ -24,12 +33,12 @@ server <- function(input, output, session) {
   output$occupancy_ts <- renderPlot({
     occupancy_per_hb %>% 
       # filter for hb, always show "all of scotland" = S92000003
-      filter(hb %in% c("S92000003", input$covid_hb)) %>% 
+      filter(hb %in% c("S92000003", input$hb)) %>% 
       ggplot() +
       aes(x = quarter, y = percentage_occupancy, colour = hb) +
       geom_line() +
       geom_point() +
-      scale_colour_brewer(type = "qual", palette = "Set1") +
+      scale_colour_manual(values = scot_hb_colours) +
       labs(x = "\nYear quarter", y = "Percentage occupancy\n",
            title = "Percentage occupancy (hospital beds)",
            colour = "Health board") +
@@ -44,9 +53,8 @@ server <- function(input, output, session) {
       )
   })
   
-<<<<<<< Updated upstream
-=======
-  # Thijmen start
+
+  # Thijmen start ----
   # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
@@ -75,7 +83,8 @@ server <- function(input, output, session) {
       labs(title = "Number of A&E attendances per year, per season",
            subtitle = "line indicating average number of attendances per season per year",
            x = "\nYear", y = "Total attendances\n",
-           fill = "Season")
+           fill = "Season") +
+      scale_fill_manual(values = season_colours)
     
   })
   
@@ -133,5 +142,92 @@ server <- function(input, output, session) {
   })
   #Thijmen end
   
->>>>>>> Stashed changes
+  
+# Chiara plots start
+  
+  
+  
+  
+
+  output$admissions_heatmap <- renderLeaflet({
+    join_ha_map %>% 
+      leaflet() %>% 
+      addProviderTiles(providers$Stamen.TonerLite) %>%
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 0,
+                       fillColor = ~colorNumeric('RdYlGn', mean_adm)
+                       (mean_adm),
+                       fillOpacity = 0.9
+                       #popup = ~ paste( br(), "Board:", HB, br(), round(mean_diff, 0))
+      )
+  })
+  
+  
+  output$admissions_ts <- renderPlot({
+    ha_demo %>% 
+      filter(hb %in% c(input$hb, "S92000003")) %>% 
+      group_by(hb, month_ending_date) %>% 
+      summarise(mean_admissions = mean(number_admissions)) %>% 
+      ggplot() +
+      aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
+      geom_line(show.legend = FALSE) +
+      labs(
+        x = "\ntime",
+        y = "average monthly hospital admissions\n"
+      )
+  })
+  
+  
+  
+  
+  output$admissions_plot <- renderPlot({
+    ha_demo %>% 
+      filter(hb %in% c(input$hb), age != "All ages") %>%
+      group_by(age, month_ending_date) %>% 
+      summarise(mean_admissions = mean(number_admissions)) %>% 
+      ggplot() +
+      aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
+      geom_line() +
+      labs(
+        x = "\ntime",
+        y = "average monthly hospital admissions\n"
+      )
+  })
+  
+  
+# Chiara plots end
+  
+  
+  
+  
+  
+  
+
+
+  # Ali start ----
+  
+  output$delays_age <- renderPlot({
+    delayed %>%
+      filter(hbt == input$hb,
+             reason_for_delay == "All Delay Reasons") %>% 
+      ggplot() +
+      aes(x = month_of_delay,
+          y = average_daily_number_of_delayed_beds,
+          group = age_group, colour = age_group) +
+      geom_line() +
+      geom_point() +
+      theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20))
+  })
+  
+  output$delays_map <- renderLeaflet({
+    map_plot
+  })
 }

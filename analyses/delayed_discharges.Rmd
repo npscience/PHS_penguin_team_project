@@ -49,6 +49,11 @@ delayed_no_reason <- delayed_no_reason %>%
 ```
 
 
+```{r}
+unique(delayed$hbt)
+```
+
+
 
 #### Inspecting the difference over health boards (all ages)
 
@@ -120,8 +125,8 @@ prop_change <- delayed_no_reason %>%
 
 ```{r}
 prop_change %>% 
-  filter(age_group == "75plus",
-         hbt == "S08000020") %>% 
+  filter(age_group == "18-74",
+         hbt == "S08000015") %>% 
   ggplot() +
   aes(x = month_of_delay, y = prop) +
   geom_line()
@@ -138,7 +143,7 @@ prop_change %>%
 delayed_no_reason %>%
   filter(hbt == "S08000015",
          age_group != "18plus") %>% 
-    ggplot() +
+  ggplot() +
   aes(x = month_of_delay,
       y = average_daily_number_of_delayed_beds,
       group = age_group, colour = age_group) +
@@ -195,3 +200,77 @@ t.test(test_before$number_of_delayed_bed_days,
        conf.level = 0.95)
 ```
 
+
+
+
+
+mean before and after covid
+
+```{r}
+means_before <- delayed %>% 
+  filter(age_group == "18plus",
+         month_of_delay < "2020-01-01",
+         reason_for_delay == "All Delay Reasons"
+  ) %>% 
+  summarise(mean = mean(average_daily_number_of_delayed_beds), .by = hbt)
+```
+
+
+```{r}
+means_after <- delayed %>% 
+  filter(age_group == "18plus",
+         month_of_delay >= "2022-01-01",
+         reason_for_delay == "All Delay Reasons") %>% 
+  summarise(mean = mean(average_daily_number_of_delayed_beds), .by = hbt)
+```
+
+
+```{r}
+mean_diff <- inner_join(means_before, means_after, by = "hbt") %>% 
+  mutate(mean_diff = mean.y - mean.x, HB = hbt)
+```
+
+
+
+```{r}
+map <- read_csv("../data/cleaned_data/hospital_locations_clean.csv")
+```
+
+```{r}
+map_means <- left_join(map, mean_diff, by = "HB")
+```
+
+
+
+```{r}
+map_means %>% 
+  filter(HB != "SB0802",
+         HB != "SB0801") %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~ ifelse(mean_diff > 0, "red", "green"),
+                   fillOpacity = ~ abs(mean_diff)/300,
+                   popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
+  )
+```
+
+
+
+```{r}
+map_means %>% 
+  filter(HB != "SB0802",
+         HB != "SB0801") %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~colorNumeric('RdYlGn', -185:185)
+                   (-mean_diff),
+                   fillOpacity = 0.9,
+                   popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
+  )
+```

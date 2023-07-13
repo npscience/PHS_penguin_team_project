@@ -1,0 +1,213 @@
+---
+title: "theming the plots"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+library(lubridate)
+```
+
+# chiara age plot
+
+```{r}
+ha_demo <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+  clean_names()
+
+ha_demo <- ha_demo %>% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %>% 
+  mutate(week_ending = ymd(week_ending)) 
+
+ha_demo <- ha_demo %>% 
+  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
+
+ha_demo <- ha_demo %>% 
+  mutate(age = case_when(
+    age_group == "Under 5"~ "Under 5",
+    age_group %in% c("15 - 44", "45 - 64")~"5 - 64",
+    age_group %in% c("65 - 74", "75 - 84", "85 and over")~"over 65",
+    age_group == "5 - 14"~ "5 - 64",
+    age_group == "All ages"~"All ages" 
+  ), 
+  .after = age_group)
+```
+
+# naomi occupancy ts by hb
+
+```{r}
+beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+  clean_names() %>% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+
+occupancy_per_hb <- beds %>% 
+  group_by(hb, quarter) %>% 
+  summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %>% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays))
+```
+
+
+# thijmen seasonal bar plot
+
+```{r}
+waiting_times <- read.csv("../data/a_and_e/monthly_ae_activity_202305.csv") %>% 
+  clean_names()
+
+# lets first create a barplot comparing summer/winter per year for attendances
+
+#1. create variable for season
+season_name <- setNames(rep(c("winter", "spring", "summer", "autumn"), each = 3),
+                        month.name)
+
+# 2. create table specifying season
+attendances_ae <- waiting_times %>% 
+  select(month, hbt, number_of_attendances_all) %>% 
+  #let's add a column indicating season
+  mutate(month_label = month(
+                      ym(month), label = TRUE, abbr = FALSE), 
+         .before = hbt) %>% 
+  mutate(season = season_name[month_label], .before = hbt) %>% 
+  # create a  year column, 
+  mutate(year = year(ym(month)), .before = hbt) %>% 
+  # create a "fake" year for december, to make sure that december of previous year falls in next year for correct grouping
+  mutate(year = if_else(month_label == "December", year+1, year)) %>% 
+  mutate(season = if_else(month_label == "December", "winter", season)) %>%  
+  mutate(season = if_else(month_label == "March", "spring", season)) %>% 
+  mutate(season = if_else(month_label == "June", "summer", season)) %>% 
+  mutate(season = if_else(month_label == "September", "autumn", season)) %>% 
+  # create a column to later filter right season!
+  mutate(right_season = if_else(
+                        str_detect(season, "winter|summer"), TRUE, FALSE),
+         .before = hbt) 
+
+
+# 3.
+#lets create a table with a yearly average per hb per season, for each year:
+avg_yearperseason_hb <- attendances_ae %>% 
+  select(year, hbt, number_of_attendances_all) %>% 
+  group_by(year, hbt) %>% 
+  summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
+  filter(hbt == "S08000028")
+
+# 4. lets create a table as input for the ggplot
+input_table_ggplot_attendances <- attendances_ae %>% 
+  filter(right_season == TRUE) %>% 
+  group_by(year, season, hbt) %>% 
+  summarise(total_attendances = sum(number_of_attendances_all)) %>%
+  filter(year < 2020 & year > 2007) %>% 
+  filter(hbt == "S08000028")
+```
+
+## thijmen simd bars
+
+
+# create theme
+
+## theme function
+
+```{r}
+theme_penguin <- function (){
+  
+  theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20)
+      )
+  
+}
+
+```
+
+## colours
+
+```{r}
+# show all of scotland v one hb:
+scot_hb_colours <- c("S92000003" = "blue4",
+                     "S08000015" = "darkviolet")
+# set first hb (scotland) to "blue4" and second hb (selected) to "darkviolet"
+  
+# show 3 different ages
+age_colours <- c("Under 5" = "greenyellow",
+                 "5 - 64" = "springgreen",
+                 "over 65" = "darkgreen"
+                )
+
+# thijmen's 7 age groups
+
+# thijmen's 6 simd levels
+
+# show summer v winter
+season_colours <- c("summer" = "goldenrod1",
+                    "winter" = "steelblue1")
+
+
+
+pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
+                     "red","indianred", "maroon", "brown",
+                     "springgreen", "springgreen2", "springgreen3", "springgreen4",
+                     "gold", "goldenrod", "yellow", "orange"),
+                   domain = unique(hospital_location_occupancy$hb))
+```
+
+
+## try all the plots
+
+```{r}
+
+# chiara age groups line ---
+ha_demo %>% 
+      filter(hb %in% c("S08000015"), age != "All ages") %>%
+      group_by(age, month_ending_date) %>% 
+      summarise(mean_admissions = mean(number_admissions)) %>% 
+      ggplot() +
+      aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
+      geom_line() +
+      labs(
+        x = "\ntime",
+        y = "average monthly hospital admissions\n") +
+      scale_colour_manual(values = age_colours) +
+      theme_penguin()
+
+
+# naomi occupancy ts ----
+occupancy_per_hb %>% 
+      filter(hb %in% c("S92000003", "S08000015")) %>% 
+      ggplot() +
+      aes(x = quarter, y = percentage_occupancy, colour = hb) +
+      geom_line() +
+      geom_point() +
+      scale_colour_manual(values = scot_hb_colours) +
+      labs(x = "\nYear quarter", y = "Percentage occupancy\n",
+           title = "Percentage occupancy (hospital beds)",
+           colour = "Health board") +
+  theme_penguin()
+
+
+# thijmen summer v winter bars ----
+
+# 5. lets create the ggplot combining both datasets
+ggplot() +
+  geom_col(data = input_table_ggplot_attendances, 
+           aes(
+    x = year, 
+    y = total_attendances, 
+    fill = season),
+           position = "dodge", col = "white") +
+  geom_line(data = avg_yearperseason_hb, 
+            aes(
+    x = year, 
+    y = average_season_year)) +
+  scale_fill_manual(values = season_colours) +
+  theme_penguin()
+```
+
+
+
+
+
+
