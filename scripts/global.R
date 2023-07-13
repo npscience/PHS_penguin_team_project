@@ -84,7 +84,7 @@ admissions_heatmap <- join_ha_map %>%
                    lat = ~ latitude,
                    weight = 0,
                    radius = 5,
-                   color = ~colorNumeric('viridis', mean_adm)
+                   fillColor = ~colorNumeric('RdYlGn', mean_adm)
                    (mean_adm),
                    fillOpacity = 0.9,
                    popup = ~ paste("Board:", hb, br(), round(mean_adm, 0))
@@ -101,9 +101,9 @@ occupancy_heatmap_all <- hospital_location_occupancy %>%
                    weight = 1,
                    radius = 5,
                    fillOpacity = 0.9,
-                   popup = ~ paste(location_name, br(), "Board:", hb),
-                   color = ~colorNumeric('viridis', percentage_occupancy)
-                   (percentage_occupancy)
+                   fillColor = ~colorNumeric('RdYlGn', percentage_occupancy)
+                   (percentage_occupancy),
+                   popup = ~ paste(location_name, br(), "Board:", hb)
                    #color = ~ occupancy_pal(percentage_occupancy)
   ) %>% 
   setView(-3.524194, 57.786499, zoom = 5.6)
@@ -119,13 +119,11 @@ map_plot <- map_means %>%
                    lat = ~ latitude,
                    weight = 0,
                    radius = 5,
-                   #fillColor = ~colorNumeric('RdYlGn', -185:185)
-                  # (-mean_diff),
-                  
+                   fillColor = ~colorNumeric('RdYlGn',  -185:185)
+                   (-mean_diff),
                    fillOpacity = 0.9,
                    popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
-  ) %>% 
-  setView(-3.524194, 57.786499, zoom = 5.6)
+  )
 
 ########### thijmen ----
 #### Create dataset including season terminology for summer/winter difference
