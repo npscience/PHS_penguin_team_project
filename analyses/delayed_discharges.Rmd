@@ -111,7 +111,8 @@ delayed_no_reason %>%
       group = age_group, colour = age_group) +
   geom_line() +
   labs(title = "Average Daily Number of Delayed Beds",
-           x = "\nYear", y = "average daily number of delayed beds\n")
+           x = "\nYear", y = "average daily number of delayed beds\n",
+       colour = "age group")
 ```
 
 
