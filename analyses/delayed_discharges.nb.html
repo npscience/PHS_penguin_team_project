@@ -5624,6 +5624,866 @@ function asArray(value) {
 
 },{}]},{},[13]);
 </script>
+<script>(function (root, factory) {
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define(['leaflet'], factory);
+	} else if (typeof modules === 'object' && module.exports) {
+		// define a Common JS module that relies on 'leaflet'
+		module.exports = factory(require('leaflet'));
+	} else {
+		// Assume Leaflet is loaded into global object L already
+		factory(L);
+	}
+}(this, function (L) {
+	'use strict';
+
+	L.TileLayer.Provider = L.TileLayer.extend({
+		initialize: function (arg, options) {
+			var providers = L.TileLayer.Provider.providers;
+
+			var parts = arg.split('.');
+
+			var providerName = parts[0];
+			var variantName = parts[1];
+
+			if (!providers[providerName]) {
+				throw 'No such provider (' + providerName + ')';
+			}
+
+			var provider = {
+				url: providers[providerName].url,
+				options: providers[providerName].options
+			};
+
+			// overwrite values in provider from variant.
+			if (variantName && 'variants' in providers[providerName]) {
+				if (!(variantName in providers[providerName].variants)) {
+					throw 'No such variant of ' + providerName + ' (' + variantName + ')';
+				}
+				var variant = providers[providerName].variants[variantName];
+				var variantOptions;
+				if (typeof variant === 'string') {
+					variantOptions = {
+						variant: variant
+					};
+				} else {
+					variantOptions = variant.options;
+				}
+				provider = {
+					url: variant.url || provider.url,
+					options: L.Util.extend({}, provider.options, variantOptions)
+				};
+			}
+
+			// replace attribution placeholders with their values from toplevel provider attribution,
+			// recursively
+			var attributionReplacer = function (attr) {
+				if (attr.indexOf('{attribution.') === -1) {
+					return attr;
+				}
+				return attr.replace(/\{attribution.(\w*)\}/g,
+					function (match, attributionName) {
+						return attributionReplacer(providers[attributionName].options.attribution);
+					}
+				);
+			};
+			provider.options.attribution = attributionReplacer(provider.options.attribution);
+
+			// Compute final options combining provider options with any user overrides
+			var layerOpts = L.Util.extend({}, provider.options, options);
+			L.TileLayer.prototype.initialize.call(this, provider.url, layerOpts);
+		}
+	});
+
+	/**
+	 * Definition of providers.
+	 * see http://leafletjs.com/reference.html#tilelayer for options in the options map.
+	 */
+
+	L.TileLayer.Provider.providers = {
+		OpenStreetMap: {
+			url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 19,
+				attribution:
+					'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			},
+			variants: {
+				Mapnik: {},
+				DE: {
+					url: '//{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png',
+					options: {
+						maxZoom: 18
+					}
+				},
+				CH: {
+					url: '//tile.osm.ch/switzerland/{z}/{x}/{y}.png',
+					options: {
+						maxZoom: 18,
+						bounds: [[45, 5], [48, 11]]
+					}
+				},
+				France: {
+					url: '//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png',
+					options: {
+						maxZoom: 20,
+						attribution: '&copy; Openstreetmap France | {attribution.OpenStreetMap}'
+					}
+				},
+				HOT: {
+					url: '//{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
+					options: {
+						attribution:
+							'{attribution.OpenStreetMap}, ' +
+							'Tiles style by <a href="https://www.hotosm.org/" target="_blank">Humanitarian OpenStreetMap Team</a> ' +
+							'hosted by <a href="https://openstreetmap.fr/" target="_blank">OpenStreetMap France</a>'
+					}
+				},
+				BZH: {
+					url: '//tile.openstreetmap.bzh/br/{z}/{x}/{y}.png',
+					options: {
+						attribution: '{attribution.OpenStreetMap}, Tiles courtesy of <a href="http://www.openstreetmap.bzh/" target="_blank">Breton OpenStreetMap Team</a>',
+						bounds: [[46.2, -5.5], [50, 0.7]]
+					}
+				}
+			}
+		},
+		OpenSeaMap: {
+			url: '//tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+			options: {
+				attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
+			}
+		},
+		OpenPtMap: {
+			url: 'http://openptmap.org/tiles/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 17,
+				attribution: 'Map data: &copy; <a href="http://www.openptmap.org">OpenPtMap</a> contributors'
+			}
+		},
+		OpenTopoMap: {
+			url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 17,
+				attribution: 'Map data: {attribution.OpenStreetMap}, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+			}
+		},
+		OpenRailwayMap: {
+			url: 'https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 19,
+				attribution: 'Map data: {attribution.OpenStreetMap} | Map style: &copy; <a href="https://www.OpenRailwayMap.org">OpenRailwayMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+			}
+		},
+		OpenFireMap: {
+			url: 'http://openfiremap.org/hytiles/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 19,
+				attribution: 'Map data: {attribution.OpenStreetMap} | Map style: &copy; <a href="http://www.openfiremap.org">OpenFireMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+			}
+		},
+		SafeCast: {
+			url: '//s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 16,
+				attribution: 'Map data: {attribution.OpenStreetMap} | Map style: &copy; <a href="https://blog.safecast.org/about/">SafeCast</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+			}
+		},
+		Thunderforest: {
+			url: 'https://{s}.tile.thunderforest.com/{variant}/{z}/{x}/{y}.png?apikey={apikey}',
+			options: {
+				attribution:
+					'&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, {attribution.OpenStreetMap}',
+				variant: 'cycle',
+				apikey: '<insert your api key here>',
+				maxZoom: 22
+			},
+			variants: {
+				OpenCycleMap: 'cycle',
+				Transport: {
+					options: {
+						variant: 'transport'
+					}
+				},
+				TransportDark: {
+					options: {
+						variant: 'transport-dark'
+					}
+				},
+				SpinalMap: {
+					options: {
+						variant: 'spinal-map'
+					}
+				},
+				Landscape: 'landscape',
+				Outdoors: 'outdoors',
+				Pioneer: 'pioneer',
+				MobileAtlas: 'mobile-atlas',
+				Neighbourhood: 'neighbourhood'
+			}
+		},
+		OpenMapSurfer: {
+			url: 'https://maps.heigit.org/openmapsurfer/tiles/{variant}/webmercator/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 19,
+				variant: 'roads',
+				attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> | Map data '
+			},
+			variants: {
+				Roads: {
+					options: {
+						variant: 'roads',
+						attribution: '{attribution.OpenMapSurfer}{attribution.OpenStreetMap}'
+					}
+				},
+				Hybrid: {
+					options: {
+						variant: 'hybrid',
+						attribution: '{attribution.OpenMapSurfer}{attribution.OpenStreetMap}'
+					}
+				},
+				AdminBounds: {
+					options: {
+						variant: 'adminb',
+						maxZoom: 18,
+						attribution: '{attribution.OpenMapSurfer}{attribution.OpenStreetMap}'
+					}
+				},
+				ContourLines: {
+					options: {
+						variant: 'asterc',
+						maxZoom: 18,
+						minZoom: 13,
+						attribution: '{attribution.OpenMapSurfer} <a href="https://lpdaac.usgs.gov/products/aster_policies">ASTER GDEM</a>'
+					}
+				},
+				Hillshade: {
+					options: {
+						variant: 'asterh',
+						maxZoom: 18,
+						attribution: '{attribution.OpenMapSurfer} <a href="https://lpdaac.usgs.gov/products/aster_policies">ASTER GDEM</a>, <a href="http://srtm.csi.cgiar.org/">SRTM</a>'
+					}
+				},
+				ElementsAtRisk: {
+					options: {
+						variant: 'elements_at_risk',
+						attribution: '{attribution.OpenMapSurfer}{attribution.OpenStreetMap}'
+					}
+				}
+			}
+		},
+		Hydda: {
+			url: '//{s}.tile.openstreetmap.se/hydda/{variant}/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 18,
+				variant: 'full',
+				attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data {attribution.OpenStreetMap}'
+			},
+			variants: {
+				Full: 'full',
+				Base: 'base',
+				RoadsAndLabels: 'roads_and_labels'
+			}
+		},
+		MapBox: {
+			url: 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}{r}.png?access_token={accessToken}',
+			options: {
+				attribution:
+					'<a href="https://www.mapbox.com/about/maps/" target="_blank">&copy; Mapbox</a> ' +
+					'{attribution.OpenStreetMap} ' +
+					'<a href="https://www.mapbox.com/map-feedback/" target="_blank">Improve this map</a>',
+				subdomains: 'abcd',
+				id: 'mapbox.streets',
+				accessToken: '<insert your access token here>',
+			}
+		},
+		Stamen: {
+			url: '//stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}{r}.{ext}',
+			options: {
+				attribution:
+					'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
+					'<a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; ' +
+					'Map data {attribution.OpenStreetMap}',
+				subdomains: 'abcd',
+				minZoom: 0,
+				maxZoom: 20,
+				variant: 'toner',
+				ext: 'png'
+			},
+			variants: {
+				Toner: 'toner',
+				TonerBackground: 'toner-background',
+				TonerHybrid: 'toner-hybrid',
+				TonerLines: 'toner-lines',
+				TonerLabels: 'toner-labels',
+				TonerLite: 'toner-lite',
+				Watercolor: {
+					url: '//stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}.{ext}',
+					options: {
+						variant: 'watercolor',
+						ext: 'jpg',
+						minZoom: 1,
+						maxZoom: 16
+					}
+				},
+				Terrain: {
+					options: {
+						variant: 'terrain',
+						minZoom: 0,
+						maxZoom: 18
+					}
+				},
+				TerrainBackground: {
+					options: {
+						variant: 'terrain-background',
+						minZoom: 0,
+						maxZoom: 18
+					}
+				},
+				TerrainLabels: {
+					options: {
+						variant: 'terrain-labels',
+						minZoom: 0,
+						maxZoom: 18
+					}
+				},
+				TopOSMRelief: {
+					url: '//stamen-tiles-{s}.a.ssl.fastly.net/{variant}/{z}/{x}/{y}.{ext}',
+					options: {
+						variant: 'toposm-color-relief',
+						ext: 'jpg',
+						bounds: [[22, -132], [51, -56]]
+					}
+				},
+				TopOSMFeatures: {
+					options: {
+						variant: 'toposm-features',
+						bounds: [[22, -132], [51, -56]],
+						opacity: 0.9
+					}
+				}
+			}
+		},
+		TomTom: {
+			url: 'https://{s}.api.tomtom.com/map/1/tile/{variant}/{style}/{z}/{x}/{y}.{ext}?key={apikey}',
+			options: {
+				variant: 'basic',
+				maxZoom: 22,
+				attribution:
+					'<a href="https://tomtom.com" target="_blank">&copy;  1992 - ' + new Date().getFullYear() + ' TomTom.</a> ',
+				subdomains: 'abcd',
+				style: 'main',
+				ext: 'png',
+				apikey: '<insert your API key here>',
+			},
+			variants: {
+				Basic: 'basic',
+				Hybrid: 'hybrid',
+				Labels: 'labels'
+			}
+		},
+		Esri: {
+			url: '//server.arcgisonline.com/ArcGIS/rest/services/{variant}/MapServer/tile/{z}/{y}/{x}',
+			options: {
+				variant: 'World_Street_Map',
+				attribution: 'Tiles &copy; Esri'
+			},
+			variants: {
+				WorldStreetMap: {
+					options: {
+						attribution:
+							'{attribution.Esri} &mdash; ' +
+							'Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+					}
+				},
+				DeLorme: {
+					options: {
+						variant: 'Specialty/DeLorme_World_Base_Map',
+						minZoom: 1,
+						maxZoom: 11,
+						attribution: '{attribution.Esri} &mdash; Copyright: &copy;2012 DeLorme'
+					}
+				},
+				WorldTopoMap: {
+					options: {
+						variant: 'World_Topo_Map',
+						attribution:
+							'{attribution.Esri} &mdash; ' +
+							'Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+					}
+				},
+				WorldImagery: {
+					options: {
+						variant: 'World_Imagery',
+						attribution:
+							'{attribution.Esri} &mdash; ' +
+							'Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+					}
+				},
+				WorldTerrain: {
+					options: {
+						variant: 'World_Terrain_Base',
+						maxZoom: 13,
+						attribution:
+							'{attribution.Esri} &mdash; ' +
+							'Source: USGS, Esri, TANA, DeLorme, and NPS'
+					}
+				},
+				WorldShadedRelief: {
+					options: {
+						variant: 'World_Shaded_Relief',
+						maxZoom: 13,
+						attribution: '{attribution.Esri} &mdash; Source: Esri'
+					}
+				},
+				WorldPhysical: {
+					options: {
+						variant: 'World_Physical_Map',
+						maxZoom: 8,
+						attribution: '{attribution.Esri} &mdash; Source: US National Park Service'
+					}
+				},
+				OceanBasemap: {
+					options: {
+						variant: 'Ocean_Basemap',
+						maxZoom: 13,
+						attribution: '{attribution.Esri} &mdash; Sources: GEBCO, NOAA, CHS, OSU, UNH, CSUMB, National Geographic, DeLorme, NAVTEQ, and Esri'
+					}
+				},
+				NatGeoWorldMap: {
+					options: {
+						variant: 'NatGeo_World_Map',
+						maxZoom: 16,
+						attribution: '{attribution.Esri} &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC'
+					}
+				},
+				WorldGrayCanvas: {
+					options: {
+						variant: 'Canvas/World_Light_Gray_Base',
+						maxZoom: 16,
+						attribution: '{attribution.Esri} &mdash; Esri, DeLorme, NAVTEQ'
+					}
+				}
+			}
+		},
+		OpenWeatherMap: {
+			url: 'http://{s}.tile.openweathermap.org/map/{variant}/{z}/{x}/{y}.png?appid={apiKey}',
+			options: {
+				maxZoom: 19,
+				attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+				apiKey:'<insert your api key here>',
+				opacity: 0.5
+			},
+			variants: {
+				Clouds: 'clouds',
+				CloudsClassic: 'clouds_cls',
+				Precipitation: 'precipitation',
+				PrecipitationClassic: 'precipitation_cls',
+				Rain: 'rain',
+				RainClassic: 'rain_cls',
+				Pressure: 'pressure',
+				PressureContour: 'pressure_cntr',
+				Wind: 'wind',
+				Temperature: 'temp',
+				Snow: 'snow'
+			}
+		},
+		HERE: {
+			/*
+			 * HERE maps, formerly Nokia maps.
+			 * These basemaps are free, but you need an API key. Please sign up at
+			 * https://developer.here.com/plans
+			 */
+			url:
+				'https://{s}.{base}.maps.api.here.com/maptile/2.1/' +
+				'{type}/{mapID}/{variant}/{z}/{x}/{y}/{size}/{format}?' +
+				'app_id={app_id}&app_code={app_code}&lg={language}',
+			options: {
+				attribution:
+					'Map &copy; 1987-' + new Date().getFullYear() + ' <a href="http://developer.here.com">HERE</a>',
+				subdomains: '1234',
+				mapID: 'newest',
+				'app_id': '<insert your app_id here>',
+				'app_code': '<insert your app_code here>',
+				base: 'base',
+				variant: 'normal.day',
+				maxZoom: 20,
+				type: 'maptile',
+				language: 'eng',
+				format: 'png8',
+				size: '256'
+			},
+			variants: {
+				normalDay: 'normal.day',
+				normalDayCustom: 'normal.day.custom',
+				normalDayGrey: 'normal.day.grey',
+				normalDayMobile: 'normal.day.mobile',
+				normalDayGreyMobile: 'normal.day.grey.mobile',
+				normalDayTransit: 'normal.day.transit',
+				normalDayTransitMobile: 'normal.day.transit.mobile',
+				normalDayTraffic: {
+					options: {
+						variant: 'normal.traffic.day',
+						base: 'traffic',
+						type: 'traffictile'
+					}
+				},
+				normalNight: 'normal.night',
+				normalNightMobile: 'normal.night.mobile',
+				normalNightGrey: 'normal.night.grey',
+				normalNightGreyMobile: 'normal.night.grey.mobile',
+				normalNightTransit: 'normal.night.transit',
+				normalNightTransitMobile: 'normal.night.transit.mobile',
+				reducedDay: 'reduced.day',
+				reducedNight: 'reduced.night',
+				basicMap: {
+					options: {
+						type: 'basetile'
+					}
+				},
+				mapLabels: {
+					options: {
+						type: 'labeltile',
+						format: 'png'
+					}
+				},
+				trafficFlow: {
+					options: {
+						base: 'traffic',
+						type: 'flowtile'
+					}
+				},
+				carnavDayGrey: 'carnav.day.grey',
+				hybridDay: {
+					options: {
+						base: 'aerial',
+						variant: 'hybrid.day'
+					}
+				},
+				hybridDayMobile: {
+					options: {
+						base: 'aerial',
+						variant: 'hybrid.day.mobile'
+					}
+				},
+				hybridDayTransit: {
+					options: {
+						base: 'aerial',
+						variant: 'hybrid.day.transit'
+					}
+				},
+				hybridDayGrey: {
+					options: {
+						base: 'aerial',
+						variant: 'hybrid.grey.day'
+					}
+				},
+				hybridDayTraffic: {
+					options: {
+						variant: 'hybrid.traffic.day',
+						base: 'traffic',
+						type: 'traffictile'
+					}
+				},
+				pedestrianDay: 'pedestrian.day',
+				pedestrianNight: 'pedestrian.night',
+				satelliteDay: {
+					options: {
+						base: 'aerial',
+						variant: 'satellite.day'
+					}
+				},
+				terrainDay: {
+					options: {
+						base: 'aerial',
+						variant: 'terrain.day'
+					}
+				},
+				terrainDayMobile: {
+					options: {
+						base: 'aerial',
+						variant: 'terrain.day.mobile'
+					}
+				}
+			}
+		},
+		FreeMapSK: {
+			url: 'http://t{s}.freemap.sk/T/{z}/{x}/{y}.jpeg',
+			options: {
+				minZoom: 8,
+				maxZoom: 16,
+				subdomains: '1234',
+				bounds: [[47.204642, 15.996093], [49.830896, 22.576904]],
+				attribution:
+					'{attribution.OpenStreetMap}, vizualization CC-By-SA 2.0 <a href="http://freemap.sk">Freemap.sk</a>'
+			}
+		},
+		MtbMap: {
+			url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
+			options: {
+				attribution:
+					'{attribution.OpenStreetMap} &amp; USGS'
+			}
+		},
+		CartoDB: {
+			url: 'https://{s}.basemaps.cartocdn.com/{variant}/{z}/{x}/{y}{r}.png',
+			options: {
+				attribution: '{attribution.OpenStreetMap} &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				subdomains: 'abcd',
+				maxZoom: 19,
+				variant: 'light_all'
+			},
+			variants: {
+				Positron: 'light_all',
+				PositronNoLabels: 'light_nolabels',
+				PositronOnlyLabels: 'light_only_labels',
+				DarkMatter: 'dark_all',
+				DarkMatterNoLabels: 'dark_nolabels',
+				DarkMatterOnlyLabels: 'dark_only_labels',
+				Voyager: 'rastertiles/voyager',
+				VoyagerNoLabels: 'rastertiles/voyager_nolabels',
+				VoyagerOnlyLabels: 'rastertiles/voyager_only_labels',
+				VoyagerLabelsUnder: 'rastertiles/voyager_labels_under'
+			}
+		},
+		HikeBike: {
+			url: 'https://tiles.wmflabs.org/{variant}/{z}/{x}/{y}.png',
+			options: {
+				maxZoom: 19,
+				attribution: '{attribution.OpenStreetMap}',
+				variant: 'hikebike'
+			},
+			variants: {
+				HikeBike: {},
+				HillShading: {
+					options: {
+						maxZoom: 15,
+						variant: 'hillshading'
+					}
+				}
+			}
+		},
+		BasemapAT: {
+			url: '//maps{s}.wien.gv.at/basemap/{variant}/normal/google3857/{z}/{y}/{x}.{format}',
+			options: {
+				maxZoom: 19,
+				attribution: 'Datenquelle: <a href="https://www.basemap.at">basemap.at</a>',
+				subdomains: ['', '1', '2', '3', '4'],
+				format: 'png',
+				bounds: [[46.358770, 8.782379], [49.037872, 17.189532]],
+				variant: 'geolandbasemap'
+			},
+			variants: {
+				basemap: {
+					options: {
+						maxZoom: 20, // currently only in Vienna
+						variant: 'geolandbasemap'
+					}
+				},
+				grau: 'bmapgrau',
+				overlay: 'bmapoverlay',
+				highdpi: {
+					options: {
+						variant: 'bmaphidpi',
+						format: 'jpeg'
+					}
+				},
+				orthofoto: {
+					options: {
+						maxZoom: 20, // currently only in Vienna
+						variant: 'bmaporthofoto30cm',
+						format: 'jpeg'
+					}
+				}
+			}
+		},
+		nlmaps: {
+			url: '//geodata.nationaalgeoregister.nl/tiles/service/wmts/{variant}/EPSG:3857/{z}/{x}/{y}.png',
+			options: {
+				minZoom: 6,
+				maxZoom: 19,
+				bounds: [[50.5, 3.25], [54, 7.6]],
+				attribution: 'Kaartgegevens &copy; <a href="kadaster.nl">Kadaster</a>'
+			},
+			variants: {
+				'standaard': 'brtachtergrondkaart',
+				'pastel': 'brtachtergrondkaartpastel',
+				'grijs': 'brtachtergrondkaartgrijs',
+				'luchtfoto': {
+					'url': '//geodata.nationaalgeoregister.nl/luchtfoto/rgb/wmts/1.0.0/2016_ortho25/EPSG:3857/{z}/{x}/{y}.png',
+				}
+			}
+		},
+		NASAGIBS: {
+			url: 'https://map1.vis.earthdata.nasa.gov/wmts-webmerc/{variant}/default/{time}/{tilematrixset}{maxZoom}/{z}/{y}/{x}.{format}',
+			options: {
+				attribution:
+					'Imagery provided by services from the Global Imagery Browse Services (GIBS), operated by the NASA/GSFC/Earth Science Data and Information System ' +
+					'(<a href="https://earthdata.nasa.gov">ESDIS</a>) with funding provided by NASA/HQ.',
+				bounds: [[-85.0511287776, -179.999999975], [85.0511287776, 179.999999975]],
+				minZoom: 1,
+				maxZoom: 9,
+				format: 'jpg',
+				time: '',
+				tilematrixset: 'GoogleMapsCompatible_Level'
+			},
+			variants: {
+				ModisTerraTrueColorCR: 'MODIS_Terra_CorrectedReflectance_TrueColor',
+				ModisTerraBands367CR: 'MODIS_Terra_CorrectedReflectance_Bands367',
+				ViirsEarthAtNight2012: {
+					options: {
+						variant: 'VIIRS_CityLights_2012',
+						maxZoom: 8
+					}
+				},
+				ModisTerraLSTDay: {
+					options: {
+						variant: 'MODIS_Terra_Land_Surface_Temp_Day',
+						format: 'png',
+						maxZoom: 7,
+						opacity: 0.75
+					}
+				},
+				ModisTerraSnowCover: {
+					options: {
+						variant: 'MODIS_Terra_Snow_Cover',
+						format: 'png',
+						maxZoom: 8,
+						opacity: 0.75
+					}
+				},
+				ModisTerraAOD: {
+					options: {
+						variant: 'MODIS_Terra_Aerosol',
+						format: 'png',
+						maxZoom: 6,
+						opacity: 0.75
+					}
+				},
+				ModisTerraChlorophyll: {
+					options: {
+						variant: 'MODIS_Terra_Chlorophyll_A',
+						format: 'png',
+						maxZoom: 7,
+						opacity: 0.75
+					}
+				}
+			}
+		},
+		NLS: {
+			// NLS maps are copyright National library of Scotland.
+			// http://maps.nls.uk/projects/api/index.html
+			// Please contact NLS for anything other than non-commercial low volume usage
+			//
+			// Map sources: Ordnance Survey 1:1m to 1:63K, 1920s-1940s
+			//   z0-9  - 1:1m
+			//  z10-11 - quarter inch (1:253440)
+			//  z12-18 - one inch (1:63360)
+			url: '//nls-{s}.tileserver.com/nls/{z}/{x}/{y}.jpg',
+			options: {
+				attribution: '<a href="http://geo.nls.uk/maps/">National Library of Scotland Historic Maps</a>',
+				bounds: [[49.6, -12], [61.7, 3]],
+				minZoom: 1,
+				maxZoom: 18,
+				subdomains: '0123',
+			}
+		},
+		JusticeMap: {
+			// Justice Map (http://www.justicemap.org/)
+			// Visualize race and income data for your community, county and country.
+			// Includes tools for data journalists, bloggers and community activists.
+			url: 'http://www.justicemap.org/tile/{size}/{variant}/{z}/{x}/{y}.png',
+			options: {
+				attribution: '<a href="http://www.justicemap.org/terms.php">Justice Map</a>',
+				// one of 'county', 'tract', 'block'
+				size: 'county',
+				// Bounds for USA, including Alaska and Hawaii
+				bounds: [[14, -180], [72, -56]]
+			},
+			variants: {
+				income: 'income',
+				americanIndian: 'indian',
+				asian: 'asian',
+				black: 'black',
+				hispanic: 'hispanic',
+				multi: 'multi',
+				nonWhite: 'nonwhite',
+				white: 'white',
+				plurality: 'plural'
+			}
+		},
+		Wikimedia: {
+			url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
+			options: {
+				attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
+				minZoom: 1,
+				maxZoom: 19
+			}
+		},
+		GeoportailFrance: {
+			url: 'https://wxs.ign.fr/{apikey}/geoportail/wmts?REQUEST=GetTile&SERVICE=WMTS&VERSION=1.0.0&STYLE={style}&TILEMATRIXSET=PM&FORMAT={format}&LAYER={variant}&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}',
+			options: {
+				attribution: '<a target="_blank" href="https://www.geoportail.gouv.fr/">Geoportail France</a>',
+				bounds: [[-75, -180], [81, 180]],
+				minZoom: 2,
+				maxZoom: 18,
+				// Get your own geoportail apikey here : http://professionnels.ign.fr/ign/contrats/
+				// NB : 'choisirgeoportail' is a demonstration key that comes with no guarantee
+				apikey: 'choisirgeoportail',
+				format: 'image/jpeg',
+				style : 'normal',
+				variant: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD'
+			},
+			variants: {
+				parcels: {
+					options : {
+						variant: 'CADASTRALPARCELS.PARCELS',
+						maxZoom: 20,
+						style : 'bdparcellaire',
+						format: 'image/png'
+					}
+				},
+				ignMaps: 'GEOGRAPHICALGRIDSYSTEMS.MAPS',
+				maps: 'GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN-EXPRESS.STANDARD',
+				orthos: {
+					options: {
+						maxZoom: 19,
+						variant: 'ORTHOIMAGERY.ORTHOPHOTOS'
+					}
+				}
+			}
+		},
+		OneMapSG: {
+			url: '//maps-{s}.onemap.sg/v3/{variant}/{z}/{x}/{y}.png',
+			options: {
+				variant: 'Default',
+				minZoom: 11,
+				maxZoom: 18,
+				bounds: [[1.56073, 104.11475], [1.16, 103.502]],
+				attribution: '<img src="https://docs.onemap.sg/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> New OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
+			},
+			variants: {
+				Default: 'Default',
+				Night: 'Night',
+				Original: 'Original',
+				Grey: 'Grey',
+				LandLot: 'LandLot'
+			}
+		}
+	};
+
+	L.tileLayer.provider = function (provider, options) {
+		return new L.TileLayer.Provider(provider, options);
+	};
+
+	return L;
+}));
+</script>
+<script>LeafletWidget.methods.addProviderTiles = function(provider, layerId, group, options) {
+  this.layerManager.addLayer(L.tileLayer.provider(provider, options), "tile", layerId, group);
+};
+</script>
 
 <style type="text/css">
 code{white-space: pre-wrap;}
@@ -6337,14 +7197,60 @@ dbl  (4): XCoordinate, YCoordinate, longitude, latitude
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFwX21lYW5zICU+JSBcbiAgZmlsdGVyKEhCICE9IFwiU0IwODAyXCIsXG4gICAgICAgICBIQiAhPSBcIlNCMDgwMVwiKSAlPiUgXG5sZWFmbGV0KCkgJT4lIFxuICBhZGRUaWxlcygpICU+JSBcbiAgYWRkQ2lyY2xlTWFya2VycyhsbmcgPSB+IGxvbmdpdHVkZSxcbiAgICAgICAgICAgICBsYXQgPSB+IGxhdGl0dWRlLFxuICAgICAgICAgICAgIHdlaWdodCA9IDAsXG4gICAgICAgICAgICAgZmlsbENvbG9yID0gfiBpZmVsc2UobWVhbl9kaWZmID4gMCwgXCJyZWRcIiwgXCJncmVlblwiKSxcbiAgICAgICAgICAgICBmaWxsT3BhY2l0eSA9IH4gYWJzKG1lYW5fZGlmZikvMzAwLFxuICAgICAgICAgICAgIHBvcHVwID0gfiBwYXN0ZShMb2NhdGlvbiwgYnIoKSwgXCJCb2FyZDpcIiwgSEIsIGJyKCksIHJvdW5kKG1lYW5fZGlmZiwgMCkpXG4gICAgICAgICAgICAgKVxuYGBgIn0= -->
+<pre class="r"><code>map_means %&gt;% 
+  filter(HB != &quot;SB0802&quot;,
+         HB != &quot;SB0801&quot;) %&gt;% 
+leaflet() %&gt;% 
+  addTiles() %&gt;% 
+  addCircleMarkers(lng = ~ longitude,
+             lat = ~ latitude,
+             weight = 0,
+             fillColor = ~ ifelse(mean_diff &gt; 0, &quot;red&quot;, &quot;green&quot;),
+             fillOpacity = ~ abs(mean_diff)/300,
+             popup = ~ paste(Location, br(), &quot;Board:&quot;, HB, br(), round(mean_diff, 0))
+             )</code></pre>
+<!-- rnb-source-end -->
 
 <!-- rnb-htmlwidget-begin eyJkZXBlbmRlbmNpZXMiOlt7Im5hbWUiOiJodG1sd2lkZ2V0cyIsInZlcnNpb24iOiIxLjYuMiIsInNyYyI6eyJmaWxlIjoid3d3In0sIm1ldGEiOltdLCJzY3JpcHQiOiJodG1sd2lkZ2V0cy5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJodG1sd2lkZ2V0cyIsImFsbF9maWxlcyI6dHJ1ZX0seyJuYW1lIjoianF1ZXJ5IiwidmVyc2lvbiI6IjEuMTIuNCIsInNyYyI6eyJmaWxlIjoiaHRtbHdpZGdldHMvbGliL2pxdWVyeSJ9LCJtZXRhIjpbXSwic2NyaXB0IjoianF1ZXJ5Lm1pbi5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjp0cnVlfSx7Im5hbWUiOiJsZWFmbGV0IiwidmVyc2lvbiI6IjEuMy4xIiwic3JjIjp7ImZpbGUiOiJodG1sd2lkZ2V0cy9saWIvbGVhZmxldCJ9LCJtZXRhIjpbXSwic2NyaXB0IjoibGVhZmxldC5qcyIsInN0eWxlc2hlZXQiOiJsZWFmbGV0LmNzcyIsImhlYWQiOltdLCJhdHRhY2htZW50IjpbXSwicGFja2FnZSI6ImxlYWZsZXQiLCJhbGxfZmlsZXMiOnRydWV9LHsibmFtZSI6ImxlYWZsZXRmaXgiLCJ2ZXJzaW9uIjoiMS4wLjAiLCJzcmMiOnsiZmlsZSI6Imh0bWx3aWRnZXRzL2xpYi9sZWFmbGV0Zml4In0sIm1ldGEiOltdLCJzY3JpcHQiOltdLCJzdHlsZXNoZWV0IjoibGVhZmxldGZpeC5jc3MiLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjp0cnVlfSx7Im5hbWUiOiJwcm9qNCIsInZlcnNpb24iOiIyLjYuMiIsInNyYyI6eyJmaWxlIjoiaHRtbHdpZGdldHMvcGx1Z2lucy9Qcm9qNExlYWZsZXQifSwibWV0YSI6W10sInNjcmlwdCI6InByb2o0Lm1pbi5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjpmYWxzZX0seyJuYW1lIjoiUHJvajRMZWFmbGV0IiwidmVyc2lvbiI6IjEuMC4xIiwic3JjIjp7ImZpbGUiOiJodG1sd2lkZ2V0cy9wbHVnaW5zL1Byb2o0TGVhZmxldCJ9LCJtZXRhIjpbXSwic2NyaXB0IjoicHJvajRsZWFmbGV0LmpzIiwic3R5bGVzaGVldCI6W10sImhlYWQiOltdLCJhdHRhY2htZW50IjpbXSwicGFja2FnZSI6ImxlYWZsZXQiLCJhbGxfZmlsZXMiOmZhbHNlfSx7Im5hbWUiOiJyc3R1ZGlvX2xlYWZsZXQiLCJ2ZXJzaW9uIjoiMS4zLjEiLCJzcmMiOnsiZmlsZSI6Imh0bWx3aWRnZXRzL2xpYi9yc3R1ZGlvX2xlYWZsZXQifSwibWV0YSI6W10sInNjcmlwdCI6W10sInN0eWxlc2hlZXQiOiJyc3R1ZGlvX2xlYWZsZXQuY3NzIiwiaGVhZCI6W10sImF0dGFjaG1lbnQiOltdLCJwYWNrYWdlIjoibGVhZmxldCIsImFsbF9maWxlcyI6dHJ1ZX0seyJuYW1lIjoibGVhZmxldC1iaW5kaW5nIiwidmVyc2lvbiI6IjIuMS4yIiwic3JjIjp7ImZpbGUiOiJodG1sd2lkZ2V0cyJ9LCJtZXRhIjpbXSwic2NyaXB0IjoibGVhZmxldC5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjpmYWxzZX1dLCJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImxlYWZsZXQiLCJodG1sd2lkZ2V0Il0sInNpemluZ1BvbGljeSI6eyJkZWZhdWx0V2lkdGgiOlsiMTAwJSJdLCJkZWZhdWx0SGVpZ2h0IjpbNDAwXSwicGFkZGluZyI6WzBdLCJmaWxsIjpbXSwidmlld2VyIjp7ImRlZmF1bHRXaWR0aCI6W10sImRlZmF1bHRIZWlnaHQiOltdLCJwYWRkaW5nIjpbXSwiZmlsbCI6W3RydWVdLCJzdXBwcmVzcyI6W2ZhbHNlXSwicGFuZUhlaWdodCI6W119LCJicm93c2VyIjp7ImRlZmF1bHRXaWR0aCI6W10sImRlZmF1bHRIZWlnaHQiOltdLCJwYWRkaW5nIjpbXSwiZmlsbCI6W3RydWVdLCJleHRlcm5hbCI6W2ZhbHNlXX0sImtuaXRyIjp7ImRlZmF1bHRXaWR0aCI6W10sImRlZmF1bHRIZWlnaHQiOltdLCJmaWd1cmUiOlt0cnVlXX0sInZpZXdlci5wYWRkaW5nIjpbMF0sInZpZXdlci5maWxsIjpbdHJ1ZV19fX0= -->
 
 <!-- htmlwidget-container-begin -->
-<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-90adb938051b53b81f23" style="width:500px;height:500px;"></div>
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3a607b7531e8e4fbfe95" style="width:500px;height:500px;"></div>
 <!-- htmlwidget-container-end -->
-<script type="application/json" data-for="htmlwidget-90adb938051b53b81f23">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[55.54311962497461,55.63457384961526,55.59500606251077,55.76129992100956,55.6139432879184,55.79854438678265,55.61187194644128,55.43417440351877,55.35470880432875,55.4925763768581,55.43032913030746,55.4491499747881,55.63959692491709,55.45249851679579,55.24830304043762,55.63506662014053,55.77261253159919,55.6072868280822,55.4235218568997,55.55032467814842,55.60326532821214,55.65201996466619,55.59547847757031,55.4237550080509,55.41946034224515,55.65153168996437,55.61781338140703,55.87116908925565,55.4190165043825,55.59548736605687,55.59359982029975,56.03520619727985,55.95934522676915,55.75578813235082,55.83039819790349,55.82699025205066,56.40041846936585,55.42066714887179,55.94861253471846,55.99308587408402,55.94430786843811,55.82281087698339,55.83522081606429,55.94431553559909,55.8802811457977,55.69587790200819,55.90646125639316,56.18642925733801,56.12511416499537,56.11778741515185,56.324314057815,56.32764733874068,56.17712832040923,56.12754152405107,56.30440583282238,56.3184594242265,56.20508558828664,56.08230669101091,56.07782161997262,55.86605310859292,55.86402957354225,55.86525065463048,55.86063728184539,55.84670002270478,55.85014541916807,55.87115401675573,55.8928955709958,55.88848976045576,55.88617604247415,55.83533813906261,55.76110819690024,55.82861542973777,55.86264610527329,55.85180958809906,55.82651883947605,55.88323090396392,55.88253821592497,55.88206641892874,55.86144444157212,55.88322222664831,55.88323090396392,55.85229318140239,55.85160619309557,55.87095599574139,55.85363041104556,55.79020612883816,55.90935967753484,55.88718177394502,55.94046150896558,55.9405684370244,55.88448738807767,55.90982292437684,55.8949896602428,55.89163019921703,55.8928955717649,55.94431553559909,55.89464726970014,58.58413820897725,58.44136111453996,58.43274353215386,57.97298338290329,57.47064812768756,57.47382321577746,57.57812457697977,57.33694059515742,57.08472623544452,56.81942653150559,56.68487842564739,57.24450394508455,57.41028219790015,57.59443485605335,57.69632835360552,57.47426146072034,57.46879788798048,56.04201188260065,56.51550072198299,57.89136842010806,56.47944551282011,57.19843872474425,57.47738143705427,55.84862765716368,55.97679629182784,55.86886202946346,55.86588208286803,55.80376676389363,55.80998099774187,55.62253292323772,55.55825115449614,55.67008760276307,55.72959090376932,55.78447233776825,55.81187018748801,55.7825759582111,55.75993288049136,55.69237912957607,55.7773751098206,55.84856012628334,55.78239692114293,55.77369599804519,55.75799113999691,57.15427511227377,57.14730701500728,57.1536151466853,57.14906883538682,57.15526891111778,57.15520282557803,57.15359474434947,57.07625071834234,57.15525994557647,57.05916708890952,57.15702689226273,57.14731597534232,57.15550678231448,57.2765829547031,57.34045160983365,57.50236254424499,57.68762892571867,57.44321124750129,57.53710412363118,57.66898175145049,57.51515496809571,57.66784027732236,57.64562915103533,57.66783142646137,57.44568579214994,57.54193977083711,57.60201408689515,57.46966295195271,57.13605426121714,56.96915206570123,57.64643575783836,57.13399127722913,57.15758398612809,57.15015155461398,57.14522085160544,58.97370185705814,55.99586137954223,55.94295337879353,55.93683653324843,56.05550826596771,55.96024603181998,55.95862705204883,55.96180739509553,55.92951484273669,55.94458347388427,55.94408942034694,55.90894786697389,55.92719588032576,55.94784908689341,55.92720470512906,55.92720470512906,55.84772710073879,55.87266080788892,55.94443350130239,55.97497105285502,55.87674798031835,55.86704151969877,55.89296735563804,55.96813209548823,55.97201466898262,55.90188932679425,55.92886654886311,55.90957290538581,55.90997885008648,55.96813450517016,55.94408059326639,55.86338583242335,55.88024680225071,55.9218962,55.95709778807319,56.46168490165826,56.4776825696829,56.46253215711227,56.45837897949852,56.50449147988203,56.47763774271566,56.4571464030205,56.4724783120415,56.46440706470625,56.46254100718129,56.39634065847395,56.29376706426126,56.61848800669604,56.58589430743549,56.40035915122203,56.42072937857727,56.55453921049833,56.73410323539149,56.56782674445885,56.70775660665387,56.77494037660811,56.65223639074636,56.56348767872194,56.36996551309908,56.46342639912218,56.6511274082109,56.70145253109605,56.3912078597114,56.47699522714304,56.45932171745459,56.46608587104092,56.4648910068513,55.99777416342939,56.01157996970821,56.03496944354773,56.10681624400568,56.02796496522494,56.02013768515904,56.12469329723518,56.02512061113519,56.95205793583473,58.22111585437035,57.47243292409503,54.93910141545364,55.05687795120745,55.06243798921802,54.83450791774312,55.15064218417886,55.12848491696385,55.33137748245706,54.95108104670589,55.23569482906726,54.98820989639195,54.90367876171734,55.05370504961819,55.04949277441625,54.89867430551453,55.05357561351414,54.9879499999598,55.06288958902695,55.04611717367987,55.0624467656914,54.99470466205259,54.89920990341152,55.05264213733598,55.05888834150986,60.15105827558128],[-5.1155214583115,-4.678127739005853,-4.473421138697358,-4.922776217072336,-4.539412042256777,-4.867767693519655,-4.660205883319174,-4.593107536329703,-4.681563274790318,-4.604861931151369,-4.595558414766277,-4.639733026144772,-4.771234860289866,-4.272934296793622,-4.846997299661254,-4.676143299976505,-2.341425082129265,-2.789212453105645,-2.794532371877845,-2.840899916133984,-2.43341807597056,-3.198198536143297,-2.741940809208126,-2.791835304978893,-2.790359133274917,-3.182768385968696,-2.809207546937752,-2.090966734426219,-2.79782263369033,-2.741956845560465,-2.747966855943875,-5.429116799163438,-4.927905423488716,-6.279234631669241,-5.055573966874413,-5.054523993288342,-5.474938612814968,-5.604279004919588,-4.594809764170136,-4.591824633964343,-4.809845004982122,-4.39908430820415,-4.43782149024335,-4.80985565168008,-4.388585159933746,-3.65131998983801,-4.425411171770315,-3.057933416141155,-3.160136430573943,-3.170064657681852,-3.017939943920836,-2.805553983219591,-3.027216933918918,-3.160326639809661,-3.054210552678036,-3.019708076375167,-3.182507223662504,-3.426963008173689,-3.41379851414456,-4.2655525962627,-4.235660384152769,-4.232262383128196,-4.16555141730952,-4.224856544820303,-4.173914180216724,-4.130971109271113,-4.21985561800892,-4.287202239478768,-4.252333351634829,-4.366487269652461,-4.331222470964176,-4.265322788141168,-4.338118360226516,-4.246845203271143,-4.296463616858377,-4.312748718880618,-4.321373997418564,-4.303437452362579,-4.339868004223159,-4.312732212533992,-4.312748718880618,-4.193233850673241,-4.226399151584367,-4.295961769097213,-4.296193779653326,-4.286971681112486,-4.350130631982507,-4.282135888327324,-4.147627212715551,-4.149194406729409,-4.267938078271173,-4.325740901684132,-4.330691146635544,-4.21426569713533,-4.223838050313562,-4.80985565168008,-4.385613400409293,-3.539669711766138,-3.095738744440644,-3.098296663458528,-3.987670952986638,-4.231572887921985,-4.192471505675599,-3.872560044938448,-3.604168558573562,-4.057114129465697,-5.104714886077089,-5.097984984165138,-5.913377426231607,-6.192947093080654,-4.417342150942143,-4.151869520937971,-4.196717510971371,-4.269626127777324,-5.418445829598569,-5.947920519959397,-4.34280411861267,-5.715886022195254,-3.822412694284272,-4.181592412955647,-4.025932574959312,-4.069878298244269,-3.940902318294467,-3.999598050590598,-3.907264907261041,-3.84813984159133,-3.520437921244523,-3.839139601485989,-3.7598694775587,-3.812822369224613,-4.002170612682511,-4.064862858043573,-3.983334912181958,-4.22199921257863,-3.991842746159676,-4.080992558231541,-4.033836557833853,-4.052793554615689,-3.941748630015671,-4.1970408583047,-2.13735918391765,-2.171575951807678,-2.088679485561665,-2.105591211056863,-2.132089831999241,-2.143181148198684,-2.135207866034525,-2.766998848372666,-2.132073270074462,-2.521391786717616,-2.125979753031968,-2.171592519718059,-2.118817078378764,-2.379627406523115,-2.613996842374836,-1.793623296244286,-2.01957556081304,-2.790358895602557,-2.450904035395793,-2.52437735486556,-1.794435857550978,-2.98179737953877,-3.331951454250245,-2.981780376851982,-3.124360136581461,-2.955604835366232,-3.580668951227715,-3.223650979417163,-2.103406290526054,-2.230811098789671,-3.327004933975263,-2.129073264130204,-2.125832872299556,-2.092665901009752,-2.152873695476821,-2.965444871430933,-2.537682442854249,-3.271357052253312,-3.03607110627887,-2.718332765426789,-2.788068913205676,-3.23305990310703,-3.234907125328908,-3.197450703698895,-3.198380115878494,-3.198364854744272,-3.154072410455071,-3.21586458072441,-3.205350660924943,-3.215880861826604,-3.215880861826604,-3.19108495307851,-3.062681156891424,-3.182283667253642,-3.587281591586647,-3.687636700122169,-3.689037484482208,-3.519389647825449,-3.173409536373238,-3.230441407577843,-3.643301465964872,-3.213195993224613,-3.14969172056575,-3.158150402610297,-3.144490840487546,-3.198348570454369,-3.686945253028031,-3.090159003312202,-3.1385988,-2.796990053852537,-2.991409737195292,-2.985562025518774,-3.013764517516649,-2.979366284827267,-3.003609002060903,-2.986681089466478,-2.992023615550715,-2.961791990246044,-2.986240497433382,-3.013780982131121,-3.452965269968983,-3.719289962169411,-3.86043203969945,-3.34628633703125,-3.412145969785142,-3.409101611068179,-2.596889253306954,-2.652020953405974,-2.607985344375301,-2.474542630796849,-2.613720373467967,-2.87163643847979,-2.573924959594018,-3.842063729874085,-3.045678685534272,-2.872197984743116,-3.737204276743906,-3.486392443178242,-3.000381606056636,-3.049785008639655,-2.989789756836964,-2.985263032093376,-3.794540400107098,-3.614271462128408,-3.819620733289113,-3.935915505284115,-3.845898863815968,-3.838690185513059,-3.783554932754797,-3.848009671312537,-7.497178133866845,-6.383596732532541,-7.377976240546467,-3.92492802970915,-3.599057354948598,-3.602708320568325,-4.050573739177153,-2.999728601226359,-3.454454926113981,-3.430350967618955,-4.491842900855683,-3.766531252098071,-3.246948193861514,-5.030752284492073,-3.605913097271089,-3.59956130137689,-5.022326322321383,-3.59662439021387,-3.246877619264902,-3.602538465503893,-3.606110244613048,-3.602724330019489,-3.252464326113309,-5.021758051825584,-3.588290191121013,-3.659026815491533,-1.155664238216284],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":0,"opacity":0.5,"fill":true,"fillColor":["blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue",null,null,"blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","blue","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","red","red","red","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue","blue"],"fillOpacity":[0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,null,null,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.016531279178338,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.02318394024276377,0.02318394024276377,0.02318394024276377,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.004056956115779646]},null,null,["A101H <br/> Board: S08000015 <br/> 73","A103H <br/> Board: S08000015 <br/> 73","A105H <br/> Board: S08000015 <br/> 73","A110H <br/> Board: S08000015 <br/> 73","A111H <br/> Board: S08000015 <br/> 73","A112H <br/> Board: S08000015 <br/> 73","A114H <br/> Board: S08000015 <br/> 73","A201H <br/> Board: S08000015 <br/> 73","A202E <br/> Board: S08000015 <br/> 73","A208H <br/> Board: S08000015 <br/> 73","A210H <br/> Board: S08000015 <br/> 73","A211H <br/> Board: S08000015 <br/> 73","A214H <br/> Board: S08000015 <br/> 73","A215H <br/> Board: S08000015 <br/> 73","A216H <br/> Board: S08000015 <br/> 73","A217H <br/> Board: S08000015 <br/> 73","B103H <br/> Board: S08000016 <br/> 28","B104H <br/> Board: S08000016 <br/> 28","B105H <br/> Board: S08000016 <br/> 28","B108H <br/> Board: S08000016 <br/> 28","B114H <br/> Board: S08000016 <br/> 28","B118H <br/> Board: S08000016 <br/> 28","B120H <br/> Board: S08000016 <br/> 28","B121H <br/> Board: S08000016 <br/> 28","B122H <br/> Board: S08000016 <br/> 28","B123H <br/> Board: S08000016 <br/> 28","B124H <br/> Board: S08000016 <br/> 28","B127H <br/> Board: S08000016 <br/> 28","B128H <br/> Board: S08000016 <br/> 28","B129H <br/> Board: S08000016 <br/> 28","B130H <br/> Board: S08000016 <br/> 28","C101H <br/> Board: S08000022 <br/> 11","C106H <br/> Board: S08000022 <br/> 11","C108H <br/> Board: S08000022 <br/> 11","C113H <br/> Board: S08000022 <br/> 11","C114H <br/> Board: S08000022 <br/> 11","C121H <br/> Board: S08000022 <br/> 11","C122H <br/> Board: S08000022 <br/> 11","C204H <br/> Board: S08000031 <br/> 185","C206H <br/> Board: S08000031 <br/> 185","C313H <br/> Board: S08000031 <br/> 185","C403H <br/> Board: S08000031 <br/> 185","C418H <br/> Board: S08000031 <br/> 185","C419H <br/> Board: S08000031 <br/> 185","C420H <br/> Board: S08000031 <br/> 185","D101H <br/> Board: SB0802 <br/> NA","D102H <br/> Board: SB0801 <br/> NA","F701H <br/> Board: S08000029 <br/> 16","F704H <br/> Board: S08000029 <br/> 16","F705H <br/> Board: S08000029 <br/> 16","F708H <br/> Board: S08000029 <br/> 16","F709H <br/> Board: S08000029 <br/> 16","F710H <br/> Board: S08000029 <br/> 16","F711H <br/> Board: S08000029 <br/> 16","F712H <br/> Board: S08000029 <br/> 16","F714H <br/> Board: S08000029 <br/> 16","F716H <br/> Board: S08000029 <br/> 16","F805H <br/> Board: S08000029 <br/> 16","F810H <br/> Board: S08000029 <br/> 16","G106H <br/> Board: S08000031 <br/> 185","G107H <br/> Board: S08000031 <br/> 185","G108H <br/> Board: S08000031 <br/> 185","G109H <br/> Board: S08000031 <br/> 185","G110H <br/> Board: S08000031 <br/> 185","G112H <br/> Board: S08000031 <br/> 185","G113H <br/> Board: S08000031 <br/> 185","G207H <br/> Board: S08000031 <br/> 185","G212H <br/> Board: S08000031 <br/> 185","G214H <br/> Board: S08000031 <br/> 185","G302H <br/> Board: S08000031 <br/> 185","G303H <br/> Board: S08000031 <br/> 185","G306H <br/> Board: S08000031 <br/> 185","G405H <br/> Board: S08000031 <br/> 185","G408H <br/> Board: S08000031 <br/> 185","G410H <br/> Board: S08000031 <br/> 185","G504H <br/> Board: S08000031 <br/> 185","G505H <br/> Board: S08000031 <br/> 185","G507H <br/> Board: S08000031 <br/> 185","G513H <br/> Board: S08000031 <br/> 185","G516H <br/> Board: S08000031 <br/> 185","G517H <br/> Board: S08000031 <br/> 185","G596H <br/> Board: S08000031 <br/> 185","G598H <br/> Board: S08000031 <br/> 185","G599H <br/> Board: S08000031 <br/> 185","G600H <br/> Board: S08000031 <br/> 185","G602H <br/> Board: S08000031 <br/> 185","G603H <br/> Board: S08000031 <br/> 185","G605H <br/> Board: S08000031 <br/> 185","G607H <br/> Board: S08000031 <br/> 185","G608H <br/> Board: S08000031 <br/> 185","G609H <br/> Board: S08000031 <br/> 185","G610H <br/> Board: S08000031 <br/> 185","G611H <br/> Board: S08000031 <br/> 185","G612H <br/> Board: S08000031 <br/> 185","G613H <br/> Board: S08000031 <br/> 185","G614H <br/> Board: S08000031 <br/> 185","G615H <br/> Board: S08000031 <br/> 185","H101H <br/> Board: S08000022 <br/> 11","H103H <br/> Board: S08000022 <br/> 11","H104H <br/> Board: S08000022 <br/> 11","H106H <br/> Board: S08000022 <br/> 11","H201H <br/> Board: S08000022 <br/> 11","H202H <br/> Board: S08000022 <br/> 11","H208H <br/> Board: S08000022 <br/> 11","H210H <br/> Board: S08000022 <br/> 11","H211H <br/> Board: S08000022 <br/> 11","H212H <br/> Board: S08000022 <br/> 11","H213H <br/> Board: S08000022 <br/> 11","H214H <br/> Board: S08000022 <br/> 11","H215H <br/> Board: S08000022 <br/> 11","H217H <br/> Board: S08000022 <br/> 11","H219H <br/> Board: S08000022 <br/> 11","H221H <br/> Board: S08000022 <br/> 11","H223H <br/> Board: S08000022 <br/> 11","H224H <br/> Board: S08000022 <br/> 11","H225H <br/> Board: S08000022 <br/> 11","H226H <br/> Board: S08000022 <br/> 11","H227H <br/> Board: S08000022 <br/> 11","H228H <br/> Board: S08000022 <br/> 11","H230H <br/> Board: S08000022 <br/> 11","L103H <br/> Board: S08000032 <br/> -9","L104H <br/> Board: S08000032 <br/> -9","L105H <br/> Board: S08000032 <br/> -9","L106H <br/> Board: S08000032 <br/> -9","L203H <br/> Board: S08000032 <br/> -9","L204H <br/> Board: S08000032 <br/> -9","L206H <br/> Board: S08000032 <br/> -9","L207H <br/> Board: S08000032 <br/> -9","L209H <br/> Board: S08000032 <br/> -9","L211H <br/> Board: S08000032 <br/> -9","L213H <br/> Board: S08000032 <br/> -9","L216H <br/> Board: S08000032 <br/> -9","L218H <br/> Board: S08000032 <br/> -9","L302H <br/> Board: S08000032 <br/> -9","L304H <br/> Board: S08000032 <br/> -9","L305H <br/> Board: S08000032 <br/> -9","L306H <br/> Board: S08000032 <br/> -9","L307H <br/> Board: S08000032 <br/> -9","L308H <br/> Board: S08000032 <br/> -9","L395E <br/> Board: S08000032 <br/> -9","N101H <br/> Board: S08000020 <br/> -24","N102H <br/> Board: S08000020 <br/> -24","N103H <br/> Board: S08000020 <br/> -24","N104H <br/> Board: S08000020 <br/> -24","N106H <br/> Board: S08000020 <br/> -24","N111H <br/> Board: S08000020 <br/> -24","N121H <br/> Board: S08000020 <br/> -24","N151H <br/> Board: S08000020 <br/> -24","N161H <br/> Board: S08000020 <br/> -24","N181H <br/> Board: S08000020 <br/> -24","N183H <br/> Board: S08000020 <br/> -24","N184H <br/> Board: S08000020 <br/> -24","N198H <br/> Board: S08000020 <br/> -24","N331H <br/> Board: S08000020 <br/> -24","N332H <br/> Board: S08000020 <br/> -24","N333H <br/> Board: S08000020 <br/> -24","N334H <br/> Board: S08000020 <br/> -24","N335H <br/> Board: S08000020 <br/> -24","N336H <br/> Board: S08000020 <br/> -24","N337H <br/> Board: S08000020 <br/> -24","N352H <br/> Board: S08000020 <br/> -24","N401E <br/> Board: S08000020 <br/> -24","N411H <br/> Board: S08000020 <br/> -24","N431H <br/> Board: S08000020 <br/> -24","N432H <br/> Board: S08000020 <br/> -24","N433H <br/> Board: S08000020 <br/> -24","N434H <br/> Board: S08000020 <br/> -24","N451H <br/> Board: S08000020 <br/> -24","N492H <br/> Board: S08000020 <br/> -24","N494H <br/> Board: S08000020 <br/> -24","N495H <br/> Board: S08000020 <br/> -24","N496H <br/> Board: S08000020 <br/> -24","N499H <br/> Board: S08000020 <br/> -24","N500H <br/> Board: S08000020 <br/> -24","N501H <br/> Board: S08000020 <br/> -24","R103H <br/> Board: S08000025 <br/> 5","S102H <br/> Board: S08000024 <br/> -42","S103H <br/> Board: S08000024 <br/> -42","S107H <br/> Board: S08000024 <br/> -42","S108H <br/> Board: S08000024 <br/> -42","S109H <br/> Board: S08000024 <br/> -42","S114H <br/> Board: S08000024 <br/> -42","S116H <br/> Board: S08000024 <br/> -42","S201H <br/> Board: S08000024 <br/> -42","S203H <br/> Board: S08000024 <br/> -42","S206H <br/> Board: S08000024 <br/> -42","S209H <br/> Board: S08000024 <br/> -42","S217H <br/> Board: S08000024 <br/> -42","S232H <br/> Board: S08000024 <br/> -42","S234H <br/> Board: S08000024 <br/> -42","S235H <br/> Board: S08000024 <br/> -42","S240H <br/> Board: S08000024 <br/> -42","S241H <br/> Board: S08000024 <br/> -42","S243H <br/> Board: S08000024 <br/> -42","S305H <br/> Board: S08000024 <br/> -42","S306H <br/> Board: S08000024 <br/> -42","S307H <br/> Board: S08000024 <br/> -42","S308H <br/> Board: S08000024 <br/> -42","S309H <br/> Board: S08000024 <br/> -42","S310H <br/> Board: S08000024 <br/> -42","S311H <br/> Board: S08000024 <br/> -42","S312H <br/> Board: S08000024 <br/> -42","S313H <br/> Board: S08000024 <br/> -42","S314H <br/> Board: S08000024 <br/> -42","S315H <br/> Board: S08000024 <br/> -42","S316H <br/> Board: S08000024 <br/> -42","S317H <br/> Board: S08000024 <br/> -42","S318H <br/> Board: S08000024 <br/> -42","S319H <br/> Board: S08000024 <br/> -42","S320H <br/> Board: S08000024 <br/> -42","T101H <br/> Board: S08000030 <br/> 49","T104H <br/> Board: S08000030 <br/> 49","T107H <br/> Board: S08000030 <br/> 49","T113H <br/> Board: S08000030 <br/> 49","T115H <br/> Board: S08000030 <br/> 49","T116H <br/> Board: S08000030 <br/> 49","T120H <br/> Board: S08000030 <br/> 49","T121H <br/> Board: S08000030 <br/> 49","T122H <br/> Board: S08000030 <br/> 49","T123H <br/> Board: S08000030 <br/> 49","T202H <br/> Board: S08000030 <br/> 49","T205H <br/> Board: S08000030 <br/> 49","T207H <br/> Board: S08000030 <br/> 49","T209H <br/> Board: S08000030 <br/> 49","T215H <br/> Board: S08000030 <br/> 49","T221H <br/> Board: S08000030 <br/> 49","T304H <br/> Board: S08000030 <br/> 49","T305H <br/> Board: S08000030 <br/> 49","T309H <br/> Board: S08000030 <br/> 49","T310H <br/> Board: S08000030 <br/> 49","T312H <br/> Board: S08000030 <br/> 49","T313H <br/> Board: S08000030 <br/> 49","T314H <br/> Board: S08000030 <br/> 49","T316H <br/> Board: S08000030 <br/> 49","T317H <br/> Board: S08000030 <br/> 49","T319H <br/> Board: S08000030 <br/> 49","T320H <br/> Board: S08000030 <br/> 49","T321H <br/> Board: S08000030 <br/> 49","T322H <br/> Board: S08000030 <br/> 49","T323H <br/> Board: S08000030 <br/> 49","T324H <br/> Board: S08000030 <br/> 49","T325H <br/> Board: S08000030 <br/> 49","V102H <br/> Board: S08000019 <br/> 27","V105H <br/> Board: S08000019 <br/> 27","V106H <br/> Board: S08000019 <br/> 27","V201H <br/> Board: S08000019 <br/> 27","V214H <br/> Board: S08000019 <br/> 27","V215H <br/> Board: S08000019 <br/> 27","V216H <br/> Board: S08000019 <br/> 27","V217H <br/> Board: S08000019 <br/> 27","W106H <br/> Board: S08000028 <br/> -7","W107H <br/> Board: S08000028 <br/> -7","W108H <br/> Board: S08000028 <br/> -7","Y101H <br/> Board: S08000017 <br/> 52","Y103H <br/> Board: S08000017 <br/> 52","Y105H <br/> Board: S08000017 <br/> 52","Y106H <br/> Board: S08000017 <br/> 52","Y107H <br/> Board: S08000017 <br/> 52","Y108H <br/> Board: S08000017 <br/> 52","Y109H <br/> Board: S08000017 <br/> 52","Y110H <br/> Board: S08000017 <br/> 52","Y114H <br/> Board: S08000017 <br/> 52","Y120H <br/> Board: S08000017 <br/> 52","Y124H <br/> Board: S08000017 <br/> 52","Y126H <br/> Board: S08000017 <br/> 52","Y129H <br/> Board: S08000017 <br/> 52","Y130H <br/> Board: S08000017 <br/> 52","Y132H <br/> Board: S08000017 <br/> 52","Y134H <br/> Board: S08000017 <br/> 52","Y135H <br/> Board: S08000017 <br/> 52","Y136H <br/> Board: S08000017 <br/> 52","Y138H <br/> Board: S08000017 <br/> 52","Y142H <br/> Board: S08000017 <br/> 52","Y144H <br/> Board: S08000017 <br/> 52","Y145H <br/> Board: S08000017 <br/> 52","Y146H <br/> Board: S08000017 <br/> 52","Z102H <br/> Board: S08000026 <br/> 1"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[54.83450791774312,60.15105827558128],"lng":[-7.497178133866845,-1.155664238216284]}},"evals":[],"jsHooks":[]}</script>
-<!-- htmlwidget-sizing-policy-base64 PHNjcmlwdCB0eXBlPSJhcHBsaWNhdGlvbi9odG1sd2lkZ2V0LXNpemluZyIgZGF0YS1mb3I9Imh0bWx3aWRnZXQtOTBhZGI5MzgwNTFiNTNiODFmMjMiPnsidmlld2VyIjp7IndpZHRoIjoiMTAwJSIsImhlaWdodCI6NDAwLCJwYWRkaW5nIjowLCJmaWxsIjp0cnVlfSwiYnJvd3NlciI6eyJ3aWR0aCI6IjEwMCUiLCJoZWlnaHQiOjQwMCwicGFkZGluZyI6MCwiZmlsbCI6dHJ1ZX19PC9zY3JpcHQ+ -->
+<script type="application/json" data-for="htmlwidget-3a607b7531e8e4fbfe95">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"https://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[55.54311962497461,55.63457384961526,55.59500606251077,55.76129992100956,55.6139432879184,55.79854438678265,55.61187194644128,55.43417440351877,55.35470880432875,55.4925763768581,55.43032913030746,55.4491499747881,55.63959692491709,55.45249851679579,55.24830304043762,55.63506662014053,55.77261253159919,55.6072868280822,55.4235218568997,55.55032467814842,55.60326532821214,55.65201996466619,55.59547847757031,55.4237550080509,55.41946034224515,55.65153168996437,55.61781338140703,55.87116908925565,55.4190165043825,55.59548736605687,55.59359982029975,56.03520619727985,55.95934522676915,55.75578813235082,55.83039819790349,55.82699025205066,56.40041846936585,55.42066714887179,55.94861253471846,55.99308587408402,55.94430786843811,55.82281087698339,55.83522081606429,55.94431553559909,55.8802811457977,56.18642925733801,56.12511416499537,56.11778741515185,56.324314057815,56.32764733874068,56.17712832040923,56.12754152405107,56.30440583282238,56.3184594242265,56.20508558828664,56.08230669101091,56.07782161997262,55.86605310859292,55.86402957354225,55.86525065463048,55.86063728184539,55.84670002270478,55.85014541916807,55.87115401675573,55.8928955709958,55.88848976045576,55.88617604247415,55.83533813906261,55.76110819690024,55.82861542973777,55.86264610527329,55.85180958809906,55.82651883947605,55.88323090396392,55.88253821592497,55.88206641892874,55.86144444157212,55.88322222664831,55.88323090396392,55.85229318140239,55.85160619309557,55.87095599574139,55.85363041104556,55.79020612883816,55.90935967753484,55.88718177394502,55.94046150896558,55.9405684370244,55.88448738807767,55.90982292437684,55.8949896602428,55.89163019921703,55.8928955717649,55.94431553559909,55.89464726970014,58.58413820897725,58.44136111453996,58.43274353215386,57.97298338290329,57.47064812768756,57.47382321577746,57.57812457697977,57.33694059515742,57.08472623544452,56.81942653150559,56.68487842564739,57.24450394508455,57.41028219790015,57.59443485605335,57.69632835360552,57.47426146072034,57.46879788798048,56.04201188260065,56.51550072198299,57.89136842010806,56.47944551282011,57.19843872474425,57.47738143705427,55.84862765716368,55.97679629182784,55.86886202946346,55.86588208286803,55.80376676389363,55.80998099774187,55.62253292323772,55.55825115449614,55.67008760276307,55.72959090376932,55.78447233776825,55.81187018748801,55.7825759582111,55.75993288049136,55.69237912957607,55.7773751098206,55.84856012628334,55.78239692114293,55.77369599804519,55.75799113999691,57.15427511227377,57.14730701500728,57.1536151466853,57.14906883538682,57.15526891111778,57.15520282557803,57.15359474434947,57.07625071834234,57.15525994557647,57.05916708890952,57.15702689226273,57.14731597534232,57.15550678231448,57.2765829547031,57.34045160983365,57.50236254424499,57.68762892571867,57.44321124750129,57.53710412363118,57.66898175145049,57.51515496809571,57.66784027732236,57.64562915103533,57.66783142646137,57.44568579214994,57.54193977083711,57.60201408689515,57.46966295195271,57.13605426121714,56.96915206570123,57.64643575783836,57.13399127722913,57.15758398612809,57.15015155461398,57.14522085160544,58.97370185705814,55.99586137954223,55.94295337879353,55.93683653324843,56.05550826596771,55.96024603181998,55.95862705204883,55.96180739509553,55.92951484273669,55.94458347388427,55.94408942034694,55.90894786697389,55.92719588032576,55.94784908689341,55.92720470512906,55.92720470512906,55.84772710073879,55.87266080788892,55.94443350130239,55.97497105285502,55.87674798031835,55.86704151969877,55.89296735563804,55.96813209548823,55.97201466898262,55.90188932679425,55.92886654886311,55.90957290538581,55.90997885008648,55.96813450517016,55.94408059326639,55.86338583242335,55.88024680225071,55.9218962,55.95709778807319,56.46168490165826,56.4776825696829,56.46253215711227,56.45837897949852,56.50449147988203,56.47763774271566,56.4571464030205,56.4724783120415,56.46440706470625,56.46254100718129,56.39634065847395,56.29376706426126,56.61848800669604,56.58589430743549,56.40035915122203,56.42072937857727,56.55453921049833,56.73410323539149,56.56782674445885,56.70775660665387,56.77494037660811,56.65223639074636,56.56348767872194,56.36996551309908,56.46342639912218,56.6511274082109,56.70145253109605,56.3912078597114,56.47699522714304,56.45932171745459,56.46608587104092,56.4648910068513,55.99777416342939,56.01157996970821,56.03496944354773,56.10681624400568,56.02796496522494,56.02013768515904,56.12469329723518,56.02512061113519,56.95205793583473,58.22111585437035,57.47243292409503,54.93910141545364,55.05687795120745,55.06243798921802,54.83450791774312,55.15064218417886,55.12848491696385,55.33137748245706,54.95108104670589,55.23569482906726,54.98820989639195,54.90367876171734,55.05370504961819,55.04949277441625,54.89867430551453,55.05357561351414,54.9879499999598,55.06288958902695,55.04611717367987,55.0624467656914,54.99470466205259,54.89920990341152,55.05264213733598,55.05888834150986,60.15105827558128],[-5.1155214583115,-4.678127739005853,-4.473421138697358,-4.922776217072336,-4.539412042256777,-4.867767693519655,-4.660205883319174,-4.593107536329703,-4.681563274790318,-4.604861931151369,-4.595558414766277,-4.639733026144772,-4.771234860289866,-4.272934296793622,-4.846997299661254,-4.676143299976505,-2.341425082129265,-2.789212453105645,-2.794532371877845,-2.840899916133984,-2.43341807597056,-3.198198536143297,-2.741940809208126,-2.791835304978893,-2.790359133274917,-3.182768385968696,-2.809207546937752,-2.090966734426219,-2.79782263369033,-2.741956845560465,-2.747966855943875,-5.429116799163438,-4.927905423488716,-6.279234631669241,-5.055573966874413,-5.054523993288342,-5.474938612814968,-5.604279004919588,-4.594809764170136,-4.591824633964343,-4.809845004982122,-4.39908430820415,-4.43782149024335,-4.80985565168008,-4.388585159933746,-3.057933416141155,-3.160136430573943,-3.170064657681852,-3.017939943920836,-2.805553983219591,-3.027216933918918,-3.160326639809661,-3.054210552678036,-3.019708076375167,-3.182507223662504,-3.426963008173689,-3.41379851414456,-4.2655525962627,-4.235660384152769,-4.232262383128196,-4.16555141730952,-4.224856544820303,-4.173914180216724,-4.130971109271113,-4.21985561800892,-4.287202239478768,-4.252333351634829,-4.366487269652461,-4.331222470964176,-4.265322788141168,-4.338118360226516,-4.246845203271143,-4.296463616858377,-4.312748718880618,-4.321373997418564,-4.303437452362579,-4.339868004223159,-4.312732212533992,-4.312748718880618,-4.193233850673241,-4.226399151584367,-4.295961769097213,-4.296193779653326,-4.286971681112486,-4.350130631982507,-4.282135888327324,-4.147627212715551,-4.149194406729409,-4.267938078271173,-4.325740901684132,-4.330691146635544,-4.21426569713533,-4.223838050313562,-4.80985565168008,-4.385613400409293,-3.539669711766138,-3.095738744440644,-3.098296663458528,-3.987670952986638,-4.231572887921985,-4.192471505675599,-3.872560044938448,-3.604168558573562,-4.057114129465697,-5.104714886077089,-5.097984984165138,-5.913377426231607,-6.192947093080654,-4.417342150942143,-4.151869520937971,-4.196717510971371,-4.269626127777324,-5.418445829598569,-5.947920519959397,-4.34280411861267,-5.715886022195254,-3.822412694284272,-4.181592412955647,-4.025932574959312,-4.069878298244269,-3.940902318294467,-3.999598050590598,-3.907264907261041,-3.84813984159133,-3.520437921244523,-3.839139601485989,-3.7598694775587,-3.812822369224613,-4.002170612682511,-4.064862858043573,-3.983334912181958,-4.22199921257863,-3.991842746159676,-4.080992558231541,-4.033836557833853,-4.052793554615689,-3.941748630015671,-4.1970408583047,-2.13735918391765,-2.171575951807678,-2.088679485561665,-2.105591211056863,-2.132089831999241,-2.143181148198684,-2.135207866034525,-2.766998848372666,-2.132073270074462,-2.521391786717616,-2.125979753031968,-2.171592519718059,-2.118817078378764,-2.379627406523115,-2.613996842374836,-1.793623296244286,-2.01957556081304,-2.790358895602557,-2.450904035395793,-2.52437735486556,-1.794435857550978,-2.98179737953877,-3.331951454250245,-2.981780376851982,-3.124360136581461,-2.955604835366232,-3.580668951227715,-3.223650979417163,-2.103406290526054,-2.230811098789671,-3.327004933975263,-2.129073264130204,-2.125832872299556,-2.092665901009752,-2.152873695476821,-2.965444871430933,-2.537682442854249,-3.271357052253312,-3.03607110627887,-2.718332765426789,-2.788068913205676,-3.23305990310703,-3.234907125328908,-3.197450703698895,-3.198380115878494,-3.198364854744272,-3.154072410455071,-3.21586458072441,-3.205350660924943,-3.215880861826604,-3.215880861826604,-3.19108495307851,-3.062681156891424,-3.182283667253642,-3.587281591586647,-3.687636700122169,-3.689037484482208,-3.519389647825449,-3.173409536373238,-3.230441407577843,-3.643301465964872,-3.213195993224613,-3.14969172056575,-3.158150402610297,-3.144490840487546,-3.198348570454369,-3.686945253028031,-3.090159003312202,-3.1385988,-2.796990053852537,-2.991409737195292,-2.985562025518774,-3.013764517516649,-2.979366284827267,-3.003609002060903,-2.986681089466478,-2.992023615550715,-2.961791990246044,-2.986240497433382,-3.013780982131121,-3.452965269968983,-3.719289962169411,-3.86043203969945,-3.34628633703125,-3.412145969785142,-3.409101611068179,-2.596889253306954,-2.652020953405974,-2.607985344375301,-2.474542630796849,-2.613720373467967,-2.87163643847979,-2.573924959594018,-3.842063729874085,-3.045678685534272,-2.872197984743116,-3.737204276743906,-3.486392443178242,-3.000381606056636,-3.049785008639655,-2.989789756836964,-2.985263032093376,-3.794540400107098,-3.614271462128408,-3.819620733289113,-3.935915505284115,-3.845898863815968,-3.838690185513059,-3.783554932754797,-3.848009671312537,-7.497178133866845,-6.383596732532541,-7.377976240546467,-3.92492802970915,-3.599057354948598,-3.602708320568325,-4.050573739177153,-2.999728601226359,-3.454454926113981,-3.430350967618955,-4.491842900855683,-3.766531252098071,-3.246948193861514,-5.030752284492073,-3.605913097271089,-3.59956130137689,-5.022326322321383,-3.59662439021387,-3.246877619264902,-3.602538465503893,-3.606110244613048,-3.602724330019489,-3.252464326113309,-5.021758051825584,-3.588290191121013,-3.659026815491533,-1.155664238216284],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":0,"opacity":0.5,"fill":true,"fillColor":["red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","red","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","green","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","green","green","green","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red","red"],"fillOpacity":[0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.2429645191409897,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.0926890756302521,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.0524183006535948,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.6166246498599439,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03535947712418301,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.03061157796451918,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.08064892623716148,0.016531279178338,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1412418300653595,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.1617647058823529,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.0891690009337068,0.02318394024276377,0.02318394024276377,0.02318394024276377,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.1749019607843137,0.004056956115779646]},null,null,["A101H <br/> Board: S08000015 <br/> 73","A103H <br/> Board: S08000015 <br/> 73","A105H <br/> Board: S08000015 <br/> 73","A110H <br/> Board: S08000015 <br/> 73","A111H <br/> Board: S08000015 <br/> 73","A112H <br/> Board: S08000015 <br/> 73","A114H <br/> Board: S08000015 <br/> 73","A201H <br/> Board: S08000015 <br/> 73","A202E <br/> Board: S08000015 <br/> 73","A208H <br/> Board: S08000015 <br/> 73","A210H <br/> Board: S08000015 <br/> 73","A211H <br/> Board: S08000015 <br/> 73","A214H <br/> Board: S08000015 <br/> 73","A215H <br/> Board: S08000015 <br/> 73","A216H <br/> Board: S08000015 <br/> 73","A217H <br/> Board: S08000015 <br/> 73","B103H <br/> Board: S08000016 <br/> 28","B104H <br/> Board: S08000016 <br/> 28","B105H <br/> Board: S08000016 <br/> 28","B108H <br/> Board: S08000016 <br/> 28","B114H <br/> Board: S08000016 <br/> 28","B118H <br/> Board: S08000016 <br/> 28","B120H <br/> Board: S08000016 <br/> 28","B121H <br/> Board: S08000016 <br/> 28","B122H <br/> Board: S08000016 <br/> 28","B123H <br/> Board: S08000016 <br/> 28","B124H <br/> Board: S08000016 <br/> 28","B127H <br/> Board: S08000016 <br/> 28","B128H <br/> Board: S08000016 <br/> 28","B129H <br/> Board: S08000016 <br/> 28","B130H <br/> Board: S08000016 <br/> 28","C101H <br/> Board: S08000022 <br/> 11","C106H <br/> Board: S08000022 <br/> 11","C108H <br/> Board: S08000022 <br/> 11","C113H <br/> Board: S08000022 <br/> 11","C114H <br/> Board: S08000022 <br/> 11","C121H <br/> Board: S08000022 <br/> 11","C122H <br/> Board: S08000022 <br/> 11","C204H <br/> Board: S08000031 <br/> 185","C206H <br/> Board: S08000031 <br/> 185","C313H <br/> Board: S08000031 <br/> 185","C403H <br/> Board: S08000031 <br/> 185","C418H <br/> Board: S08000031 <br/> 185","C419H <br/> Board: S08000031 <br/> 185","C420H <br/> Board: S08000031 <br/> 185","F701H <br/> Board: S08000029 <br/> 16","F704H <br/> Board: S08000029 <br/> 16","F705H <br/> Board: S08000029 <br/> 16","F708H <br/> Board: S08000029 <br/> 16","F709H <br/> Board: S08000029 <br/> 16","F710H <br/> Board: S08000029 <br/> 16","F711H <br/> Board: S08000029 <br/> 16","F712H <br/> Board: S08000029 <br/> 16","F714H <br/> Board: S08000029 <br/> 16","F716H <br/> Board: S08000029 <br/> 16","F805H <br/> Board: S08000029 <br/> 16","F810H <br/> Board: S08000029 <br/> 16","G106H <br/> Board: S08000031 <br/> 185","G107H <br/> Board: S08000031 <br/> 185","G108H <br/> Board: S08000031 <br/> 185","G109H <br/> Board: S08000031 <br/> 185","G110H <br/> Board: S08000031 <br/> 185","G112H <br/> Board: S08000031 <br/> 185","G113H <br/> Board: S08000031 <br/> 185","G207H <br/> Board: S08000031 <br/> 185","G212H <br/> Board: S08000031 <br/> 185","G214H <br/> Board: S08000031 <br/> 185","G302H <br/> Board: S08000031 <br/> 185","G303H <br/> Board: S08000031 <br/> 185","G306H <br/> Board: S08000031 <br/> 185","G405H <br/> Board: S08000031 <br/> 185","G408H <br/> Board: S08000031 <br/> 185","G410H <br/> Board: S08000031 <br/> 185","G504H <br/> Board: S08000031 <br/> 185","G505H <br/> Board: S08000031 <br/> 185","G507H <br/> Board: S08000031 <br/> 185","G513H <br/> Board: S08000031 <br/> 185","G516H <br/> Board: S08000031 <br/> 185","G517H <br/> Board: S08000031 <br/> 185","G596H <br/> Board: S08000031 <br/> 185","G598H <br/> Board: S08000031 <br/> 185","G599H <br/> Board: S08000031 <br/> 185","G600H <br/> Board: S08000031 <br/> 185","G602H <br/> Board: S08000031 <br/> 185","G603H <br/> Board: S08000031 <br/> 185","G605H <br/> Board: S08000031 <br/> 185","G607H <br/> Board: S08000031 <br/> 185","G608H <br/> Board: S08000031 <br/> 185","G609H <br/> Board: S08000031 <br/> 185","G610H <br/> Board: S08000031 <br/> 185","G611H <br/> Board: S08000031 <br/> 185","G612H <br/> Board: S08000031 <br/> 185","G613H <br/> Board: S08000031 <br/> 185","G614H <br/> Board: S08000031 <br/> 185","G615H <br/> Board: S08000031 <br/> 185","H101H <br/> Board: S08000022 <br/> 11","H103H <br/> Board: S08000022 <br/> 11","H104H <br/> Board: S08000022 <br/> 11","H106H <br/> Board: S08000022 <br/> 11","H201H <br/> Board: S08000022 <br/> 11","H202H <br/> Board: S08000022 <br/> 11","H208H <br/> Board: S08000022 <br/> 11","H210H <br/> Board: S08000022 <br/> 11","H211H <br/> Board: S08000022 <br/> 11","H212H <br/> Board: S08000022 <br/> 11","H213H <br/> Board: S08000022 <br/> 11","H214H <br/> Board: S08000022 <br/> 11","H215H <br/> Board: S08000022 <br/> 11","H217H <br/> Board: S08000022 <br/> 11","H219H <br/> Board: S08000022 <br/> 11","H221H <br/> Board: S08000022 <br/> 11","H223H <br/> Board: S08000022 <br/> 11","H224H <br/> Board: S08000022 <br/> 11","H225H <br/> Board: S08000022 <br/> 11","H226H <br/> Board: S08000022 <br/> 11","H227H <br/> Board: S08000022 <br/> 11","H228H <br/> Board: S08000022 <br/> 11","H230H <br/> Board: S08000022 <br/> 11","L103H <br/> Board: S08000032 <br/> -9","L104H <br/> Board: S08000032 <br/> -9","L105H <br/> Board: S08000032 <br/> -9","L106H <br/> Board: S08000032 <br/> -9","L203H <br/> Board: S08000032 <br/> -9","L204H <br/> Board: S08000032 <br/> -9","L206H <br/> Board: S08000032 <br/> -9","L207H <br/> Board: S08000032 <br/> -9","L209H <br/> Board: S08000032 <br/> -9","L211H <br/> Board: S08000032 <br/> -9","L213H <br/> Board: S08000032 <br/> -9","L216H <br/> Board: S08000032 <br/> -9","L218H <br/> Board: S08000032 <br/> -9","L302H <br/> Board: S08000032 <br/> -9","L304H <br/> Board: S08000032 <br/> -9","L305H <br/> Board: S08000032 <br/> -9","L306H <br/> Board: S08000032 <br/> -9","L307H <br/> Board: S08000032 <br/> -9","L308H <br/> Board: S08000032 <br/> -9","L395E <br/> Board: S08000032 <br/> -9","N101H <br/> Board: S08000020 <br/> -24","N102H <br/> Board: S08000020 <br/> -24","N103H <br/> Board: S08000020 <br/> -24","N104H <br/> Board: S08000020 <br/> -24","N106H <br/> Board: S08000020 <br/> -24","N111H <br/> Board: S08000020 <br/> -24","N121H <br/> Board: S08000020 <br/> -24","N151H <br/> Board: S08000020 <br/> -24","N161H <br/> Board: S08000020 <br/> -24","N181H <br/> Board: S08000020 <br/> -24","N183H <br/> Board: S08000020 <br/> -24","N184H <br/> Board: S08000020 <br/> -24","N198H <br/> Board: S08000020 <br/> -24","N331H <br/> Board: S08000020 <br/> -24","N332H <br/> Board: S08000020 <br/> -24","N333H <br/> Board: S08000020 <br/> -24","N334H <br/> Board: S08000020 <br/> -24","N335H <br/> Board: S08000020 <br/> -24","N336H <br/> Board: S08000020 <br/> -24","N337H <br/> Board: S08000020 <br/> -24","N352H <br/> Board: S08000020 <br/> -24","N401E <br/> Board: S08000020 <br/> -24","N411H <br/> Board: S08000020 <br/> -24","N431H <br/> Board: S08000020 <br/> -24","N432H <br/> Board: S08000020 <br/> -24","N433H <br/> Board: S08000020 <br/> -24","N434H <br/> Board: S08000020 <br/> -24","N451H <br/> Board: S08000020 <br/> -24","N492H <br/> Board: S08000020 <br/> -24","N494H <br/> Board: S08000020 <br/> -24","N495H <br/> Board: S08000020 <br/> -24","N496H <br/> Board: S08000020 <br/> -24","N499H <br/> Board: S08000020 <br/> -24","N500H <br/> Board: S08000020 <br/> -24","N501H <br/> Board: S08000020 <br/> -24","R103H <br/> Board: S08000025 <br/> 5","S102H <br/> Board: S08000024 <br/> -42","S103H <br/> Board: S08000024 <br/> -42","S107H <br/> Board: S08000024 <br/> -42","S108H <br/> Board: S08000024 <br/> -42","S109H <br/> Board: S08000024 <br/> -42","S114H <br/> Board: S08000024 <br/> -42","S116H <br/> Board: S08000024 <br/> -42","S201H <br/> Board: S08000024 <br/> -42","S203H <br/> Board: S08000024 <br/> -42","S206H <br/> Board: S08000024 <br/> -42","S209H <br/> Board: S08000024 <br/> -42","S217H <br/> Board: S08000024 <br/> -42","S232H <br/> Board: S08000024 <br/> -42","S234H <br/> Board: S08000024 <br/> -42","S235H <br/> Board: S08000024 <br/> -42","S240H <br/> Board: S08000024 <br/> -42","S241H <br/> Board: S08000024 <br/> -42","S243H <br/> Board: S08000024 <br/> -42","S305H <br/> Board: S08000024 <br/> -42","S306H <br/> Board: S08000024 <br/> -42","S307H <br/> Board: S08000024 <br/> -42","S308H <br/> Board: S08000024 <br/> -42","S309H <br/> Board: S08000024 <br/> -42","S310H <br/> Board: S08000024 <br/> -42","S311H <br/> Board: S08000024 <br/> -42","S312H <br/> Board: S08000024 <br/> -42","S313H <br/> Board: S08000024 <br/> -42","S314H <br/> Board: S08000024 <br/> -42","S315H <br/> Board: S08000024 <br/> -42","S316H <br/> Board: S08000024 <br/> -42","S317H <br/> Board: S08000024 <br/> -42","S318H <br/> Board: S08000024 <br/> -42","S319H <br/> Board: S08000024 <br/> -42","S320H <br/> Board: S08000024 <br/> -42","T101H <br/> Board: S08000030 <br/> 49","T104H <br/> Board: S08000030 <br/> 49","T107H <br/> Board: S08000030 <br/> 49","T113H <br/> Board: S08000030 <br/> 49","T115H <br/> Board: S08000030 <br/> 49","T116H <br/> Board: S08000030 <br/> 49","T120H <br/> Board: S08000030 <br/> 49","T121H <br/> Board: S08000030 <br/> 49","T122H <br/> Board: S08000030 <br/> 49","T123H <br/> Board: S08000030 <br/> 49","T202H <br/> Board: S08000030 <br/> 49","T205H <br/> Board: S08000030 <br/> 49","T207H <br/> Board: S08000030 <br/> 49","T209H <br/> Board: S08000030 <br/> 49","T215H <br/> Board: S08000030 <br/> 49","T221H <br/> Board: S08000030 <br/> 49","T304H <br/> Board: S08000030 <br/> 49","T305H <br/> Board: S08000030 <br/> 49","T309H <br/> Board: S08000030 <br/> 49","T310H <br/> Board: S08000030 <br/> 49","T312H <br/> Board: S08000030 <br/> 49","T313H <br/> Board: S08000030 <br/> 49","T314H <br/> Board: S08000030 <br/> 49","T316H <br/> Board: S08000030 <br/> 49","T317H <br/> Board: S08000030 <br/> 49","T319H <br/> Board: S08000030 <br/> 49","T320H <br/> Board: S08000030 <br/> 49","T321H <br/> Board: S08000030 <br/> 49","T322H <br/> Board: S08000030 <br/> 49","T323H <br/> Board: S08000030 <br/> 49","T324H <br/> Board: S08000030 <br/> 49","T325H <br/> Board: S08000030 <br/> 49","V102H <br/> Board: S08000019 <br/> 27","V105H <br/> Board: S08000019 <br/> 27","V106H <br/> Board: S08000019 <br/> 27","V201H <br/> Board: S08000019 <br/> 27","V214H <br/> Board: S08000019 <br/> 27","V215H <br/> Board: S08000019 <br/> 27","V216H <br/> Board: S08000019 <br/> 27","V217H <br/> Board: S08000019 <br/> 27","W106H <br/> Board: S08000028 <br/> -7","W107H <br/> Board: S08000028 <br/> -7","W108H <br/> Board: S08000028 <br/> -7","Y101H <br/> Board: S08000017 <br/> 52","Y103H <br/> Board: S08000017 <br/> 52","Y105H <br/> Board: S08000017 <br/> 52","Y106H <br/> Board: S08000017 <br/> 52","Y107H <br/> Board: S08000017 <br/> 52","Y108H <br/> Board: S08000017 <br/> 52","Y109H <br/> Board: S08000017 <br/> 52","Y110H <br/> Board: S08000017 <br/> 52","Y114H <br/> Board: S08000017 <br/> 52","Y120H <br/> Board: S08000017 <br/> 52","Y124H <br/> Board: S08000017 <br/> 52","Y126H <br/> Board: S08000017 <br/> 52","Y129H <br/> Board: S08000017 <br/> 52","Y130H <br/> Board: S08000017 <br/> 52","Y132H <br/> Board: S08000017 <br/> 52","Y134H <br/> Board: S08000017 <br/> 52","Y135H <br/> Board: S08000017 <br/> 52","Y136H <br/> Board: S08000017 <br/> 52","Y138H <br/> Board: S08000017 <br/> 52","Y142H <br/> Board: S08000017 <br/> 52","Y144H <br/> Board: S08000017 <br/> 52","Y145H <br/> Board: S08000017 <br/> 52","Y146H <br/> Board: S08000017 <br/> 52","Z102H <br/> Board: S08000026 <br/> 1"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[54.83450791774312,60.15105827558128],"lng":[-7.497178133866845,-1.155664238216284]}},"evals":[],"jsHooks":[]}</script>
+<!-- htmlwidget-sizing-policy-base64 PHNjcmlwdCB0eXBlPSJhcHBsaWNhdGlvbi9odG1sd2lkZ2V0LXNpemluZyIgZGF0YS1mb3I9Imh0bWx3aWRnZXQtM2E2MDdiNzUzMWU4ZTRmYmZlOTUiPnsidmlld2VyIjp7IndpZHRoIjoiMTAwJSIsImhlaWdodCI6NDAwLCJwYWRkaW5nIjowLCJmaWxsIjp0cnVlfSwiYnJvd3NlciI6eyJ3aWR0aCI6IjEwMCUiLCJoZWlnaHQiOjQwMCwicGFkZGluZyI6MCwiZmlsbCI6dHJ1ZX19PC9zY3JpcHQ+ -->
+
+<!-- rnb-htmlwidget-end -->
+
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFwX21lYW5zICU+JSBcbiAgZmlsdGVyKEhCICE9IFwiU0IwODAyXCIsXG4gICAgICAgICBIQiAhPSBcIlNCMDgwMVwiKSAlPiUgXG4gIGxlYWZsZXQoKSAlPiUgXG4gIGFkZFByb3ZpZGVyVGlsZXMocHJvdmlkZXJzJFN0YW1lbi5Ub25lckxpdGUpICU+JVxuICAjIGFkZFByb3ZpZGVyVGlsZXMocHJvdmlkZXJzJEVzcmkuTmF0R2VvV29ybGRNYXApICU+JVxuICBhZGRDaXJjbGVNYXJrZXJzKGxuZyA9IH4gbG9uZ2l0dWRlLFxuICAgICAgICAgICAgICAgICAgIGxhdCA9IH4gbGF0aXR1ZGUsXG4gICAgICAgICAgICAgICAgICAgd2VpZ2h0ID0gMCxcbiAgICAgICAgICAgICAgICAgICBmaWxsQ29sb3IgPSB+Y29sb3JOdW1lcmljKCdSZFlsR24nLCAtMjAwOjIwMClcbiAgICAgICAgICAgICAgICAgICAoLW1lYW5fZGlmZiksXG4gICAgICAgICAgICAgICAgICAgZmlsbE9wYWNpdHkgPSAwLjksXG4gICAgICAgICAgICAgICAgICAgIyBmaWxsT3BhY2l0eSA9IH4gYWJzKG1lYW5fZGlmZikvMzAwLFxuICAgICAgICAgICAgICAgICAgIHBvcHVwID0gfiBwYXN0ZShMb2NhdGlvbiwgYnIoKSwgXCJCb2FyZDpcIiwgSEIsIGJyKCksIHJvdW5kKG1lYW5fZGlmZiwgMCkpXG4gIClcbmBgYCJ9 -->
+<pre class="r"><code>map_means %&gt;% 
+  filter(HB != &quot;SB0802&quot;,
+         HB != &quot;SB0801&quot;) %&gt;% 
+  leaflet() %&gt;% 
+  addProviderTiles(providers$Stamen.TonerLite) %&gt;%
+  # addProviderTiles(providers$Esri.NatGeoWorldMap) %&gt;%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~colorNumeric(&#39;RdYlGn&#39;, -200:200)
+                   (-mean_diff),
+                   fillOpacity = 0.9,
+                   # fillOpacity = ~ abs(mean_diff)/300,
+                   popup = ~ paste(Location, br(), &quot;Board:&quot;, HB, br(), round(mean_diff, 0))
+  )</code></pre>
+<!-- rnb-source-end -->
+
+<!-- rnb-htmlwidget-begin eyJkZXBlbmRlbmNpZXMiOlt7Im5hbWUiOiJodG1sd2lkZ2V0cyIsInZlcnNpb24iOiIxLjYuMiIsInNyYyI6eyJmaWxlIjoid3d3In0sIm1ldGEiOltdLCJzY3JpcHQiOiJodG1sd2lkZ2V0cy5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJodG1sd2lkZ2V0cyIsImFsbF9maWxlcyI6dHJ1ZX0seyJuYW1lIjoianF1ZXJ5IiwidmVyc2lvbiI6IjEuMTIuNCIsInNyYyI6eyJmaWxlIjoiaHRtbHdpZGdldHMvbGliL2pxdWVyeSJ9LCJtZXRhIjpbXSwic2NyaXB0IjoianF1ZXJ5Lm1pbi5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjp0cnVlfSx7Im5hbWUiOiJsZWFmbGV0IiwidmVyc2lvbiI6IjEuMy4xIiwic3JjIjp7ImZpbGUiOiJodG1sd2lkZ2V0cy9saWIvbGVhZmxldCJ9LCJtZXRhIjpbXSwic2NyaXB0IjoibGVhZmxldC5qcyIsInN0eWxlc2hlZXQiOiJsZWFmbGV0LmNzcyIsImhlYWQiOltdLCJhdHRhY2htZW50IjpbXSwicGFja2FnZSI6ImxlYWZsZXQiLCJhbGxfZmlsZXMiOnRydWV9LHsibmFtZSI6ImxlYWZsZXRmaXgiLCJ2ZXJzaW9uIjoiMS4wLjAiLCJzcmMiOnsiZmlsZSI6Imh0bWx3aWRnZXRzL2xpYi9sZWFmbGV0Zml4In0sIm1ldGEiOltdLCJzY3JpcHQiOltdLCJzdHlsZXNoZWV0IjoibGVhZmxldGZpeC5jc3MiLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjp0cnVlfSx7Im5hbWUiOiJwcm9qNCIsInZlcnNpb24iOiIyLjYuMiIsInNyYyI6eyJmaWxlIjoiaHRtbHdpZGdldHMvcGx1Z2lucy9Qcm9qNExlYWZsZXQifSwibWV0YSI6W10sInNjcmlwdCI6InByb2o0Lm1pbi5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjpmYWxzZX0seyJuYW1lIjoiUHJvajRMZWFmbGV0IiwidmVyc2lvbiI6IjEuMC4xIiwic3JjIjp7ImZpbGUiOiJodG1sd2lkZ2V0cy9wbHVnaW5zL1Byb2o0TGVhZmxldCJ9LCJtZXRhIjpbXSwic2NyaXB0IjoicHJvajRsZWFmbGV0LmpzIiwic3R5bGVzaGVldCI6W10sImhlYWQiOltdLCJhdHRhY2htZW50IjpbXSwicGFja2FnZSI6ImxlYWZsZXQiLCJhbGxfZmlsZXMiOmZhbHNlfSx7Im5hbWUiOiJyc3R1ZGlvX2xlYWZsZXQiLCJ2ZXJzaW9uIjoiMS4zLjEiLCJzcmMiOnsiZmlsZSI6Imh0bWx3aWRnZXRzL2xpYi9yc3R1ZGlvX2xlYWZsZXQifSwibWV0YSI6W10sInNjcmlwdCI6W10sInN0eWxlc2hlZXQiOiJyc3R1ZGlvX2xlYWZsZXQuY3NzIiwiaGVhZCI6W10sImF0dGFjaG1lbnQiOltdLCJwYWNrYWdlIjoibGVhZmxldCIsImFsbF9maWxlcyI6dHJ1ZX0seyJuYW1lIjoibGVhZmxldC1iaW5kaW5nIiwidmVyc2lvbiI6IjIuMS4yIiwic3JjIjp7ImZpbGUiOiJodG1sd2lkZ2V0cyJ9LCJtZXRhIjpbXSwic2NyaXB0IjoibGVhZmxldC5qcyIsInN0eWxlc2hlZXQiOltdLCJoZWFkIjpbXSwiYXR0YWNobWVudCI6W10sInBhY2thZ2UiOiJsZWFmbGV0IiwiYWxsX2ZpbGVzIjpmYWxzZX0seyJuYW1lIjoibGVhZmxldC1wcm92aWRlcnMiLCJ2ZXJzaW9uIjoiMS45LjAiLCJzcmMiOnsiZmlsZSI6Ii92YXIvZm9sZGVycy9jMi96ODAyemh0czczcTU3cThieGhteV82dGMwMDAwZ24vVC8vUnRtcHNOMFRxQSJ9LCJtZXRhIjpbXSwic2NyaXB0IjoibGVhZmxldC1wcm92aWRlcnNfMS45LjAuanMiLCJzdHlsZXNoZWV0IjpbXSwiaGVhZCI6W10sImF0dGFjaG1lbnQiOltdLCJwYWNrYWdlIjpbXSwiYWxsX2ZpbGVzIjpmYWxzZX0seyJuYW1lIjoibGVhZmxldC1wcm92aWRlcnMtcGx1Z2luIiwidmVyc2lvbiI6IjIuMS4yIiwic3JjIjp7ImZpbGUiOiJodG1sd2lkZ2V0cy9wbHVnaW5zL2xlYWZsZXQtcHJvdmlkZXJzLXBsdWdpbiJ9LCJtZXRhIjpbXSwic2NyaXB0IjoibGVhZmxldC1wcm92aWRlcnMtcGx1Z2luLmpzIiwic3R5bGVzaGVldCI6W10sImhlYWQiOltdLCJhdHRhY2htZW50IjpbXSwicGFja2FnZSI6ImxlYWZsZXQiLCJhbGxfZmlsZXMiOnRydWV9XSwibWV0YWRhdGEiOnsiY2xhc3NlcyI6WyJsZWFmbGV0IiwiaHRtbHdpZGdldCJdLCJzaXppbmdQb2xpY3kiOnsiZGVmYXVsdFdpZHRoIjpbIjEwMCUiXSwiZGVmYXVsdEhlaWdodCI6WzQwMF0sInBhZGRpbmciOlswXSwiZmlsbCI6W10sInZpZXdlciI6eyJkZWZhdWx0V2lkdGgiOltdLCJkZWZhdWx0SGVpZ2h0IjpbXSwicGFkZGluZyI6W10sImZpbGwiOlt0cnVlXSwic3VwcHJlc3MiOltmYWxzZV0sInBhbmVIZWlnaHQiOltdfSwiYnJvd3NlciI6eyJkZWZhdWx0V2lkdGgiOltdLCJkZWZhdWx0SGVpZ2h0IjpbXSwicGFkZGluZyI6W10sImZpbGwiOlt0cnVlXSwiZXh0ZXJuYWwiOltmYWxzZV19LCJrbml0ciI6eyJkZWZhdWx0V2lkdGgiOltdLCJkZWZhdWx0SGVpZ2h0IjpbXSwiZmlndXJlIjpbdHJ1ZV19LCJ2aWV3ZXIucGFkZGluZyI6WzBdLCJ2aWV3ZXIuZmlsbCI6W3RydWVdfX19 -->
+
+<!-- htmlwidget-container-begin -->
+<div class="leaflet html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-44d422438f03a19fc66d" style="width:500px;height:500px;"></div>
+<!-- htmlwidget-container-end -->
+<script type="application/json" data-for="htmlwidget-44d422438f03a19fc66d">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Stamen.TonerLite",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addCircleMarkers","args":[[55.54311962497461,55.63457384961526,55.59500606251077,55.76129992100956,55.6139432879184,55.79854438678265,55.61187194644128,55.43417440351877,55.35470880432875,55.4925763768581,55.43032913030746,55.4491499747881,55.63959692491709,55.45249851679579,55.24830304043762,55.63506662014053,55.77261253159919,55.6072868280822,55.4235218568997,55.55032467814842,55.60326532821214,55.65201996466619,55.59547847757031,55.4237550080509,55.41946034224515,55.65153168996437,55.61781338140703,55.87116908925565,55.4190165043825,55.59548736605687,55.59359982029975,56.03520619727985,55.95934522676915,55.75578813235082,55.83039819790349,55.82699025205066,56.40041846936585,55.42066714887179,55.94861253471846,55.99308587408402,55.94430786843811,55.82281087698339,55.83522081606429,55.94431553559909,55.8802811457977,56.18642925733801,56.12511416499537,56.11778741515185,56.324314057815,56.32764733874068,56.17712832040923,56.12754152405107,56.30440583282238,56.3184594242265,56.20508558828664,56.08230669101091,56.07782161997262,55.86605310859292,55.86402957354225,55.86525065463048,55.86063728184539,55.84670002270478,55.85014541916807,55.87115401675573,55.8928955709958,55.88848976045576,55.88617604247415,55.83533813906261,55.76110819690024,55.82861542973777,55.86264610527329,55.85180958809906,55.82651883947605,55.88323090396392,55.88253821592497,55.88206641892874,55.86144444157212,55.88322222664831,55.88323090396392,55.85229318140239,55.85160619309557,55.87095599574139,55.85363041104556,55.79020612883816,55.90935967753484,55.88718177394502,55.94046150896558,55.9405684370244,55.88448738807767,55.90982292437684,55.8949896602428,55.89163019921703,55.8928955717649,55.94431553559909,55.89464726970014,58.58413820897725,58.44136111453996,58.43274353215386,57.97298338290329,57.47064812768756,57.47382321577746,57.57812457697977,57.33694059515742,57.08472623544452,56.81942653150559,56.68487842564739,57.24450394508455,57.41028219790015,57.59443485605335,57.69632835360552,57.47426146072034,57.46879788798048,56.04201188260065,56.51550072198299,57.89136842010806,56.47944551282011,57.19843872474425,57.47738143705427,55.84862765716368,55.97679629182784,55.86886202946346,55.86588208286803,55.80376676389363,55.80998099774187,55.62253292323772,55.55825115449614,55.67008760276307,55.72959090376932,55.78447233776825,55.81187018748801,55.7825759582111,55.75993288049136,55.69237912957607,55.7773751098206,55.84856012628334,55.78239692114293,55.77369599804519,55.75799113999691,57.15427511227377,57.14730701500728,57.1536151466853,57.14906883538682,57.15526891111778,57.15520282557803,57.15359474434947,57.07625071834234,57.15525994557647,57.05916708890952,57.15702689226273,57.14731597534232,57.15550678231448,57.2765829547031,57.34045160983365,57.50236254424499,57.68762892571867,57.44321124750129,57.53710412363118,57.66898175145049,57.51515496809571,57.66784027732236,57.64562915103533,57.66783142646137,57.44568579214994,57.54193977083711,57.60201408689515,57.46966295195271,57.13605426121714,56.96915206570123,57.64643575783836,57.13399127722913,57.15758398612809,57.15015155461398,57.14522085160544,58.97370185705814,55.99586137954223,55.94295337879353,55.93683653324843,56.05550826596771,55.96024603181998,55.95862705204883,55.96180739509553,55.92951484273669,55.94458347388427,55.94408942034694,55.90894786697389,55.92719588032576,55.94784908689341,55.92720470512906,55.92720470512906,55.84772710073879,55.87266080788892,55.94443350130239,55.97497105285502,55.87674798031835,55.86704151969877,55.89296735563804,55.96813209548823,55.97201466898262,55.90188932679425,55.92886654886311,55.90957290538581,55.90997885008648,55.96813450517016,55.94408059326639,55.86338583242335,55.88024680225071,55.9218962,55.95709778807319,56.46168490165826,56.4776825696829,56.46253215711227,56.45837897949852,56.50449147988203,56.47763774271566,56.4571464030205,56.4724783120415,56.46440706470625,56.46254100718129,56.39634065847395,56.29376706426126,56.61848800669604,56.58589430743549,56.40035915122203,56.42072937857727,56.55453921049833,56.73410323539149,56.56782674445885,56.70775660665387,56.77494037660811,56.65223639074636,56.56348767872194,56.36996551309908,56.46342639912218,56.6511274082109,56.70145253109605,56.3912078597114,56.47699522714304,56.45932171745459,56.46608587104092,56.4648910068513,55.99777416342939,56.01157996970821,56.03496944354773,56.10681624400568,56.02796496522494,56.02013768515904,56.12469329723518,56.02512061113519,56.95205793583473,58.22111585437035,57.47243292409503,54.93910141545364,55.05687795120745,55.06243798921802,54.83450791774312,55.15064218417886,55.12848491696385,55.33137748245706,54.95108104670589,55.23569482906726,54.98820989639195,54.90367876171734,55.05370504961819,55.04949277441625,54.89867430551453,55.05357561351414,54.9879499999598,55.06288958902695,55.04611717367987,55.0624467656914,54.99470466205259,54.89920990341152,55.05264213733598,55.05888834150986,60.15105827558128],[-5.1155214583115,-4.678127739005853,-4.473421138697358,-4.922776217072336,-4.539412042256777,-4.867767693519655,-4.660205883319174,-4.593107536329703,-4.681563274790318,-4.604861931151369,-4.595558414766277,-4.639733026144772,-4.771234860289866,-4.272934296793622,-4.846997299661254,-4.676143299976505,-2.341425082129265,-2.789212453105645,-2.794532371877845,-2.840899916133984,-2.43341807597056,-3.198198536143297,-2.741940809208126,-2.791835304978893,-2.790359133274917,-3.182768385968696,-2.809207546937752,-2.090966734426219,-2.79782263369033,-2.741956845560465,-2.747966855943875,-5.429116799163438,-4.927905423488716,-6.279234631669241,-5.055573966874413,-5.054523993288342,-5.474938612814968,-5.604279004919588,-4.594809764170136,-4.591824633964343,-4.809845004982122,-4.39908430820415,-4.43782149024335,-4.80985565168008,-4.388585159933746,-3.057933416141155,-3.160136430573943,-3.170064657681852,-3.017939943920836,-2.805553983219591,-3.027216933918918,-3.160326639809661,-3.054210552678036,-3.019708076375167,-3.182507223662504,-3.426963008173689,-3.41379851414456,-4.2655525962627,-4.235660384152769,-4.232262383128196,-4.16555141730952,-4.224856544820303,-4.173914180216724,-4.130971109271113,-4.21985561800892,-4.287202239478768,-4.252333351634829,-4.366487269652461,-4.331222470964176,-4.265322788141168,-4.338118360226516,-4.246845203271143,-4.296463616858377,-4.312748718880618,-4.321373997418564,-4.303437452362579,-4.339868004223159,-4.312732212533992,-4.312748718880618,-4.193233850673241,-4.226399151584367,-4.295961769097213,-4.296193779653326,-4.286971681112486,-4.350130631982507,-4.282135888327324,-4.147627212715551,-4.149194406729409,-4.267938078271173,-4.325740901684132,-4.330691146635544,-4.21426569713533,-4.223838050313562,-4.80985565168008,-4.385613400409293,-3.539669711766138,-3.095738744440644,-3.098296663458528,-3.987670952986638,-4.231572887921985,-4.192471505675599,-3.872560044938448,-3.604168558573562,-4.057114129465697,-5.104714886077089,-5.097984984165138,-5.913377426231607,-6.192947093080654,-4.417342150942143,-4.151869520937971,-4.196717510971371,-4.269626127777324,-5.418445829598569,-5.947920519959397,-4.34280411861267,-5.715886022195254,-3.822412694284272,-4.181592412955647,-4.025932574959312,-4.069878298244269,-3.940902318294467,-3.999598050590598,-3.907264907261041,-3.84813984159133,-3.520437921244523,-3.839139601485989,-3.7598694775587,-3.812822369224613,-4.002170612682511,-4.064862858043573,-3.983334912181958,-4.22199921257863,-3.991842746159676,-4.080992558231541,-4.033836557833853,-4.052793554615689,-3.941748630015671,-4.1970408583047,-2.13735918391765,-2.171575951807678,-2.088679485561665,-2.105591211056863,-2.132089831999241,-2.143181148198684,-2.135207866034525,-2.766998848372666,-2.132073270074462,-2.521391786717616,-2.125979753031968,-2.171592519718059,-2.118817078378764,-2.379627406523115,-2.613996842374836,-1.793623296244286,-2.01957556081304,-2.790358895602557,-2.450904035395793,-2.52437735486556,-1.794435857550978,-2.98179737953877,-3.331951454250245,-2.981780376851982,-3.124360136581461,-2.955604835366232,-3.580668951227715,-3.223650979417163,-2.103406290526054,-2.230811098789671,-3.327004933975263,-2.129073264130204,-2.125832872299556,-2.092665901009752,-2.152873695476821,-2.965444871430933,-2.537682442854249,-3.271357052253312,-3.03607110627887,-2.718332765426789,-2.788068913205676,-3.23305990310703,-3.234907125328908,-3.197450703698895,-3.198380115878494,-3.198364854744272,-3.154072410455071,-3.21586458072441,-3.205350660924943,-3.215880861826604,-3.215880861826604,-3.19108495307851,-3.062681156891424,-3.182283667253642,-3.587281591586647,-3.687636700122169,-3.689037484482208,-3.519389647825449,-3.173409536373238,-3.230441407577843,-3.643301465964872,-3.213195993224613,-3.14969172056575,-3.158150402610297,-3.144490840487546,-3.198348570454369,-3.686945253028031,-3.090159003312202,-3.1385988,-2.796990053852537,-2.991409737195292,-2.985562025518774,-3.013764517516649,-2.979366284827267,-3.003609002060903,-2.986681089466478,-2.992023615550715,-2.961791990246044,-2.986240497433382,-3.013780982131121,-3.452965269968983,-3.719289962169411,-3.86043203969945,-3.34628633703125,-3.412145969785142,-3.409101611068179,-2.596889253306954,-2.652020953405974,-2.607985344375301,-2.474542630796849,-2.613720373467967,-2.87163643847979,-2.573924959594018,-3.842063729874085,-3.045678685534272,-2.872197984743116,-3.737204276743906,-3.486392443178242,-3.000381606056636,-3.049785008639655,-2.989789756836964,-2.985263032093376,-3.794540400107098,-3.614271462128408,-3.819620733289113,-3.935915505284115,-3.845898863815968,-3.838690185513059,-3.783554932754797,-3.848009671312537,-7.497178133866845,-6.383596732532541,-7.377976240546467,-3.92492802970915,-3.599057354948598,-3.602708320568325,-4.050573739177153,-2.999728601226359,-3.454454926113981,-3.430350967618955,-4.491842900855683,-3.766531252098071,-3.246948193861514,-5.030752284492073,-3.605913097271089,-3.59956130137689,-5.022326322321383,-3.59662439021387,-3.246877619264902,-3.602538465503893,-3.606110244613048,-3.602724330019489,-3.252464326113309,-5.021758051825584,-3.588290191121013,-3.659026815491533,-1.155664238216284],10,null,null,{"interactive":true,"className":"","stroke":true,"color":"#03F","weight":0,"opacity":0.5,"fill":true,"fillColor":["#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FEB768","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFE99B","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#FFF3AA","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#B81727","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#FFF7B1","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#F6FBB3","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#E8F5A0","#FFFBB9","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#D6EE89","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FED582","#FFEA9C","#FFEA9C","#FFEA9C","#FFEA9C","#FFEA9C","#FFEA9C","#FFEA9C","#FFEA9C","#F8FCB6","#F8FCB6","#F8FCB6","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FED17E","#FFFEBD"],"fillOpacity":0.9},null,null,["A101H <br/> Board: S08000015 <br/> 73","A103H <br/> Board: S08000015 <br/> 73","A105H <br/> Board: S08000015 <br/> 73","A110H <br/> Board: S08000015 <br/> 73","A111H <br/> Board: S08000015 <br/> 73","A112H <br/> Board: S08000015 <br/> 73","A114H <br/> Board: S08000015 <br/> 73","A201H <br/> Board: S08000015 <br/> 73","A202E <br/> Board: S08000015 <br/> 73","A208H <br/> Board: S08000015 <br/> 73","A210H <br/> Board: S08000015 <br/> 73","A211H <br/> Board: S08000015 <br/> 73","A214H <br/> Board: S08000015 <br/> 73","A215H <br/> Board: S08000015 <br/> 73","A216H <br/> Board: S08000015 <br/> 73","A217H <br/> Board: S08000015 <br/> 73","B103H <br/> Board: S08000016 <br/> 28","B104H <br/> Board: S08000016 <br/> 28","B105H <br/> Board: S08000016 <br/> 28","B108H <br/> Board: S08000016 <br/> 28","B114H <br/> Board: S08000016 <br/> 28","B118H <br/> Board: S08000016 <br/> 28","B120H <br/> Board: S08000016 <br/> 28","B121H <br/> Board: S08000016 <br/> 28","B122H <br/> Board: S08000016 <br/> 28","B123H <br/> Board: S08000016 <br/> 28","B124H <br/> Board: S08000016 <br/> 28","B127H <br/> Board: S08000016 <br/> 28","B128H <br/> Board: S08000016 <br/> 28","B129H <br/> Board: S08000016 <br/> 28","B130H <br/> Board: S08000016 <br/> 28","C101H <br/> Board: S08000022 <br/> 11","C106H <br/> Board: S08000022 <br/> 11","C108H <br/> Board: S08000022 <br/> 11","C113H <br/> Board: S08000022 <br/> 11","C114H <br/> Board: S08000022 <br/> 11","C121H <br/> Board: S08000022 <br/> 11","C122H <br/> Board: S08000022 <br/> 11","C204H <br/> Board: S08000031 <br/> 185","C206H <br/> Board: S08000031 <br/> 185","C313H <br/> Board: S08000031 <br/> 185","C403H <br/> Board: S08000031 <br/> 185","C418H <br/> Board: S08000031 <br/> 185","C419H <br/> Board: S08000031 <br/> 185","C420H <br/> Board: S08000031 <br/> 185","F701H <br/> Board: S08000029 <br/> 16","F704H <br/> Board: S08000029 <br/> 16","F705H <br/> Board: S08000029 <br/> 16","F708H <br/> Board: S08000029 <br/> 16","F709H <br/> Board: S08000029 <br/> 16","F710H <br/> Board: S08000029 <br/> 16","F711H <br/> Board: S08000029 <br/> 16","F712H <br/> Board: S08000029 <br/> 16","F714H <br/> Board: S08000029 <br/> 16","F716H <br/> Board: S08000029 <br/> 16","F805H <br/> Board: S08000029 <br/> 16","F810H <br/> Board: S08000029 <br/> 16","G106H <br/> Board: S08000031 <br/> 185","G107H <br/> Board: S08000031 <br/> 185","G108H <br/> Board: S08000031 <br/> 185","G109H <br/> Board: S08000031 <br/> 185","G110H <br/> Board: S08000031 <br/> 185","G112H <br/> Board: S08000031 <br/> 185","G113H <br/> Board: S08000031 <br/> 185","G207H <br/> Board: S08000031 <br/> 185","G212H <br/> Board: S08000031 <br/> 185","G214H <br/> Board: S08000031 <br/> 185","G302H <br/> Board: S08000031 <br/> 185","G303H <br/> Board: S08000031 <br/> 185","G306H <br/> Board: S08000031 <br/> 185","G405H <br/> Board: S08000031 <br/> 185","G408H <br/> Board: S08000031 <br/> 185","G410H <br/> Board: S08000031 <br/> 185","G504H <br/> Board: S08000031 <br/> 185","G505H <br/> Board: S08000031 <br/> 185","G507H <br/> Board: S08000031 <br/> 185","G513H <br/> Board: S08000031 <br/> 185","G516H <br/> Board: S08000031 <br/> 185","G517H <br/> Board: S08000031 <br/> 185","G596H <br/> Board: S08000031 <br/> 185","G598H <br/> Board: S08000031 <br/> 185","G599H <br/> Board: S08000031 <br/> 185","G600H <br/> Board: S08000031 <br/> 185","G602H <br/> Board: S08000031 <br/> 185","G603H <br/> Board: S08000031 <br/> 185","G605H <br/> Board: S08000031 <br/> 185","G607H <br/> Board: S08000031 <br/> 185","G608H <br/> Board: S08000031 <br/> 185","G609H <br/> Board: S08000031 <br/> 185","G610H <br/> Board: S08000031 <br/> 185","G611H <br/> Board: S08000031 <br/> 185","G612H <br/> Board: S08000031 <br/> 185","G613H <br/> Board: S08000031 <br/> 185","G614H <br/> Board: S08000031 <br/> 185","G615H <br/> Board: S08000031 <br/> 185","H101H <br/> Board: S08000022 <br/> 11","H103H <br/> Board: S08000022 <br/> 11","H104H <br/> Board: S08000022 <br/> 11","H106H <br/> Board: S08000022 <br/> 11","H201H <br/> Board: S08000022 <br/> 11","H202H <br/> Board: S08000022 <br/> 11","H208H <br/> Board: S08000022 <br/> 11","H210H <br/> Board: S08000022 <br/> 11","H211H <br/> Board: S08000022 <br/> 11","H212H <br/> Board: S08000022 <br/> 11","H213H <br/> Board: S08000022 <br/> 11","H214H <br/> Board: S08000022 <br/> 11","H215H <br/> Board: S08000022 <br/> 11","H217H <br/> Board: S08000022 <br/> 11","H219H <br/> Board: S08000022 <br/> 11","H221H <br/> Board: S08000022 <br/> 11","H223H <br/> Board: S08000022 <br/> 11","H224H <br/> Board: S08000022 <br/> 11","H225H <br/> Board: S08000022 <br/> 11","H226H <br/> Board: S08000022 <br/> 11","H227H <br/> Board: S08000022 <br/> 11","H228H <br/> Board: S08000022 <br/> 11","H230H <br/> Board: S08000022 <br/> 11","L103H <br/> Board: S08000032 <br/> -9","L104H <br/> Board: S08000032 <br/> -9","L105H <br/> Board: S08000032 <br/> -9","L106H <br/> Board: S08000032 <br/> -9","L203H <br/> Board: S08000032 <br/> -9","L204H <br/> Board: S08000032 <br/> -9","L206H <br/> Board: S08000032 <br/> -9","L207H <br/> Board: S08000032 <br/> -9","L209H <br/> Board: S08000032 <br/> -9","L211H <br/> Board: S08000032 <br/> -9","L213H <br/> Board: S08000032 <br/> -9","L216H <br/> Board: S08000032 <br/> -9","L218H <br/> Board: S08000032 <br/> -9","L302H <br/> Board: S08000032 <br/> -9","L304H <br/> Board: S08000032 <br/> -9","L305H <br/> Board: S08000032 <br/> -9","L306H <br/> Board: S08000032 <br/> -9","L307H <br/> Board: S08000032 <br/> -9","L308H <br/> Board: S08000032 <br/> -9","L395E <br/> Board: S08000032 <br/> -9","N101H <br/> Board: S08000020 <br/> -24","N102H <br/> Board: S08000020 <br/> -24","N103H <br/> Board: S08000020 <br/> -24","N104H <br/> Board: S08000020 <br/> -24","N106H <br/> Board: S08000020 <br/> -24","N111H <br/> Board: S08000020 <br/> -24","N121H <br/> Board: S08000020 <br/> -24","N151H <br/> Board: S08000020 <br/> -24","N161H <br/> Board: S08000020 <br/> -24","N181H <br/> Board: S08000020 <br/> -24","N183H <br/> Board: S08000020 <br/> -24","N184H <br/> Board: S08000020 <br/> -24","N198H <br/> Board: S08000020 <br/> -24","N331H <br/> Board: S08000020 <br/> -24","N332H <br/> Board: S08000020 <br/> -24","N333H <br/> Board: S08000020 <br/> -24","N334H <br/> Board: S08000020 <br/> -24","N335H <br/> Board: S08000020 <br/> -24","N336H <br/> Board: S08000020 <br/> -24","N337H <br/> Board: S08000020 <br/> -24","N352H <br/> Board: S08000020 <br/> -24","N401E <br/> Board: S08000020 <br/> -24","N411H <br/> Board: S08000020 <br/> -24","N431H <br/> Board: S08000020 <br/> -24","N432H <br/> Board: S08000020 <br/> -24","N433H <br/> Board: S08000020 <br/> -24","N434H <br/> Board: S08000020 <br/> -24","N451H <br/> Board: S08000020 <br/> -24","N492H <br/> Board: S08000020 <br/> -24","N494H <br/> Board: S08000020 <br/> -24","N495H <br/> Board: S08000020 <br/> -24","N496H <br/> Board: S08000020 <br/> -24","N499H <br/> Board: S08000020 <br/> -24","N500H <br/> Board: S08000020 <br/> -24","N501H <br/> Board: S08000020 <br/> -24","R103H <br/> Board: S08000025 <br/> 5","S102H <br/> Board: S08000024 <br/> -42","S103H <br/> Board: S08000024 <br/> -42","S107H <br/> Board: S08000024 <br/> -42","S108H <br/> Board: S08000024 <br/> -42","S109H <br/> Board: S08000024 <br/> -42","S114H <br/> Board: S08000024 <br/> -42","S116H <br/> Board: S08000024 <br/> -42","S201H <br/> Board: S08000024 <br/> -42","S203H <br/> Board: S08000024 <br/> -42","S206H <br/> Board: S08000024 <br/> -42","S209H <br/> Board: S08000024 <br/> -42","S217H <br/> Board: S08000024 <br/> -42","S232H <br/> Board: S08000024 <br/> -42","S234H <br/> Board: S08000024 <br/> -42","S235H <br/> Board: S08000024 <br/> -42","S240H <br/> Board: S08000024 <br/> -42","S241H <br/> Board: S08000024 <br/> -42","S243H <br/> Board: S08000024 <br/> -42","S305H <br/> Board: S08000024 <br/> -42","S306H <br/> Board: S08000024 <br/> -42","S307H <br/> Board: S08000024 <br/> -42","S308H <br/> Board: S08000024 <br/> -42","S309H <br/> Board: S08000024 <br/> -42","S310H <br/> Board: S08000024 <br/> -42","S311H <br/> Board: S08000024 <br/> -42","S312H <br/> Board: S08000024 <br/> -42","S313H <br/> Board: S08000024 <br/> -42","S314H <br/> Board: S08000024 <br/> -42","S315H <br/> Board: S08000024 <br/> -42","S316H <br/> Board: S08000024 <br/> -42","S317H <br/> Board: S08000024 <br/> -42","S318H <br/> Board: S08000024 <br/> -42","S319H <br/> Board: S08000024 <br/> -42","S320H <br/> Board: S08000024 <br/> -42","T101H <br/> Board: S08000030 <br/> 49","T104H <br/> Board: S08000030 <br/> 49","T107H <br/> Board: S08000030 <br/> 49","T113H <br/> Board: S08000030 <br/> 49","T115H <br/> Board: S08000030 <br/> 49","T116H <br/> Board: S08000030 <br/> 49","T120H <br/> Board: S08000030 <br/> 49","T121H <br/> Board: S08000030 <br/> 49","T122H <br/> Board: S08000030 <br/> 49","T123H <br/> Board: S08000030 <br/> 49","T202H <br/> Board: S08000030 <br/> 49","T205H <br/> Board: S08000030 <br/> 49","T207H <br/> Board: S08000030 <br/> 49","T209H <br/> Board: S08000030 <br/> 49","T215H <br/> Board: S08000030 <br/> 49","T221H <br/> Board: S08000030 <br/> 49","T304H <br/> Board: S08000030 <br/> 49","T305H <br/> Board: S08000030 <br/> 49","T309H <br/> Board: S08000030 <br/> 49","T310H <br/> Board: S08000030 <br/> 49","T312H <br/> Board: S08000030 <br/> 49","T313H <br/> Board: S08000030 <br/> 49","T314H <br/> Board: S08000030 <br/> 49","T316H <br/> Board: S08000030 <br/> 49","T317H <br/> Board: S08000030 <br/> 49","T319H <br/> Board: S08000030 <br/> 49","T320H <br/> Board: S08000030 <br/> 49","T321H <br/> Board: S08000030 <br/> 49","T322H <br/> Board: S08000030 <br/> 49","T323H <br/> Board: S08000030 <br/> 49","T324H <br/> Board: S08000030 <br/> 49","T325H <br/> Board: S08000030 <br/> 49","V102H <br/> Board: S08000019 <br/> 27","V105H <br/> Board: S08000019 <br/> 27","V106H <br/> Board: S08000019 <br/> 27","V201H <br/> Board: S08000019 <br/> 27","V214H <br/> Board: S08000019 <br/> 27","V215H <br/> Board: S08000019 <br/> 27","V216H <br/> Board: S08000019 <br/> 27","V217H <br/> Board: S08000019 <br/> 27","W106H <br/> Board: S08000028 <br/> -7","W107H <br/> Board: S08000028 <br/> -7","W108H <br/> Board: S08000028 <br/> -7","Y101H <br/> Board: S08000017 <br/> 52","Y103H <br/> Board: S08000017 <br/> 52","Y105H <br/> Board: S08000017 <br/> 52","Y106H <br/> Board: S08000017 <br/> 52","Y107H <br/> Board: S08000017 <br/> 52","Y108H <br/> Board: S08000017 <br/> 52","Y109H <br/> Board: S08000017 <br/> 52","Y110H <br/> Board: S08000017 <br/> 52","Y114H <br/> Board: S08000017 <br/> 52","Y120H <br/> Board: S08000017 <br/> 52","Y124H <br/> Board: S08000017 <br/> 52","Y126H <br/> Board: S08000017 <br/> 52","Y129H <br/> Board: S08000017 <br/> 52","Y130H <br/> Board: S08000017 <br/> 52","Y132H <br/> Board: S08000017 <br/> 52","Y134H <br/> Board: S08000017 <br/> 52","Y135H <br/> Board: S08000017 <br/> 52","Y136H <br/> Board: S08000017 <br/> 52","Y138H <br/> Board: S08000017 <br/> 52","Y142H <br/> Board: S08000017 <br/> 52","Y144H <br/> Board: S08000017 <br/> 52","Y145H <br/> Board: S08000017 <br/> 52","Y146H <br/> Board: S08000017 <br/> 52","Z102H <br/> Board: S08000026 <br/> 1"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[54.83450791774312,60.15105827558128],"lng":[-7.497178133866845,-1.155664238216284]}},"evals":[],"jsHooks":[]}</script>
+<!-- htmlwidget-sizing-policy-base64 PHNjcmlwdCB0eXBlPSJhcHBsaWNhdGlvbi9odG1sd2lkZ2V0LXNpemluZyIgZGF0YS1mb3I9Imh0bWx3aWRnZXQtNDRkNDIyNDM4ZjAzYTE5ZmM2NmQiPnsidmlld2VyIjp7IndpZHRoIjoiMTAwJSIsImhlaWdodCI6NDAwLCJwYWRkaW5nIjowLCJmaWxsIjp0cnVlfSwiYnJvd3NlciI6eyJ3aWR0aCI6IjEwMCUiLCJoZWlnaHQiOjQwMCwicGFkZGluZyI6MCwiZmlsbCI6dHJ1ZX19PC9zY3JpcHQ+ -->
 
 <!-- rnb-htmlwidget-end -->
 
@@ -6352,7 +7258,7 @@ dbl  (4): XCoordinate, YCoordinate, longitude, latitude
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKbGlicmFyeShqYW5pdG9yKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKYGBgCgoKYGBge3J9CmRlbGF5ZWQgPC0gY2xlYW5fbmFtZXMocmVhZF9jc3YoIi4uL2RhdGEvZGVsYXllZC1kaXNjaGFyZ2UtYmVkZGF5cy1oZWFsdGgtYm9hcmQuY3N2IikpCmBgYAoKSW5pdGlhbCBjbGVhbjogICAgcmVtb3ZlIHJlYXNvbiwgcmVtb3ZlIHF1YWxpZmllciByb3dzCgoKYGBge3J9CmRlbGF5ZWQgPC0gZGVsYXllZCAlPiUgCiAgc2VsZWN0KG1vbnRoX29mX2RlbGF5LAogICAgICAgICBoYnQsCiAgICAgICAgIGFnZV9ncm91cCwKICAgICAgICAgbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMsCiAgICAgICAgIGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSkKYGBgCgoKCmBgYHtyfQpkZWxheWVkX25vX3JlYXNvbiA8LSBkZWxheWVkICU+JSAKICBmaWx0ZXIocmVhc29uX2Zvcl9kZWxheSA9PSAiQWxsIERlbGF5IFJlYXNvbnMiKSAlPiUgCiAgc2VsZWN0KC1yZWFzb25fZm9yX2RlbGF5KQpgYGAKCgoKCmBgYHtyfQpkZWxheWVkIDwtIGRlbGF5ZWQgJT4lIAogIG11dGF0ZShtb250aF9vZl9kZWxheSA9IHltKG1vbnRoX29mX2RlbGF5KSkKCgpkZWxheWVkX25vX3JlYXNvbiA8LSBkZWxheWVkX25vX3JlYXNvbiAlPiUgCiAgbXV0YXRlKG1vbnRoX29mX2RlbGF5ID0geW0obW9udGhfb2ZfZGVsYXkpKQpgYGAKCgoKIyMjIyBJbnNwZWN0aW5nIHRoZSBkaWZmZXJlbmNlIG92ZXIgaGVhbHRoIGJvYXJkcyAoYWxsIGFnZXMpCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjE4cGx1cyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwKICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgZ3JvdXAgPSBoYnQsIGNvbG91ciA9IGhidCkgKwogIGdlb21fbGluZSgpCmBgYAoKCgpSZW1vdmluZyBvdXRsaWVyIHRvIGdldCBhIGJldHRlciBpbXByZXNzaW9uIG9mIGhvdyB0aGUgaGVhbHRoIGJvYXJkcyBjb21wYXJlCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIHNsaWNlX21heChhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX25vX3JlYXNvbl9iZWRzLCBuID0gMSkKYGBgCgoKYGBge3J9CmRlbGF5ZWRfbm9fcmVhc29uICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBoYnQgIT0gIlM5MjAwMDAwMyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwKICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgZ3JvdXAgPSBoYnQsIGNvbG91ciA9IGhidCkgKwogIGdlb21fbGluZSgpCmBgYAoKbW9zdCByZWFkYWJsZSBncmFwaCBvZiB0aGUgeWVhciB3aW5uZXIgMjAyMwoKd291bGQgYmUgaW50ZXJlc3RpbmcgdG8gYmUgYWJsZSB0byBsb29rIGF0IGluZGl2aWR1YWwgaGVhbHRoIGJvYXJkcyByZWFjdGl2ZWx5IGFzIHRoZXkgc2VlbSB0byBoYXZlCmRyYXN0aWNhbGx5IGRpZmZlcmVudCBwYXR0ZXJucyB0byBvbmUgYW5vdGhlcgoKCgoKCiMjIyMgRGlmZmVyZW5jZSBiZXR3ZWVuIGFnZSBncm91cHMKCmV4YW1wbGUgb2YgZGlmZmVyZW5jZSBpbiBhZ2VzIGZvciBzaW5nbGUgaGVhbHRoIGJvYXJkCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIsCiAgICAgICAgIGhidCA9PSAiUzA4MDAwMDE1IikgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LAogICAgICB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLAogICAgICBncm91cCA9IGFnZV9ncm91cCwgY29sb3VyID0gYWdlX2dyb3VwKSArCiAgZ2VvbV9saW5lKCkKYGBgCgoKbm90IHN1cGVyIGludGVyZXN0aW5nLCBvbmx5IHNob3dzIHRoZSBkaWZmZXJlbmNlLCBtYXliZSBhIGxpbmUgb2YgY2hhbmdpbmcgcHJvcG9ydGlvbiB3b3VsZCBiZSBtb3JlCmRlc2NyaXB0aXZlCgpgYGB7cn0KcHJvcF9jaGFuZ2UgPC0gZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIpICU+JSAKICBncm91cF9ieShoYnQsIG1vbnRoX29mX2RlbGF5KSAlPiUKICBzdW1tYXJpc2UocHJvcCA9IG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzL3N1bShudW1iZXJfb2ZfZGVsYXllZF9iZWRfZGF5cyksIGFnZV9ncm91cCkKYGBgCgpgYGB7cn0KcHJvcF9jaGFuZ2UgJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjc1cGx1cyIsCiAgICAgICAgIGhidCA9PSAiUzA4MDAwMDIwIikgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LCB5ID0gcHJvcCkgKwogIGdlb21fbGluZSgpCmBgYAoKCgoKCgoKCmBgYHtyfQpkZWxheWVkX25vX3JlYXNvbiAlPiUKICBmaWx0ZXIoaGJ0ID09ICJTMDgwMDAwMTUiLAogICAgICAgICBhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIpICU+JSAKICAgIGdncGxvdCgpICsKICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LAogICAgICB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLAogICAgICBncm91cCA9IGFnZV9ncm91cCwgY29sb3VyID0gYWdlX2dyb3VwKSArCiAgZ2VvbV9saW5lKCkKYGBgCgoKCgpgYGB7cn0KZGVsYXllZCAlPiUgCiAgZmlsdGVyKGhidCA9PSAiUzA4MDAwMDE1IiwKICAgICAgICAgYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICByZWFzb25fZm9yX2RlbGF5ICE9ICJBbGwgRGVsYXkgUmVhc29ucyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywgY29sb3VyID0gcmVhc29uX2Zvcl9kZWxheSkgKwogIGdlb21fbGluZSgpCmBgYAoKCgojIyMjIEh5cG90aGVzaXMgVGVzdGluZwoKCmNyZWF0aW5nIHNldHMgdG8gdGVzdCBhZ2FpbnN0IG9uZSBhbm90aGVyCgpiZWZvcmUgPSAoMjAxNi0wMS0wMSAgIC0gICAgMjAyMC0wMS0wMSkKCgoKYGBge3J9CnRlc3RfYmVmb3JlIDwtIGRlbGF5ZWRfbm9fcmVhc29uICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBtb250aF9vZl9kZWxheSA8ICIyMDIwLTAxLTAxIiwKICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPj0gIjIwMTctMDEtMDEiLAogICAgICAgICBoYnQgPT0gIlMwODAwMDAyMiIpCmBgYAoKYGBge3J9CnRlc3RfYWZ0ZXIgPC0gZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjE4cGx1cyIsCiAgICAgICAgIG1vbnRoX29mX2RlbGF5ID49ICIyMDIyLTAxLTAxIiwKICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPCAiMjAyMy0wMS0wMSIsCiAgICAgICAgIGhidCA9PSAiUzA4MDAwMDIyIikKYGBgCgoKCmBgYHtyfQp0LnRlc3QodGVzdF9iZWZvcmUkbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMsCiAgICAgICB0ZXN0X2FmdGVyJG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzLAogICAgICAgYWx0ZXJuYXRpdmUgPSAidHdvLnNpZGVkIiwKICAgICAgIHBhaXJlZCA9IEZBTFNFLAogICAgICAgY29uZi5sZXZlbCA9IDAuOTUpCmBgYAoKCgoKCm1lYW4gYmVmb3JlIGFuZCBhZnRlciBjb3ZpZAoKYGBge3J9Cm1lYW5zX2JlZm9yZSA8LSBkZWxheWVkICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBtb250aF9vZl9kZWxheSA8ICIyMDIwLTAxLTAxIiwKICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSA9PSAiQWxsIERlbGF5IFJlYXNvbnMiCiAgICAgICAgICkgJT4lIAogIHN1bW1hcmlzZShtZWFuID0gbWVhbihhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX2JlZHMpLCAuYnkgPSBoYnQpCmBgYAoKCmBgYHtyfQptZWFuc19hZnRlciA8LSBkZWxheWVkICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBtb250aF9vZl9kZWxheSA+PSAiMjAyMi0wMS0wMSIsCiAgICAgICAgIHJlYXNvbl9mb3JfZGVsYXkgPT0gIkFsbCBEZWxheSBSZWFzb25zIikgJT4lIAogICBzdW1tYXJpc2UobWVhbiA9IG1lYW4oYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzKSwgLmJ5ID0gaGJ0KQpgYGAKCgpgYGB7cn0KbWVhbl9kaWZmIDwtIGlubmVyX2pvaW4obWVhbnNfYmVmb3JlLCBtZWFuc19hZnRlciwgYnkgPSAiaGJ0IikgJT4lIAogIG11dGF0ZShtZWFuX2RpZmYgPSBtZWFuLnkgLSBtZWFuLngsIEhCID0gaGJ0KQpgYGAKCgoKYGBge3J9Cm1hcCA8LSByZWFkX2NzdigiLi4vZGF0YS9jbGVhbmVkX2RhdGEvaG9zcGl0YWxfbG9jYXRpb25zX2NsZWFuLmNzdiIpCmBgYAoKYGBge3J9Cm1hcF9tZWFucyA8LSBsZWZ0X2pvaW4obWFwLCBtZWFuX2RpZmYsIGJ5ID0gIkhCIikKYGBgCgoKCmBgYHtyfQpsZWFmbGV0KG1hcF9tZWFucykgJT4lIAogIGFkZFRpbGVzKCkgJT4lIAogIGFkZENpcmNsZU1hcmtlcnMobG5nID0gfiBsb25naXR1ZGUsCiAgICAgICAgICAgICBsYXQgPSB+IGxhdGl0dWRlLAogICAgICAgICAgICAgd2VpZ2h0ID0gMCwKICAgICAgICAgICAgIGZpbGxDb2xvciA9IH4gaWZlbHNlKG1lYW5fZGlmZiA+IDAsICJibHVlIiwgInJlZCIpLAogICAgICAgICAgICAgZmlsbE9wYWNpdHkgPSB+IGFicyhtZWFuX2RpZmYpLzMwMCwKICAgICAgICAgICAgIHBvcHVwID0gfiBwYXN0ZShMb2NhdGlvbiwgYnIoKSwgIkJvYXJkOiIsIEhCLCBicigpLCByb3VuZChtZWFuX2RpZmYsIDApKQogICAgICAgICAgICAgKQpgYGAKCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKbGlicmFyeShqYW5pdG9yKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKYGBgCgoKYGBge3J9CmRlbGF5ZWQgPC0gY2xlYW5fbmFtZXMocmVhZF9jc3YoIi4uL2RhdGEvZGVsYXllZC1kaXNjaGFyZ2UtYmVkZGF5cy1oZWFsdGgtYm9hcmQuY3N2IikpCmBgYAoKSW5pdGlhbCBjbGVhbjogICAgcmVtb3ZlIHJlYXNvbiwgcmVtb3ZlIHF1YWxpZmllciByb3dzCgoKYGBge3J9CmRlbGF5ZWQgPC0gZGVsYXllZCAlPiUgCiAgc2VsZWN0KG1vbnRoX29mX2RlbGF5LAogICAgICAgICBoYnQsCiAgICAgICAgIGFnZV9ncm91cCwKICAgICAgICAgbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMsCiAgICAgICAgIGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSkKYGBgCgoKCmBgYHtyfQpkZWxheWVkX25vX3JlYXNvbiA8LSBkZWxheWVkICU+JSAKICBmaWx0ZXIocmVhc29uX2Zvcl9kZWxheSA9PSAiQWxsIERlbGF5IFJlYXNvbnMiKSAlPiUgCiAgc2VsZWN0KC1yZWFzb25fZm9yX2RlbGF5KQpgYGAKCgoKCmBgYHtyfQpkZWxheWVkIDwtIGRlbGF5ZWQgJT4lIAogIG11dGF0ZShtb250aF9vZl9kZWxheSA9IHltKG1vbnRoX29mX2RlbGF5KSkKCgpkZWxheWVkX25vX3JlYXNvbiA8LSBkZWxheWVkX25vX3JlYXNvbiAlPiUgCiAgbXV0YXRlKG1vbnRoX29mX2RlbGF5ID0geW0obW9udGhfb2ZfZGVsYXkpKQpgYGAKCgoKIyMjIyBJbnNwZWN0aW5nIHRoZSBkaWZmZXJlbmNlIG92ZXIgaGVhbHRoIGJvYXJkcyAoYWxsIGFnZXMpCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjE4cGx1cyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwKICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgZ3JvdXAgPSBoYnQsIGNvbG91ciA9IGhidCkgKwogIGdlb21fbGluZSgpCmBgYAoKCgpSZW1vdmluZyBvdXRsaWVyIHRvIGdldCBhIGJldHRlciBpbXByZXNzaW9uIG9mIGhvdyB0aGUgaGVhbHRoIGJvYXJkcyBjb21wYXJlCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIHNsaWNlX21heChhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX25vX3JlYXNvbl9iZWRzLCBuID0gMSkKYGBgCgoKYGBge3J9CmRlbGF5ZWRfbm9fcmVhc29uICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBoYnQgIT0gIlM5MjAwMDAwMyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwKICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgZ3JvdXAgPSBoYnQsIGNvbG91ciA9IGhidCkgKwogIGdlb21fbGluZSgpCmBgYAoKbW9zdCByZWFkYWJsZSBncmFwaCBvZiB0aGUgeWVhciB3aW5uZXIgMjAyMwoKd291bGQgYmUgaW50ZXJlc3RpbmcgdG8gYmUgYWJsZSB0byBsb29rIGF0IGluZGl2aWR1YWwgaGVhbHRoIGJvYXJkcyByZWFjdGl2ZWx5IGFzIHRoZXkgc2VlbSB0byBoYXZlCmRyYXN0aWNhbGx5IGRpZmZlcmVudCBwYXR0ZXJucyB0byBvbmUgYW5vdGhlcgoKCgoKCiMjIyMgRGlmZmVyZW5jZSBiZXR3ZWVuIGFnZSBncm91cHMKCmV4YW1wbGUgb2YgZGlmZmVyZW5jZSBpbiBhZ2VzIGZvciBzaW5nbGUgaGVhbHRoIGJvYXJkCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIsCiAgICAgICAgIGhidCA9PSAiUzA4MDAwMDE1IikgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LAogICAgICB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLAogICAgICBncm91cCA9IGFnZV9ncm91cCwgY29sb3VyID0gYWdlX2dyb3VwKSArCiAgZ2VvbV9saW5lKCkKYGBgCgoKbm90IHN1cGVyIGludGVyZXN0aW5nLCBvbmx5IHNob3dzIHRoZSBkaWZmZXJlbmNlLCBtYXliZSBhIGxpbmUgb2YgY2hhbmdpbmcgcHJvcG9ydGlvbiB3b3VsZCBiZSBtb3JlCmRlc2NyaXB0aXZlCgpgYGB7cn0KcHJvcF9jaGFuZ2UgPC0gZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIpICU+JSAKICBncm91cF9ieShoYnQsIG1vbnRoX29mX2RlbGF5KSAlPiUKICBzdW1tYXJpc2UocHJvcCA9IG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzL3N1bShudW1iZXJfb2ZfZGVsYXllZF9iZWRfZGF5cyksIGFnZV9ncm91cCkKYGBgCgpgYGB7cn0KcHJvcF9jaGFuZ2UgJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjc1cGx1cyIsCiAgICAgICAgIGhidCA9PSAiUzA4MDAwMDIwIikgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LCB5ID0gcHJvcCkgKwogIGdlb21fbGluZSgpCmBgYAoKCgoKCgoKCmBgYHtyfQpkZWxheWVkX25vX3JlYXNvbiAlPiUKICBmaWx0ZXIoaGJ0ID09ICJTMDgwMDAwMTUiLAogICAgICAgICBhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwKICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgZ3JvdXAgPSBhZ2VfZ3JvdXAsIGNvbG91ciA9IGFnZV9ncm91cCkgKwogIGdlb21fbGluZSgpCmBgYAoKCgoKYGBge3J9CmRlbGF5ZWQgJT4lIAogIGZpbHRlcihoYnQgPT0gIlMwODAwMDAxNSIsCiAgICAgICAgIGFnZV9ncm91cCA9PSAiMThwbHVzIiwKICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSAhPSAiQWxsIERlbGF5IFJlYXNvbnMiKSAlPiUgCiAgZ2dwbG90KCkgKwogIGFlcyh4ID0gbW9udGhfb2ZfZGVsYXksIHkgPSBhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX2JlZHMsIGNvbG91ciA9IHJlYXNvbl9mb3JfZGVsYXkpICsKICBnZW9tX2xpbmUoKQpgYGAKCgoKIyMjIyBIeXBvdGhlc2lzIFRlc3RpbmcKCgpjcmVhdGluZyBzZXRzIHRvIHRlc3QgYWdhaW5zdCBvbmUgYW5vdGhlcgoKYmVmb3JlID0gKDIwMTYtMDEtMDEgICAtICAgIDIwMjAtMDEtMDEpCgoKCmBgYHtyfQp0ZXN0X2JlZm9yZSA8LSBkZWxheWVkX25vX3JlYXNvbiAlPiUgCiAgZmlsdGVyKGFnZV9ncm91cCA9PSAiMThwbHVzIiwKICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPCAiMjAyMC0wMS0wMSIsCiAgICAgICAgIG1vbnRoX29mX2RlbGF5ID49ICIyMDE3LTAxLTAxIiwKICAgICAgICAgaGJ0ID09ICJTMDgwMDAwMjIiKQpgYGAKCmBgYHtyfQp0ZXN0X2FmdGVyIDwtIGRlbGF5ZWRfbm9fcmVhc29uICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBtb250aF9vZl9kZWxheSA+PSAiMjAyMi0wMS0wMSIsCiAgICAgICAgIG1vbnRoX29mX2RlbGF5IDwgIjIwMjMtMDEtMDEiLAogICAgICAgICBoYnQgPT0gIlMwODAwMDAyMiIpCmBgYAoKCgpgYGB7cn0KdC50ZXN0KHRlc3RfYmVmb3JlJG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzLAogICAgICAgdGVzdF9hZnRlciRudW1iZXJfb2ZfZGVsYXllZF9iZWRfZGF5cywKICAgICAgIGFsdGVybmF0aXZlID0gInR3by5zaWRlZCIsCiAgICAgICBwYWlyZWQgPSBGQUxTRSwKICAgICAgIGNvbmYubGV2ZWwgPSAwLjk1KQpgYGAKCgoKCgptZWFuIGJlZm9yZSBhbmQgYWZ0ZXIgY292aWQKCmBgYHtyfQptZWFuc19iZWZvcmUgPC0gZGVsYXllZCAlPiUgCiAgZmlsdGVyKGFnZV9ncm91cCA9PSAiMThwbHVzIiwKICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPCAiMjAyMC0wMS0wMSIsCiAgICAgICAgIHJlYXNvbl9mb3JfZGVsYXkgPT0gIkFsbCBEZWxheSBSZWFzb25zIgogICkgJT4lIAogIHN1bW1hcmlzZShtZWFuID0gbWVhbihhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX2JlZHMpLCAuYnkgPSBoYnQpCmBgYAoKCmBgYHtyfQptZWFuc19hZnRlciA8LSBkZWxheWVkICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBtb250aF9vZl9kZWxheSA+PSAiMjAyMi0wMS0wMSIsCiAgICAgICAgIHJlYXNvbl9mb3JfZGVsYXkgPT0gIkFsbCBEZWxheSBSZWFzb25zIikgJT4lIAogIHN1bW1hcmlzZShtZWFuID0gbWVhbihhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX2JlZHMpLCAuYnkgPSBoYnQpCmBgYAoKCmBgYHtyfQptZWFuX2RpZmYgPC0gaW5uZXJfam9pbihtZWFuc19iZWZvcmUsIG1lYW5zX2FmdGVyLCBieSA9ICJoYnQiKSAlPiUgCiAgbXV0YXRlKG1lYW5fZGlmZiA9IG1lYW4ueSAtIG1lYW4ueCwgSEIgPSBoYnQpCmBgYAoKCgpgYGB7cn0KbWFwIDwtIHJlYWRfY3N2KCIuLi9kYXRhL2NsZWFuZWRfZGF0YS9ob3NwaXRhbF9sb2NhdGlvbnNfY2xlYW4uY3N2IikKYGBgCgpgYGB7cn0KbWFwX21lYW5zIDwtIGxlZnRfam9pbihtYXAsIG1lYW5fZGlmZiwgYnkgPSAiSEIiKQpgYGAKCgoKYGBge3J9Cm1hcF9tZWFucyAlPiUgCiAgZmlsdGVyKEhCICE9ICJTQjA4MDIiLAogICAgICAgICBIQiAhPSAiU0IwODAxIikgJT4lIAogIGxlYWZsZXQoKSAlPiUgCiAgYWRkVGlsZXMoKSAlPiUgCiAgYWRkQ2lyY2xlTWFya2VycyhsbmcgPSB+IGxvbmdpdHVkZSwKICAgICAgICAgICAgICAgICAgIGxhdCA9IH4gbGF0aXR1ZGUsCiAgICAgICAgICAgICAgICAgICB3ZWlnaHQgPSAwLAogICAgICAgICAgICAgICAgICAgZmlsbENvbG9yID0gfiBpZmVsc2UobWVhbl9kaWZmID4gMCwgInJlZCIsICJncmVlbiIpLAogICAgICAgICAgICAgICAgICAgZmlsbE9wYWNpdHkgPSB+IGFicyhtZWFuX2RpZmYpLzMwMCwKICAgICAgICAgICAgICAgICAgIHBvcHVwID0gfiBwYXN0ZShMb2NhdGlvbiwgYnIoKSwgIkJvYXJkOiIsIEhCLCBicigpLCByb3VuZChtZWFuX2RpZmYsIDApKQogICkKYGBgCgoKCmBgYHtyfQptYXBfbWVhbnMgJT4lIAogIGZpbHRlcihIQiAhPSAiU0IwODAyIiwKICAgICAgICAgSEIgIT0gIlNCMDgwMSIpICU+JSAKICBsZWFmbGV0KCkgJT4lIAogIGFkZFByb3ZpZGVyVGlsZXMocHJvdmlkZXJzJFN0YW1lbi5Ub25lckxpdGUpICU+JQogIGFkZENpcmNsZU1hcmtlcnMobG5nID0gfiBsb25naXR1ZGUsCiAgICAgICAgICAgICAgICAgICBsYXQgPSB+IGxhdGl0dWRlLAogICAgICAgICAgICAgICAgICAgd2VpZ2h0ID0gMCwKICAgICAgICAgICAgICAgICAgIGZpbGxDb2xvciA9IH5jb2xvck51bWVyaWMoJ1JkWWxHbicsIC0xODU6MTg1KQogICAgICAgICAgICAgICAgICAgKC1tZWFuX2RpZmYpLAogICAgICAgICAgICAgICAgICAgZmlsbE9wYWNpdHkgPSAwLjksCiAgICAgICAgICAgICAgICAgICBwb3B1cCA9IH4gcGFzdGUoTG9jYXRpb24sIGJyKCksICJCb2FyZDoiLCBIQiwgYnIoKSwgcm91bmQobWVhbl9kaWZmLCAwKSkKICApCmBgYAoK</div>
 
 
 
