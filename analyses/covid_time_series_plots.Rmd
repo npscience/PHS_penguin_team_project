@@ -66,11 +66,7 @@ ha_simd <- ha_simd %>%
 #Since, the heal board code 'Scotland' correspond to the entire Scotland, I am going to mutate it in 'Scotland' for clarity.
 
 
-ha_demo <- ha_demo %>% 
-  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
 
-ha_simd <- ha_simd %>% 
-  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
 
 #Finally, I am going to create a new column for dividing the age_groups into different age groups I am more interested in.
 
@@ -102,10 +98,15 @@ ha_demo <- ha_demo %>%
 ```
 
 
+```{r}
+ha_demo_join <- left_join(ha_demo, ha_simd, by = "hb")
+```
+
+
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland")) %>% 
+  filter(hb %in% c("S08000015", "S92000003")) %>% 
   group_by(hb, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
@@ -150,7 +151,7 @@ ha_for_join <- ha_demo %>%
 
 
 ```{r}
-join <- left_join(ha_demo, map, by = "hb")
+#join <- left_join(ha_demo, map, by = "hb")
 ```
 
 
@@ -182,7 +183,7 @@ leaflet() %>%
                    fillOpacity = 0.9
                    #popup = ~ paste( br(), "Board:", HB, br(), round(mean_diff, 0))
   )
-  )
+  
 ```
 
 
@@ -216,7 +217,7 @@ ha_simd %>%
 
 ```{r}
 join %>% 
-  filter(hb %in% c("S08000015", "Scotland"), age_group != "All ages") %>%
+  filter(hb %in% c("S08000015", "S92000003"), age_group != "All ages") %>%
   group_by(age_group, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
@@ -242,7 +243,7 @@ join %>%
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland"), age_group != "All ages") %>%
+  filter(hb %in% c("S08000015", "S92000003"), age_group != "All ages") %>%
   group_by(age_group, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
@@ -253,7 +254,7 @@ ha_demo %>%
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland"), age != "All ages") %>%
+  filter(hb %in% c("S08000015", "S92000003"), age != "All ages") %>%
   group_by(age, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +

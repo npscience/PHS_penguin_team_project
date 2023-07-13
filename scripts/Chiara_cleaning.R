@@ -33,11 +33,7 @@ ha_simd <- ha_simd %>%
 #Since, the heal board code 'Scotland' correspond to the entire Scotland, I am going to mutate it in 'Scotland' for clarity.
 
 
-ha_demo <- ha_demo %>% 
-  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
 
-ha_simd <- ha_simd %>% 
-  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
 
 #Finally, I am going to create a new column for dividing the age_groups into different age groups I am more interested in.
 
@@ -73,7 +69,7 @@ ha_for_join <- ha_demo %>%
 join_ha_map <- full_join(map, ha_for_join, by = "hb")
 
 
-
+write_csv(join_ha_map, "../PHS_penguin_team_project/data/cleaned_data/join_ha_map.csv")
 
 write_csv(ha_demo, "../PHS_penguin_team_project/data/cleaned_data/ha_demo_clean.csv")
 
