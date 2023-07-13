@@ -50,36 +50,23 @@ ui <- fluidPage(
   
   
  fluidRow(
-    column(width = 6,
-           plotOutput("map")
+    column(width = 4,
+           leafletOutput("map")
   ),
   
   column(
-    width = 6,
+    width = 4,
     plotOutput("ha_admissions")
   ),
   
+  column(width = 4,
+         plotOutput("age_ha_covid"))
+ 
+  
   ),
   
 
-fluidRow(
-  
-  
-#  column(
- #   width = 6,
-#  ),
-  
-  
-  column(width = 6,
-         plotOutput("age_ha_covid"))
 )
-  
-  
-  
-  
-  
-)
-
 
 
 
