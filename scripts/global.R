@@ -46,17 +46,46 @@ hbs_list <- c("Ayrshire and Arran" = "S08000015",
               "Tayside" = "S08000030",
               "Greater Glasgow and Clyde" = "S08000031",
               "Lanarkshire" = "S08000032",
-              "All Scotland" = "S92000003",
-              "The Golden Jubilee National Hospital" = "SB0801") # used on both pages for now
+              "All Scotland" = "S92000003")#,
+              #"The Golden Jubilee National Hospital" = "SB0801") # used on both pages for now
 
 # theme for plots ----
 
+theme_penguin <- function(){
+  
+  theme(legend.position = "bottom",
+        panel.background = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text = element_text(size = 12),
+        axis.title = element_text(size = 16),
+        legend.title = element_text(size = 12),
+        plot.title = element_text(size = 20)
+  )
+  
+}
+
 ## colour palettes for plots ----
 
-# show all of scotland v one hb
+# set "All Scotland" to "blue4" and individual hbs to "darkviolet"
 scot_hb_colours <- c("S92000003" = "blue4",
-                     "S08000015" = "darkviolet")
-# set first hb (scotland) to "blue4" and second hb (selected) to "darkviolet"
+                    "S08000015" = "darkviolet",
+                    "S08000016" = "darkviolet",
+                    "S08000017"= "darkviolet",
+                    "S08000019" = "darkviolet",
+                    "S08000020" = "darkviolet",
+                    "S08000022" = "darkviolet",
+                    "S08000024" = "darkviolet",
+                    "S08000025" = "darkviolet",
+                    "S08000026" = "darkviolet",
+                    "S08000028"= "darkviolet",
+                    "S08000029" = "darkviolet",
+                    "S08000030" = "darkviolet",
+                    "S08000031" = "darkviolet",
+                    "S08000032" = "darkviolet")
+
+# scot_hb_colours <- c("S92000003" = "blue4",
+#                      "S08000015" = "darkviolet")
 
 # show 3 different ages
 age_colours <- c("Under 5" = "greenyellow",

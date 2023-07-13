@@ -46,21 +46,13 @@ server <- function(input, output, session) {
       filter(hb %in% c("S92000003", input$hb)) %>% 
       ggplot() +
       aes(x = quarter, y = percentage_occupancy, colour = hb) +
-      geom_line() +
-      geom_point() +
+      geom_line(show.legend = FALSE) +
+      geom_point(show.legend = FALSE) +
       scale_colour_manual(values = scot_hb_colours) +
       labs(x = "\nYear quarter", y = "Percentage occupancy\n",
            title = "Percentage occupancy (hospital beds)",
            colour = "Health board") +
-      theme(legend.position = "bottom",
-            panel.background = element_blank(),
-            panel.grid.minor.x = element_blank(),
-            panel.grid.minor.y = element_blank(),
-            axis.text = element_text(size = 12),
-            axis.title = element_text(size = 16),
-            legend.title = element_text(size = 12),
-            plot.title = element_text(size = 20)
-      )
+      theme_penguin()
   })
 # Naomi plots end
 
