@@ -44,7 +44,7 @@ ui <- fluidPage(
                column(width = 6,
                       plotOutput("plot_season_demo_age")
                )
-             ),
+             )),
     
     
     # Tab 2: COVID impact on hospital admissions ----

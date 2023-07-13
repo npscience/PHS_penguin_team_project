@@ -136,8 +136,8 @@ locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
 
 #Chiara data
 
-ha_demo <- read_csv("data/cleaned_data/ha_demo_clean.csv")
-join_ha_map <- read_csv("data/cleaned_data/join_ha_map.csv")
+ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
+join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
 
 
 
