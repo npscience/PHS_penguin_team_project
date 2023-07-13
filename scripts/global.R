@@ -60,7 +60,7 @@ theme_penguin <- function(){
         axis.text = element_text(size = 12),
         axis.title = element_text(size = 16),
         legend.title = element_text(size = 12),
-        plot.title = element_text(size = 20)
+        plot.title = element_text(size = 18)
   )
   
 }
@@ -105,6 +105,7 @@ admissions_pal <- colorNumeric(
   domain = join_ha_map$mean_adm)
   
 admissions_heatmap <- join_ha_map %>% 
+  filter(!is.na(mean_adm)) %>% 
   leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>%
   setView(-3.524194, 57.786499, zoom = 5.6) %>% 

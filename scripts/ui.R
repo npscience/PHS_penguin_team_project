@@ -1,6 +1,6 @@
 # UI -----
 ui <- fluidPage(
-  theme = bs_theme(bootswatch = "simplex"),
+  theme = bs_theme(bootswatch = "pulse"),
   
   # ABOVE TABS ----
   titlePanel(tags$h3("Trends in acute care provision")),
@@ -27,18 +27,19 @@ ui <- fluidPage(
              HTML("<br>"),
              
              fluidRow(
-               column(width = 6,
+               column(width = 5, offset = 1,
                       leafletOutput("attendance_season_heatmap")
                ),
-               column(width = 6,
+               column(width = 5,
                       plotOutput("plot_season")
                )),
+             HTML("<br><br>"),
              
              fluidRow(
-               column(width = 6,
+               column(width = 5, offset = 1,
                       plotOutput("plot_season_demo_simd")
                ),
-               column(width = 6,
+               column(width = 5, 
                       plotOutput("plot_season_demo_age")
                )
              )),
@@ -60,6 +61,7 @@ ui <- fluidPage(
                       plotOutput("admissions_plot")
                )
              ),
+             HTML("<br>"),
              fluidRow(
                "These plot shows the trend of hospital admissions over time, from the beginning of 2020 up to June 2023."
              )
@@ -69,9 +71,7 @@ ui <- fluidPage(
     
     tabPanel(tags$b("COVID impact on bed occupancy"),
              HTML("<br>"),
-             fluidRow(
-               "From Public Health Scotland data glossary: 'The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period.'"
-             ),
+             
              fluidRow(
                column(width = 4,
                       leafletOutput("occupancy_heatmap_all")
@@ -83,6 +83,7 @@ ui <- fluidPage(
                       plotOutput("occupancy_ts")
                )
              ),
+             HTML("<br>"),
              fluidRow(
                "These maps show % bed occupancy for the most recent quarter with data available (2022 Q4)"
              )
