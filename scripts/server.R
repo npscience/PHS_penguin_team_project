@@ -166,7 +166,7 @@ server <- function(input, output, session) {
       aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
       geom_line(show.legend = FALSE) +
       labs(
-        title = "Hospital admissions trend per health Board",
+        title = "Hospital admissions trend per hb",
         x = "\nYear",
         y = "average monthly hospital admissions\n"
       ) +
