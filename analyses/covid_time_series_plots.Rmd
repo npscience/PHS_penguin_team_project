@@ -188,6 +188,11 @@ leaflet() %>%
 
 
 
+```{r}
+ha_demo %>% 
+  arrange(desc(week_ending))
+
+```
 
 
 
