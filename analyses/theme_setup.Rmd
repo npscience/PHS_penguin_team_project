@@ -127,20 +127,19 @@ theme_penguin <- function (){
 
 ```{r}
 # show all of scotland v one hb:
-scot_hb_colours <- c("blue4","darkviolet")
+scot_hb_colours <- c("S92000003" = "blue4",
+                     "S08000015" = "darkviolet")
 # set first hb (scotland) to "blue4" and second hb (selected) to "darkviolet"
   
 # show 3 different ages
-age_colours <- c("Under 5" = "orchid",
-                 "5 - 64" = "darkorchid2",
-                 "over 65" = "darkmagenta"
+age_colours <- c("Under 5" = "greenyellow",
+                 "5 - 64" = "springgreen",
+                 "over 65" = "darkgreen"
                 )
 
-
-
 # show summer v winter
-summer
-winter
+season_colours <- c("summer" = "goldenrod1",
+                    "winter" = "steelblue1")
 
 
 
@@ -199,20 +198,7 @@ ggplot() +
             aes(
     x = year, 
     y = average_season_year)) +
-  scale_fill_manual(values = c("blue4","blue2")) +
-  theme_penguin()
-
-# 6. create plot per healthboard, split per season
-attendances_ae %>% 
-  filter(right_season == TRUE) %>% 
-  group_by(year, season, hbt) %>% 
-  summarise(total_attendances = sum(number_of_attendances_all)) %>%
-  filter(year < 2020 & year > 2007) %>% 
-  filter(hbt == "S08000028") %>% 
-  ggplot() +
-  aes(x = year, y = total_attendances, fill = season) +
-  geom_col(position = "dodge", col = "white") +
-  scale_fill_manual(values = c("blue4","darkviolet")) +
+  scale_fill_manual(values = season_colours) +
   theme_penguin()
 ```
 

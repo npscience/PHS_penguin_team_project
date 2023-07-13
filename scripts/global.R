@@ -39,14 +39,33 @@ hbs_list <- c("Ayrshire and Arran" = "S08000015",
 
 # theme for plots ----
 
-## tbc
+## colour palettes for plots ----
 
-## occupancy heatmap
+# show all of scotland v one hb
+scot_hb_colours <- c("S92000003" = "blue4",
+                     "S08000015" = "darkviolet")
+# set first hb (scotland) to "blue4" and second hb (selected) to "darkviolet"
+
+# show 3 different ages
+age_colours <- c("Under 5" = "greenyellow",
+                 "5 - 64" = "springgreen",
+                 "over 65" = "darkgreen"
+)
+
+# show summer v winter
+season_colours <- c("summer" = "goldenrod1",
+                    "winter" = "steelblue1")
+
+## heatmap palettes ----
+
+# occupancy heatmap 
 occupancy_pal <- colorNumeric(
   palette = "viridis",
   domain = hospital_location_occupancy$percentage_occupancy)
 
-## static plot to show all of scotland
+## static plots ----
+
+# occupancy heatmap for all of scotland
 occupancy_heatmap_all <- hospital_location_occupancy %>% 
   leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>% 
@@ -59,13 +78,6 @@ occupancy_heatmap_all <- hospital_location_occupancy %>%
                    color = ~ occupancy_pal(percentage_occupancy)
   ) %>% 
   setView(-3.524194, 57.786499, zoom = 5.6)
-
-## [old] colour palette for hospitals on map
-pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
-                     "red","indianred", "maroon", "brown",
-                     "springgreen", "springgreen2", "springgreen3", "springgreen4",
-                     "gold", "goldenrod", "yellow", "orange"),
-                   domain = unique(hospital_location_occupancy$hb))
 
 ########### thijmen
 #### Create dataset including season terminology for summer/winter difference
