@@ -10,6 +10,7 @@ library(tidyverse)
 library(ggplot2)
 library(janitor)
 library(lubridate)
+library(leaflet)
 ```
 
 
@@ -149,8 +150,52 @@ ha_for_join <- ha_demo %>%
 
 
 ```{r}
+join <- left_join(ha_demo, map, by = "hb")
+```
+
+
+
+
+```{r}
 join_ha_map <- full_join(map, ha_for_join, by = "hb")
 ```
+
+#Cleaning join dataset
+
+
+```{r}
+ha_
+```
+
+
+
+
+```{r}
+join_ha_map %>% 
+leaflet() %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~colorNumeric('RdYlGn', mean_adm)
+                   (mean_adm),
+                   fillOpacity = 0.9
+                   #popup = ~ paste( br(), "Board:", HB, br(), round(mean_diff, 0))
+  )
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -170,7 +215,7 @@ ha_simd %>%
 
 
 ```{r}
-ha_demo %>% 
+join %>% 
   filter(hb %in% c("S08000015", "Scotland"), age_group != "All ages") %>%
   group_by(age_group, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
@@ -181,8 +226,8 @@ ha_demo %>%
 
 
 ```{r}
-ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland"), age != "All ages") %>%
+join %>% 
+  filter(hb %in% c("S08000015"), age != "All ages") %>%
   group_by(age, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +

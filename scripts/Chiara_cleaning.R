@@ -10,7 +10,10 @@ ha_demo <- read_csv("../PHS_penguin_team_project/data/covid/hospital_admissions/
 
 
 ha_simd <- read_csv("../PHS_penguin_team_project/data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
+  clean_names()
 
+
+map <- read_csv("../PHS_penguin_team_project/data/cleaned_data/hospital_locations_clean.csv") %>% 
   clean_names()
 
 #First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset consistent with the other datasets.
@@ -57,6 +60,17 @@ ha_demo <- ha_demo %>%
   
   .after = age_group)
 
+
+join <- left_join(ha_demo, map, by = "hb")
+
+
+
+ha_for_join <- ha_demo %>% 
+  group_by(hb) %>% 
+  summarise(mean_adm = mean(number_admissions))
+
+
+join_ha_map <- full_join(map, ha_for_join, by = "hb")
 
 
 
