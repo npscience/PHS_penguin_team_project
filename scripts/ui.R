@@ -55,10 +55,13 @@ ui <- fluidPage(
              
              fluidRow(
                column(width = 4,
+                      leafletOutput("occupancy_heatmap_all")
+               ),
+               column(width = 4,
                       leafletOutput("occupancy_heatmap"),
                       "This map shows occupancy in 2022 Q4"
                ),
-               column(width = 6, offset = 2,
+               column(width = 4,
                       plotOutput("occupancy_ts")
                )
              )

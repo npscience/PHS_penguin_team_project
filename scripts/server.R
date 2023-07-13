@@ -1,18 +1,27 @@
 # server -----
 server <- function(input, output, session) {
   
-  # output$occupancy_heatmap ----
+  # output$occupancy_heatmap_all ----
+  # static, shows all of scotland
+  output$occupancy_heatmap_all <- renderLeaflet({
+    occupancy_heatmap_all
+  })
   
+  
+  # output$occupancy_heatmap ----
+  # reactive to hb selector
   output$occupancy_heatmap <- renderLeaflet({
     hospital_location_occupancy %>% 
       filter(hb == input$hb) %>% 
       leaflet() %>% 
-      addTiles() %>% 
+      addProviderTiles(providers$Stamen.TonerLite) %>% 
       addCircleMarkers(lng = ~ longitude,
                        lat = ~ latitude,
                        weight = 1,
+                       radius = 5,
+                       fillOpacity = 1,
                        popup = ~ paste(location_name, br(), "Board:", hb),
-                       color = ~ percentage_occupancy
+                       color = ~ occupancy_pal(percentage_occupancy)
       )
   })
   
