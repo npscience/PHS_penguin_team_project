@@ -224,9 +224,11 @@ server <- function(input, output, session) {
           y = average_daily_number_of_delayed_beds,
           group = age_group, colour = age_group) +
       geom_line() +
-      geom_point() +
+      geom_point(size = 1) +
       labs(title = "Average Daily Number of Delayed Beds",
-           x = "\nYear", y = "average daily number of delayed beds\n") +
+           x = "\nYear",
+           y = "Average Daily Number of Delayed Beds\n",
+           colour = "Age Group") +
       theme(legend.position = "bottom",
             panel.background = element_blank(),
             panel.grid.minor.x = element_blank(),
