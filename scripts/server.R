@@ -44,4 +44,94 @@ server <- function(input, output, session) {
       )
   })
   
+<<<<<<< Updated upstream
+=======
+  # Thijmen start
+  # Thijmen - output plot for season difference
+  output$plot_season <- renderPlot({
+    ggplot() +
+      geom_col(data = 
+                 attendances_ae %>% 
+                 filter(right_season == TRUE) %>% 
+                 group_by(year, season, hbt) %>% 
+                 summarise(total_attendances = sum(number_of_attendances_all)) %>%
+                 filter(year < 2020 & year > 2007) %>% 
+                 filter(hbt == input$hb), 
+               aes(
+                 x = year, 
+                 y = total_attendances, 
+                 fill = season),
+               position = "dodge", col = "white") +
+      geom_line(data = 
+                  attendances_ae %>% 
+                  select(year, hbt, number_of_attendances_all) %>% 
+                  group_by(year, hbt) %>% 
+                  summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
+                  filter(year < 2020 & year > 2007) %>%
+                  filter(hbt == input$hb), 
+                aes(
+                  x = year, 
+                  y = average_season_year)) +
+      labs(title = "Number of A&E attendances per year, per season",
+           subtitle = "line indicating average number of attendances per season per year",
+           x = "\nYear", y = "Total attendances\n",
+           fill = "Season")
+    
+  })
+  
+  # Thijmen - output plot with demographics - focus on deprivation
+  output$plot_season_demo_simd <- renderPlot({
+    
+    demo_attendances_season %>% 
+      filter(right_season == TRUE) %>% 
+      filter(year < 2020 & year > 2007) %>% 
+      filter(hbt == input$hb) %>% 
+      select(year, season, hbt, deprivation, number_of_attendances) %>% 
+      group_by(year, season, hbt, deprivation) %>% 
+      summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
+      ggplot() +
+      aes(x = as.character(year), y = total_per_deprivation, fill = as.character(deprivation), group = season) +
+      geom_col(position = "dodge", col = "white") +
+      labs(title = "Number of attendances split by SIMD",
+           x = "\nYear", y = "Attendances\n",
+           fill = "SIMD")
+    
+  })
+  
+  # Thijmen - output plot with demographics - focus on age
+  output$plot_season_demo_age <- renderPlot({
+    
+    demo_attendances_season %>% 
+      filter(right_season == TRUE) %>% 
+      filter(year < 2020 & year > 2007) %>% 
+      filter(hbt == input$hb) %>% 
+      select(year, season, hbt, age, number_of_attendances) %>% 
+      group_by(year, season, hbt, age) %>% 
+      summarise(total_per_age = sum(number_of_attendances)) %>% 
+      ggplot() +
+      aes(x = as.character(year), y = total_per_age, fill = as.character(age), group = season) +
+      geom_col(position = "dodge", col = "white") +
+      labs(title = "Number of attendances split by age group",
+           x = "\nYear", y = "Attendances\n",
+           fill = "Age group")
+    
+  })
+  
+  # Thijmen - output map leaflet plot
+  output$attendance_season_heatmap <- renderLeaflet({
+    waiting_times %>% 
+      rename("Location" = "treatment_location") %>% 
+      left_join(locations, by = "Location") %>% 
+      filter(hbt == input$hb) %>% 
+      leaflet() %>% 
+      addProviderTiles(providers$Stamen.TonerLite) %>%
+      addCircleMarkers(lng = ~ longitude,
+                       lat = ~ latitude,
+                       weight = 0,
+                       fillOpacity = 0.9,
+                       popup = ~ paste(department_type))
+  })
+  #Thijmen end
+  
+>>>>>>> Stashed changes
 }
