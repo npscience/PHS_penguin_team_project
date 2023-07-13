@@ -140,16 +140,13 @@ server <- function(input, output, session) {
                        lat = ~ latitude,
                        weight = 0,
                        fillOpacity = 0.9,
+                       fillColor = "darkviolet",
                        popup = ~ paste(department_type))
   })
-  #Thijmen end
+ #Thijmen end
   
   
-# Chiara plots start
-  
-  
-  
-  
+# Chiara plots start ----
 
   output$admissions_heatmap <- renderLeaflet({
     join_ha_map %>% 
@@ -165,7 +162,6 @@ server <- function(input, output, session) {
       )
   })
   
-  
   output$admissions_ts <- renderPlot({
     ha_demo %>% 
       filter(hb %in% c(input$hb)) %>% 
@@ -179,9 +175,6 @@ server <- function(input, output, session) {
         y = "average monthly hospital admissions\n"
       )
   })
-  
-  
-  
   
   output$admissions_plot <- renderPlot({
     ha_demo %>% 
@@ -199,15 +192,8 @@ server <- function(input, output, session) {
   
   
 # Chiara plots end
-  
-  
-  
-  
-  
-  
-
-
-  # Ali start ----
+ 
+# Ali start ----
   
   output$delays_age <- renderPlot({
     delayed %>%
