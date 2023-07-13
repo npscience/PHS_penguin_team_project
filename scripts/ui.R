@@ -21,14 +21,31 @@ ui <- fluidPage(
              HTML("<br>"),
              
              fluidRow(
+               
+               # select hb(s)
+               selectInput(inputId = "season_hb",
+                           label = tags$b("Which health board?"),
+                           choices = hbs_list,
+                           selected = "S08000015")
+             ),
+             
+             fluidRow(
                column(width = 6,
-                      plotOutput("plot1")
+                      leafletOutput("attendance_season_heatmap")
                ),
                column(width = 6,
-                      plotOutput("plot2")
+                      plotOutput("plot_season")
+               )),
+             
+             fluidRow(
+               column(width = 6,
+                      plotOutput("plot_season_demo_simd")
+               ),
+               column(width = 6,
+                      plotOutput("plot_season_demo_age")
                )
-             )
-    ),
+             ),
+    
     
     # Tab 2: COVID impact on hospital admissions ----
     
