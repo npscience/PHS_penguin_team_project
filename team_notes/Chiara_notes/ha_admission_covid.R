@@ -11,7 +11,6 @@ library(sf)
 
 
 ha_demo <- read_csv("../PHS_penguin_team_project/data/cleaned_data/ha_demo_clean.csv")
-
 join_ha_map <- read_csv("../PHS_penguin_team_project/data/cleaned_data/join_ha_map.csv")
 
 hbs_list <- c("Ayrshire and Arran" = "S08000015",
@@ -50,36 +49,23 @@ ui <- fluidPage(
   
   
  fluidRow(
-    column(width = 6,
-           plotOutput("map")
+    column(width = 4,
+           leafletOutput("map")
   ),
   
   column(
-    width = 6,
+    width = 4,
     plotOutput("ha_admissions")
   ),
   
+  column(width = 4,
+         plotOutput("age_ha_covid"))
+ 
+  
   ),
   
 
-fluidRow(
-  
-  
-#  column(
- #   width = 6,
-#  ),
-  
-  
-  column(width = 6,
-         plotOutput("age_ha_covid"))
 )
-  
-  
-  
-  
-  
-)
-
 
 
 
