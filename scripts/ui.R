@@ -59,6 +59,9 @@ ui <- fluidPage(
                column(width = 4,
                       plotOutput("admissions_plot")
                )
+             ),
+             fluidRow(
+               "These plot shows the trend of hospital admissions over time, from the beginning of 2020 up to June 2023."
              )
     ),
     
