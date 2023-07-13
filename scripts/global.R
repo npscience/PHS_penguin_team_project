@@ -41,6 +41,24 @@ hbs_list <- c("Ayrshire and Arran" = "S08000015",
 
 ## tbc
 
+## occupancy heatmap
+occupancy_pal <- colorNumeric(
+  palette = "viridis",
+  domain = hospital_location_occupancy$percentage_occupancy)
+
+## static plot to show all of scotland
+occupancy_heatmap_all <- hospital_location_occupancy %>% 
+  leaflet() %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>% 
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 1,
+                   radius = 5,
+                   fillOpacity = 1,
+                   popup = ~ paste(location_name, br(), "Board:", hb),
+                   color = ~ occupancy_pal(percentage_occupancy)
+  )
+
 ## [old] colour palette for hospitals on map
 pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
                      "red","indianred", "maroon", "brown",
