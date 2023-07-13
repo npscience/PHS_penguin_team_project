@@ -55,20 +55,20 @@ attendances_ae <- waiting_times %>%
 
 # 3.
 #lets create a table with a yearly average per hb per season, for each year:
-avg_yearperseason_hb <- attendances_ae %>% 
-  select(year, hbt, number_of_attendances_all) %>% 
-  group_by(year, hbt) %>% 
-  summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
-  filter(year < 2020 & year > 2007) %>%
-  filter(hbt == "S08000028")
+#avg_yearperseason_hb <- attendances_ae %>% 
+#  select(year, hbt, number_of_attendances_all) %>% 
+#  group_by(year, hbt) %>% 
+#  summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
+#  filter(year < 2020 & year > 2007) %>%
+#  filter(hbt == "S08000028")
 
 # 4. lets create a table as input for the ggplot
-input_table_ggplot_attendances <- attendances_ae %>% 
-  filter(right_season == TRUE) %>% 
-  group_by(year, season, hbt) %>% 
-  summarise(total_attendances = sum(number_of_attendances_all)) %>%
-  filter(year < 2020 & year > 2007) %>% 
-  filter(hbt == "S08000028")
+#input_table_ggplot_attendances <- attendances_ae %>% 
+#  filter(right_season == TRUE) %>% 
+#  group_by(year, season, hbt) %>% 
+#  summarise(total_attendances = sum(number_of_attendances_all)) %>%
+#  filter(year < 2020 & year > 2007) %>% 
+#  filter(hbt == "S08000028")
 
 ########
 ########
@@ -136,13 +136,25 @@ server <- function(input, output, session) {
   # create the plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
-      geom_col(data = input_table_ggplot_attendances, 
+      geom_col(data = 
+                 attendances_ae %>% 
+                 filter(right_season == TRUE) %>% 
+                 group_by(year, season, hbt) %>% 
+                 summarise(total_attendances = sum(number_of_attendances_all)) %>%
+                 filter(year < 2020 & year > 2007) %>% 
+                 filter(hbt == input$season_hb), 
                aes(
                  x = year, 
                  y = total_attendances, 
                  fill = season),
                position = "dodge", col = "white") +
-      geom_line(data = avg_yearperseason_hb, 
+      geom_line(data = 
+                  attendances_ae %>% 
+                  select(year, hbt, number_of_attendances_all) %>% 
+                  group_by(year, hbt) %>% 
+                  summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
+                  filter(year < 2020 & year > 2007) %>%
+                  filter(hbt == input$season_hb), 
                 aes(
                   x = year, 
                   y = average_season_year))
@@ -160,7 +172,7 @@ server <- function(input, output, session) {
       group_by(year, season, hbt, deprivation) %>% 
       summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
       ggplot() +
-      aes(x = year, y = total_per_deprivation, fill = as.character(deprivation), group = season) +
+      aes(x = as.character(year), y = total_per_deprivation, fill = as.character(deprivation), group = season) +
       geom_col(position = "dodge", col = "white")
   
 })
@@ -176,7 +188,7 @@ server <- function(input, output, session) {
       group_by(year, season, hbt, age) %>% 
       summarise(total_per_age = sum(number_of_attendances)) %>% 
       ggplot() +
-      aes(x = year, y = total_per_age, fill = as.character(age), group = season) +
+      aes(x = as.character(year), y = total_per_age, fill = as.character(age), group = season) +
       geom_col(position = "dodge", col = "white") 
     
   })
