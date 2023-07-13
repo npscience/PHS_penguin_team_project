@@ -108,7 +108,7 @@ waiting_times %>%
             axis.title = element_text(size = 16),
             legend.title = element_text(size = 12),
             plot.title = element_text(size = 20)) 
-  ggsave("total_attendances.pdf")
+  ggsave("total_attendances.pdf", width = 10)
 
 
 
