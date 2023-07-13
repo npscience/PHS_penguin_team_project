@@ -1,6 +1,16 @@
 # server -----
 server <- function(input, output, session) {
   
+  # render PHS logo
+  # 
+  # output$PHSlogo <- renderImage({
+  #   list(src = "../images/phs-logo.png",
+  #        width = 100,
+  #        height = 60,
+  #        alt = "Public Health Scotland")
+  # })
+  
+# Naomi plots start ----
   # output$occupancy_heatmap_all ----
   # static, shows all of scotland
   output$occupancy_heatmap_all <- renderLeaflet({
@@ -52,9 +62,9 @@ server <- function(input, output, session) {
             plot.title = element_text(size = 20)
       )
   })
-  
+# Naomi plots end
 
-  # Thijmen start ----
+# Thijmen start ----
   # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
@@ -140,31 +150,17 @@ server <- function(input, output, session) {
                        lat = ~ latitude,
                        weight = 0,
                        fillOpacity = 0.9,
+                       fillColor = "darkviolet",
                        popup = ~ paste(department_type))
   })
-  #Thijmen end
+#Thijmen end
   
   
-# Chiara plots start
-  
-  
-  
-  
+# Chiara plots start ----
 
   output$admissions_heatmap <- renderLeaflet({
-    join_ha_map %>% 
-      leaflet() %>% 
-      addProviderTiles(providers$Stamen.TonerLite) %>%
-      addCircleMarkers(lng = ~ longitude,
-                       lat = ~ latitude,
-                       weight = 0,
-                       fillColor = ~colorNumeric('RdYlGn', mean_adm)
-                       (mean_adm),
-                       fillOpacity = 0.9
-                       #popup = ~ paste( br(), "Board:", HB, br(), round(mean_diff, 0))
-      )
+    admissions_heatmap
   })
-  
   
   output$admissions_ts <- renderPlot({
     ha_demo %>% 
@@ -179,9 +175,6 @@ server <- function(input, output, session) {
         y = "average monthly hospital admissions\n"
       )
   })
-  
-  
-  
   
   output$admissions_plot <- renderPlot({
     ha_demo %>% 
@@ -199,15 +192,8 @@ server <- function(input, output, session) {
   
   
 # Chiara plots end
-  
-  
-  
-  
-  
-  
-
-
-  # Ali start ----
+ 
+# Ali start ----
   
   output$delays_age <- renderPlot({
     delayed %>%
@@ -219,6 +205,8 @@ server <- function(input, output, session) {
           group = age_group, colour = age_group) +
       geom_line() +
       geom_point() +
+      labs(title = "Average Daily Number of Delayed Beds",
+           x = "\nYear", y = "average daily number of delayed beds\n") +
       theme(legend.position = "bottom",
             panel.background = element_blank(),
             panel.grid.minor.x = element_blank(),
@@ -232,4 +220,9 @@ server <- function(input, output, session) {
   output$delays_map <- renderLeaflet({
     map_plot
   })
+  
+  
+  # Ali end
+  
 }
+

@@ -13,10 +13,21 @@ library(sf) # if using geometry
 
 # load in data ----
 
-# for occupancy map and plot
+## for tab 1: winter v summer
+## tbc
+
+## for tab 2: hospital admissions
+join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
+ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
+
+## for tab 3: bed occupancy
 hospital_location_occupancy <- read_csv("../data/cleaned_data/hospital_location_occupancy.csv")
 occupancy_per_hb <- read_csv("../data/cleaned_data/occupancy_per_hb.csv") %>% 
   mutate(quarter = zoo::as.yearqtr(quarter))
+
+## for tab 4: delayed discharge
+delayed <- clean_names(read_csv("../data/cleaned_data/delayed.csv"))
+map_means <- read_csv("../data/cleaned_data/delayed_map_means.csv")
 
 # lists for selectors ----
 
@@ -65,19 +76,58 @@ occupancy_pal <- colorNumeric(
 
 ## static plots ----
 
-# occupancy heatmap for all of scotland
+# Chiara: admissions heatmap for all of scotland
+admissions_heatmap <- join_ha_map %>% 
+  filter(hb != "S92000003") %>% 
+  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   radius = 5,
+                   fillColor = ~colorNumeric('RdYlGn', mean_adm)
+                   (mean_adm),
+                   fillOpacity = 0.9,
+                   popup = ~ paste("Board:", hb, br(), 
+                                   "Mean admissions: ", round(mean_adm, 0))
+  )
+
+
+# Naomi: occupancy heatmap for all of scotland
 occupancy_heatmap_all <- hospital_location_occupancy %>% 
   leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
   addCircleMarkers(lng = ~ longitude,
                    lat = ~ latitude,
-                   weight = 1,
+                   weight = 0,
                    radius = 5,
-                   fillOpacity = 1,
-                   popup = ~ paste(location_name, br(), "Board:", hb),
-                   color = ~ occupancy_pal(percentage_occupancy)
-  ) %>% 
-  setView(-3.524194, 57.786499, zoom = 5.6)
+                   fillColor = ~colorNumeric('RdYlGn', percentage_occupancy)
+                   (percentage_occupancy),
+                   fillOpacity = 0.9,
+                   popup = ~ paste(location_name, br(), "Board:", hb, br(), 
+                                   "Occupancy: ", round(percentage_occupancy,0), "%")
+  )
+
+# Ali: delayed discharges heatmap for all of scotland
+map_plot <- map_means %>% 
+  filter(HB != "SB0802",
+         HB != "SB0801") %>% 
+  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   radius = 5,
+                   fillColor = ~colorNumeric('RdYlGn', -185:185)
+                   (-mean_diff),
+                   fillOpacity = 0.9,
+                   popup = ~ paste(Location, br(), "Board:", HB, br(), 
+                                   "Difference in means: ",
+                                   round(mean_diff, 0))
+  )
 
 ########### thijmen ----
 #### Create dataset including season terminology for summer/winter difference
@@ -145,32 +195,4 @@ locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
 
 #thijmen end
 
-
-#Chiara data ----
-
-ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
-join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
-
-
-# Ali ----
-
-delayed <- clean_names(read_csv("../data/cleaned_data/delayed.csv"))
-map_means <- read_csv("../data/cleaned_data/delayed_map_means.csv")
-
-# static map
-
-map_plot <- map_means %>% 
-  filter(HB != "SB0802",
-         HB != "SB0801") %>% 
-  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
-  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
-  addProviderTiles(providers$Stamen.TonerLite) %>%
-  addCircleMarkers(lng = ~ longitude,
-                   lat = ~ latitude,
-                   weight = 0,
-                   fillColor = ~colorNumeric('RdYlGn', -185:185)
-                   (-mean_diff),
-                   fillOpacity = 0.9,
-                   popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
-  )
 
