@@ -21,15 +21,6 @@ ui <- fluidPage(
              HTML("<br>"),
              
              fluidRow(
-               
-               # select hb(s)
-               selectInput(inputId = "season_hb",
-                           label = tags$b("Which health board?"),
-                           choices = hbs_list,
-                           selected = "S08000015")
-             ),
-             
-             fluidRow(
                column(width = 6,
                       leafletOutput("attendance_season_heatmap")
                ),

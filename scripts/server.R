@@ -53,6 +53,7 @@ server <- function(input, output, session) {
       )
   })
   
+
   # Thijmen start
   # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
@@ -63,7 +64,7 @@ server <- function(input, output, session) {
                  group_by(year, season, hbt) %>% 
                  summarise(total_attendances = sum(number_of_attendances_all)) %>%
                  filter(year < 2020 & year > 2007) %>% 
-                 filter(hbt == input$season_hb), 
+                 filter(hbt == input$hb), 
                aes(
                  x = year, 
                  y = total_attendances, 
@@ -75,7 +76,7 @@ server <- function(input, output, session) {
                   group_by(year, hbt) %>% 
                   summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
                   filter(year < 2020 & year > 2007) %>%
-                  filter(hbt == input$season_hb), 
+                  filter(hbt == input$hb), 
                 aes(
                   x = year, 
                   y = average_season_year)) +
@@ -92,7 +93,7 @@ server <- function(input, output, session) {
     demo_attendances_season %>% 
       filter(right_season == TRUE) %>% 
       filter(year < 2020 & year > 2007) %>% 
-      filter(hbt == input$season_hb) %>% 
+      filter(hbt == input$hb) %>% 
       select(year, season, hbt, deprivation, number_of_attendances) %>% 
       group_by(year, season, hbt, deprivation) %>% 
       summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
@@ -111,7 +112,7 @@ server <- function(input, output, session) {
     demo_attendances_season %>% 
       filter(right_season == TRUE) %>% 
       filter(year < 2020 & year > 2007) %>% 
-      filter(hbt == input$season_hb) %>% 
+      filter(hbt == input$hb) %>% 
       select(year, season, hbt, age, number_of_attendances) %>% 
       group_by(year, season, hbt, age) %>% 
       summarise(total_per_age = sum(number_of_attendances)) %>% 
@@ -129,7 +130,7 @@ server <- function(input, output, session) {
     waiting_times %>% 
       rename("Location" = "treatment_location") %>% 
       left_join(locations, by = "Location") %>% 
-      filter(hbt == input$season_hb) %>% 
+      filter(hbt == input$hb) %>% 
       leaflet() %>% 
       addProviderTiles(providers$Stamen.TonerLite) %>%
       addCircleMarkers(lng = ~ longitude,
