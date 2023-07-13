@@ -91,8 +91,16 @@ ui <- fluidPage(
                column(width = 6,
                       plotOutput("delays_age")
                )
+               ),
+             fluidRow(
+               column(width = 5, offset = 1,
+                      "Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool Big map looks so cool "
+               ),
+               column(width = 6, 
+                      "Big map looks so cool"
+               )
              )
     )
   )
 )
-  
+

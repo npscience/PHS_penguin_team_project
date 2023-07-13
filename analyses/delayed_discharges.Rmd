@@ -80,12 +80,13 @@ delayed_no_reason %>%
 ```{r}
 delayed_no_reason %>% 
   filter(age_group == "18plus",
-         hbt != "S92000003") %>% 
+         hbt != "S92000003")%>% 
   ggplot() +
   aes(x = month_of_delay,
       y = average_daily_number_of_delayed_beds,
       group = hbt, colour = hbt) +
-  geom_line()
+  geom_line() +
+  facet_wrap(~ hbt)
 ```
 
 most readable graph of the year winner 2023
@@ -177,24 +178,23 @@ before = (2016-01-01   -    2020-01-01)
 
 
 ```{r}
-test_before <- delayed_no_reason %>% 
+
+binky <- "S08000030"
+
+test_before <- delayed %>% 
   filter(age_group == "18plus",
+         reason_for_delay == "All Delay Reasons",
          month_of_delay < "2020-01-01",
          month_of_delay >= "2017-01-01",
-         hbt == "S08000022")
-```
+         hbt == binky)
 
-```{r}
-test_after <- delayed_no_reason %>% 
+test_after <- delayed %>% 
   filter(age_group == "18plus",
+         reason_for_delay == "All Delay Reasons",
          month_of_delay >= "2022-01-01",
          month_of_delay < "2023-01-01",
-         hbt == "S08000022")
-```
+         hbt == binky)
 
-
-
-```{r}
 t.test(test_before$number_of_delayed_bed_days,
        test_after$number_of_delayed_bed_days,
        alternative = "two.sided",
