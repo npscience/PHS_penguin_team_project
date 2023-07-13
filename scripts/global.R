@@ -17,7 +17,8 @@ library(sf) # if using geometry
 ## tbc
 
 ## for tab 2: hospital admissions
-join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
+join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv") %>% 
+  filter(hb != "S92000003")
 ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
 
 ## for tab 3: bed occupancy
@@ -67,18 +68,14 @@ age_colours <- c("Under 5" = "greenyellow",
 season_colours <- c("summer" = "goldenrod1",
                     "winter" = "steelblue1")
 
-## heatmap palettes ----
-
-# occupancy heatmap 
-occupancy_pal <- colorNumeric(
-  palette = "viridis",
-  domain = hospital_location_occupancy$percentage_occupancy)
-
 ## static plots ----
 
 # Chiara: admissions heatmap for all of scotland
+admissions_pal <- colorNumeric(
+  palette = "RdYlGn",
+  domain = join_ha_map$mean_adm)
+  
 admissions_heatmap <- join_ha_map %>% 
-  filter(hb != "S92000003") %>% 
   leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>%
   setView(-3.524194, 57.786499, zoom = 5.6) %>% 
@@ -86,15 +83,23 @@ admissions_heatmap <- join_ha_map %>%
                    lat = ~ latitude,
                    weight = 0,
                    radius = 5,
-                   fillColor = ~colorNumeric('RdYlGn', mean_adm)
-                   (mean_adm),
+                   color = ~ admissions_pal(mean_adm),
                    fillOpacity = 0.9,
                    popup = ~ paste("Board:", hb, br(), 
-                                   "Mean admissions: ", round(mean_adm, 0))
+                                   "Mean admissions: ", round(mean_adm, 0))) %>% 
+  addLegend(position = "topright",
+            pal = admissions_pal,
+            values = ~ mean_adm,
+            title = "Mean admissions",
+            opacity = 1
   )
 
 
 # Naomi: occupancy heatmap for all of scotland
+occupancy_pal <- colorNumeric(
+  palette = "RdYlGn",
+  domain = hospital_location_occupancy$percentage_occupancy)
+
 occupancy_heatmap_all <- hospital_location_occupancy %>% 
   leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>% 
@@ -103,11 +108,17 @@ occupancy_heatmap_all <- hospital_location_occupancy %>%
                    lat = ~ latitude,
                    weight = 0,
                    radius = 5,
-                   fillColor = ~colorNumeric('RdYlGn', percentage_occupancy)
-                   (percentage_occupancy),
+                   fillColor = ~colorNumeric("RdYlGn", hospital_location_occupancy$percentage_occupancy)(percentage_occupancy),
+                   #color = ~occupancy_pal(-percentage_occupancy),
                    fillOpacity = 0.9,
                    popup = ~ paste(location_name, br(), "Board:", hb, br(), 
                                    "Occupancy: ", round(percentage_occupancy,0), "%")
+  ) %>% 
+  addLegend(position = "topright",
+            pal = colorNumeric("RdYlGn", hospital_location_occupancy$percentage_occupancy),
+            values = ~ percentage_occupancy,
+            title = "Occupancy (%)",
+            opacity = 1
   )
 
 # Ali: delayed discharges heatmap for all of scotland
@@ -127,6 +138,12 @@ map_plot <- map_means %>%
                    popup = ~ paste(Location, br(), "Board:", HB, br(), 
                                    "Difference in means: ",
                                    round(mean_diff, 0))
+  ) %>% 
+  addLegend(position = "topright",
+            pal = colorNumeric("RdYlGn", -185:185),
+            values = ~ c(185:-185),
+            title = "Difference in means:",
+            opacity = 1
   )
 
 ########### thijmen ----
