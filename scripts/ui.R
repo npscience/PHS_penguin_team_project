@@ -75,13 +75,15 @@ ui <- fluidPage(
                       leafletOutput("occupancy_heatmap_all")
                ),
                column(width = 4,
-                      leafletOutput("occupancy_heatmap"),
-                      "This map shows occupancy in 2022 Q4"
+                      leafletOutput("occupancy_heatmap")
                ),
                column(width = 4,
                       plotOutput("occupancy_ts")
                )
-             )
+             ),
+          fluidRow(
+            "These maps show % bed occupancy for the most recent quarter with data available (2022 Q4)"
+          )
     ),
     
     # Tab 4: COVID impact on delayed discharges ----
