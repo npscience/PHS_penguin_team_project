@@ -14,16 +14,13 @@ server <- function(input, output, session) {
   # output$occupancy_heatmap_all ----
   # static, shows all of scotland
   output$occupancy_heatmap_all <- renderLeaflet({
-    
     occupancy_heatmap_all
-  
-    })
+  })
   
   
   # output$occupancy_heatmap ----
   # reactive to hb selector
   output$occupancy_heatmap <- renderLeaflet({
-    
     hospital_location_occupancy %>% 
       filter(hb == input$hb) %>% 
       leaflet() %>% 
@@ -36,7 +33,6 @@ server <- function(input, output, session) {
                        popup = ~ paste(location_name, br(), "Board:", hb),
                        color = ~ occupancy_pal(percentage_occupancy)
       )
-    
   })
   
   # output$occupancy_ts ----
@@ -45,7 +41,6 @@ server <- function(input, output, session) {
   # assign to plot_ts_occupancy_filter_hb
   # note scale all health boards == individual HB so keep on same graph
   output$occupancy_ts <- renderPlot({
-    
     occupancy_per_hb %>% 
       # filter for hb, always show "all of scotland" = S92000003
       filter(hb %in% c("S92000003", input$hb)) %>% 
@@ -53,20 +48,25 @@ server <- function(input, output, session) {
       aes(x = quarter, y = percentage_occupancy, colour = hb) +
       geom_line() +
       geom_point() +
-      scale_colour_manual(values = c("S92000003" = "blue4",
-                                     input$hb = "darkviolet")) +
+      scale_colour_manual(values = scot_hb_colours) +
       labs(x = "\nYear quarter", y = "Percentage occupancy\n",
            title = "Percentage occupancy (hospital beds)",
            colour = "Health board") +
-      theme_penguin()
-    
+      theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20)
+      )
   })
 # Naomi plots end
 
 # Thijmen start ----
   # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
-    
     ggplot() +
       geom_col(data = 
                  attendances_ae %>% 
@@ -94,8 +94,7 @@ server <- function(input, output, session) {
            subtitle = "line indicating average number of attendances per season per year",
            x = "\nYear", y = "Total attendances\n",
            fill = "Season") +
-      scale_fill_manual(values = season_colours) +
-      theme_penguin()
+      scale_fill_manual(values = season_colours)
     
   })
   
@@ -116,8 +115,7 @@ server <- function(input, output, session) {
       geom_col(position = "dodge", col = "white") +
       labs(title = "Number of attendances split by SIMD",
            x = "\nYear", y = "Attendances\n",
-           fill = "SIMD") +
-      theme_penguin()
+           fill = "SIMD")
     
   })
   
@@ -136,14 +134,12 @@ server <- function(input, output, session) {
       geom_col(position = "dodge", col = "white") +
       labs(title = "Number of attendances split by age group",
            x = "\nYear", y = "Attendances\n",
-           fill = "Age group") +
-      theme_penguin()
+           fill = "Age group")
     
   })
   
   # Thijmen - output map leaflet plot
   output$attendance_season_heatmap <- renderLeaflet({
-    
     waiting_times %>% 
       rename("Location" = "treatment_location") %>% 
       left_join(locations, by = "Location") %>% 
@@ -156,7 +152,6 @@ server <- function(input, output, session) {
                        fillOpacity = 0.9,
                        fillColor = "darkviolet",
                        popup = ~ paste(department_type))
-    
   })
 #Thijmen end
   
@@ -164,13 +159,10 @@ server <- function(input, output, session) {
 # Chiara plots start ----
 
   output$admissions_heatmap <- renderLeaflet({
-    
     admissions_heatmap
-    
   })
   
   output$admissions_ts <- renderPlot({
-    
     ha_demo %>% 
       filter(hb %in% c(input$hb)) %>% 
       group_by(hb, month_ending_date) %>% 
@@ -180,12 +172,8 @@ server <- function(input, output, session) {
       geom_line(show.legend = FALSE) +
       labs(
         x = "\nYear",
-        y = "Average monthly hospital admissions\n"
-      ) +
-      scale_colour_manual(values = c("S92000003" = "blue4",
-                                     input$hb = "darkviolet")) +
-      theme_penguin()
-    
+        y = "average monthly hospital admissions\n"
+      )
   })
   
   output$admissions_plot <- renderPlot({
@@ -199,8 +187,7 @@ server <- function(input, output, session) {
       labs(
         x = "\nYear",
         y = "average monthly hospital admissions\n"
-      )  +
-      theme_penguin()
+      )
   })
   
   
@@ -209,7 +196,6 @@ server <- function(input, output, session) {
 # Ali start ----
   
   output$delays_age <- renderPlot({
-    
     delayed %>%
       filter(hbt == input$hb,
              reason_for_delay == "All Delay Reasons") %>% 
@@ -221,15 +207,19 @@ server <- function(input, output, session) {
       geom_point() +
       labs(title = "Average Daily Number of Delayed Beds",
            x = "\nYear", y = "average daily number of delayed beds\n") +
-      theme_penguin()
-    
+      theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20))
   })
   
   output$delays_map <- renderLeaflet({
-    
     map_plot
-  
-    })
+  })
   
   
   # Ali end

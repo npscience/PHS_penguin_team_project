@@ -5,7 +5,7 @@ library(lubridate)
 
 
 
-ha_demo <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+ha_demo <- read_csv("../PHS_penguin_team_project/data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
   clean_names()
 
 
