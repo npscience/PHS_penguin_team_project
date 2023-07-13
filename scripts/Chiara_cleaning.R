@@ -5,12 +5,9 @@ library(lubridate)
 
 
 
-ha_demo <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
-  clean_names()
-
-ha_simd <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
 ha_demo <- read_csv("../PHS_penguin_team_project/data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
   clean_names()
+
 
 ha_simd <- read_csv("../PHS_penguin_team_project/data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
 
@@ -64,7 +61,7 @@ ha_demo <- ha_demo %>%
 
 
 
-write_csv(ha_demo, "../PHS_penguin_team_project/team_notes/Chiara_notes/da_demo_clean.csv")
+write_csv(ha_demo, "../PHS_penguin_team_project/data/cleaned_data/ha_demo_clean.csv")
 
 
 
