@@ -75,6 +75,7 @@ ha_demo <- ha_demo %>%
     
     age_group == "Under 5"~ "Under 5",
     
+
     age_group %in% c("15 - 44", "45 - 64")~"5 - 64",
     
     
@@ -187,6 +188,11 @@ leaflet() %>%
 
 
 
+```{r}
+ha_demo %>% 
+  arrange(desc(week_ending))
+
+```
 
 
 
@@ -209,27 +215,7 @@ ha_simd %>%
 
 
 
-```{r}
-join %>% 
-  filter(hb %in% c("S08000015", "S92000003"), age_group != "All ages") %>%
-  group_by(age_group, month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = age_group, colour = age_group) +
-  geom_line()
-```
 
-
-```{r}
-join %>% 
-  filter(hb %in% c("S08000015"), age != "All ages") %>%
-  group_by(age, month_ending_date) %>% 
-  summarise(mean_admissions = mean(number_admissions)) %>% 
-  ggplot() +
-  aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
-  geom_line()
-
-```
 
 
 
@@ -237,12 +223,14 @@ join %>%
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "S92000003"), age_group != "All ages") %>%
+  filter(hb %in% c("S92000003"), age_group != "All ages") %>%
   group_by(age_group, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
   aes(x = month_ending_date, y = mean_admissions, group = age_group, colour = age_group) +
-  geom_line()
+  geom_line() +
+  labs(x = "\nYear",
+       y = "average monthly hospital admissions\n")
 ```
 
 

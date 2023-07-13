@@ -59,6 +59,9 @@ ui <- fluidPage(
                column(width = 4,
                       plotOutput("admissions_plot")
                )
+             ),
+             fluidRow(
+               "These plot shows the trend of hospital admissions over time, from the beginning of 2020 up to June 2023."
              )
     ),
     
@@ -97,6 +100,12 @@ ui <- fluidPage(
                column(width = 6,
                       plotOutput("delays_age")
                )
+             ),
+             fluidRow(
+               column(width = 5, offset = 1,
+                        "Map of difference in means of average delayed discharge bed-days by health board before and after COVID-19. The points are more red in health boards where there are more delayed bed-days after covid than before"),
+               column(width = 6,
+                        "Splitting the data by age group, see the proportion of the effect on 75+ year olds as opposed to those of 74 or younger"),
              )
     )
   )

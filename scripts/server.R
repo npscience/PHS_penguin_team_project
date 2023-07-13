@@ -163,8 +163,18 @@ server <- function(input, output, session) {
       aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
       geom_line(show.legend = FALSE) +
       labs(
+        title = "Hospital admissions trend per health Board",
         x = "\nYear",
         y = "average monthly hospital admissions\n"
+      ) +
+      theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20)
       )
   })
   
@@ -177,8 +187,18 @@ server <- function(input, output, session) {
       aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
       geom_line() +
       labs(
+        title = "Hospital admissions depending on age",
         x = "\nYear",
         y = "average monthly hospital admissions\n"
+      ) +
+      theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20)
       )
   })
   
@@ -196,9 +216,11 @@ server <- function(input, output, session) {
           y = average_daily_number_of_delayed_beds,
           group = age_group, colour = age_group) +
       geom_line() +
-      geom_point() +
+      geom_point(size = 1) +
       labs(title = "Average Daily Number of Delayed Beds",
-           x = "\nYear", y = "average daily number of delayed beds\n") +
+           x = "\nYear",
+           y = "Average Daily Number of Delayed Beds\n",
+           colour = "Age Group") +
       theme(legend.position = "bottom",
             panel.background = element_blank(),
             panel.grid.minor.x = element_blank(),
