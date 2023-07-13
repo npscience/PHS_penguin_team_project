@@ -127,13 +127,16 @@ theme_penguin <- function (){
 
 ```{r}
 # show all of scotland v one hb:
-scotland
-hb
+scot_hb_colours <- c("blue4","darkviolet")
+# set first hb (scotland) to "blue4" and second hb (selected) to "darkviolet"
   
 # show 3 different ages
-"Under 5"
-"5 - 64"
-"Over 65"
+age_colours <- c("Under 5" = "orchid",
+                 "5 - 64" = "darkorchid2",
+                 "Over 65" = "darkmagenta"
+                )
+
+
 
 # show summer v winter
 summer
@@ -164,17 +167,18 @@ ha_demo %>%
       labs(
         x = "\ntime",
         y = "average monthly hospital admissions\n") +
-  theme_penguin()
+      scale_colour_manual(values = age_colours) +
+      theme_penguin()
 
 
 # naomi occupancy ts ----
 occupancy_per_hb %>% 
-      #filter(hb %in% c("S92000003", input$hb)) %>% 
+      filter(hb %in% c("S92000003", "S08000015")) %>% 
       ggplot() +
       aes(x = quarter, y = percentage_occupancy, colour = hb) +
       geom_line() +
       geom_point() +
-      scale_colour_brewer(type = "qual", palette = "Set1") +
+      scale_colour_manual(values = scot_hb_colours) +
       labs(x = "\nYear quarter", y = "Percentage occupancy\n",
            title = "Percentage occupancy (hospital beds)",
            colour = "Health board") +
@@ -195,6 +199,7 @@ ggplot() +
             aes(
     x = year, 
     y = average_season_year)) +
+  scale_fill_manual(values = c("blue4","blue2")) +
   theme_penguin()
 
 # 6. create plot per healthboard, split per season
@@ -207,6 +212,7 @@ attendances_ae %>%
   ggplot() +
   aes(x = year, y = total_attendances, fill = season) +
   geom_col(position = "dodge", col = "white") +
+  scale_fill_manual(values = c("blue4","darkviolet")) +
   theme_penguin()
 ```
 
