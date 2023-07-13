@@ -94,7 +94,24 @@ waiting_times %>%
   summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
   ggplot() +
   aes(x = ym(month), y = total_number_attendances_all) +
-  geom_line()
+  geom_line(colour = "#253494") +
+  labs(
+        title = "Total attendances at A&E departments in Scotland",
+        x = "\nYear",
+        y = "Total attendances\n"
+      ) +
+  theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20)) 
+  ggsave("total_attendances.pdf")
+
+
+
                  
 ```
 
