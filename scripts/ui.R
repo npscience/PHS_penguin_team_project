@@ -52,7 +52,9 @@ ui <- fluidPage(
     
     tabPanel(tags$b("COVID impact on bed occupancy"),
              HTML("<br>"),
-             
+             fluidRow(
+               "From Public Health Scotland data glossary: 'The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period.'"
+             ),
              fluidRow(
                column(width = 4,
                       leafletOutput("occupancy_heatmap_all")
