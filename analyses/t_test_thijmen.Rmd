@@ -88,13 +88,13 @@ t.test(test_summer$total_attendances,
 ```
 
 ```{r}
-# here do some tests with plots
 waiting_times %>% 
-  select(month, hbt, number_of_attendances_all) %>% 
-  mutate(month_new = ym(month)) %>% 
-  group_by(hbt) %>% 
+  select(month, hbt, number_of_attendances_all) %>%
+  group_by(month) %>% 
+  summarise(total_number_attendances_all = sum(number_of_attendances_all)) %>% 
   ggplot() +
-  aes(x = month_new, group = hbt) +
-  geom_histogram((aes(fill = hbt))
+  aes(x = ym(month), y = total_number_attendances_all) +
+  geom_line()
+                 
 ```
 
