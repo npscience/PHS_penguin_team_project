@@ -47,9 +47,10 @@ ui <- fluidPage(
     # Tab 2: COVID impact on hospital admissions ----
     
     tabPanel(tags$b("COVID impact in hospital admissions"),
-             HTML("<br>"),
+             HTML("<br><br><br>"),
              
              fluidRow(
+
                column(width = 4,
                       leafletOutput("admissions_heatmap")
                ),
@@ -65,10 +66,8 @@ ui <- fluidPage(
     # Tab 3: COVID impact on bed occupancy ----
     
     tabPanel(tags$b("COVID impact on bed occupancy"),
-             HTML("<br>"),
-             fluidRow(
-               "From Public Health Scotland data glossary: 'The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period.'"
-             ),
+             HTML("<br><br><br>"),
+            
              fluidRow(
                column(width = 4,
                       leafletOutput("occupancy_heatmap_all")

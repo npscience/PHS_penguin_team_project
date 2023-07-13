@@ -211,6 +211,9 @@ ggplot() +
 join_ha_map %>% 
   select(hb, mean_adm) %>% 
   arrange(desc(mean_adm))
+
+ha_demo %>% 
+  distinct(hb)
 ```
 
 

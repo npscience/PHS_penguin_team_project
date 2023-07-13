@@ -1,0 +1,42 @@
+<mxfile host="app.diagrams.net" modified="2023-07-13T15:13:00.966Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36" etag="iUg5miRxb8K1efR_ZLqt" version="21.5.2" type="device">
+  <diagram name="Page-1" id="1aH7VWo8NEERykn1JH1z">
+    <mxGraphModel dx="838" dy="461" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-14" value="&lt;font color=&quot;#000000&quot; style=&quot;font-size: 14px;&quot;&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;/font&gt;&lt;div style=&quot;text-align: left; font-size: 14px;&quot;&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;&lt;font color=&quot;#000000&quot; style=&quot;font-size: 14px;&quot;&gt;Location(s)&lt;/font&gt;&lt;/span&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="270" y="160" width="250" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#6a00ff;strokeColor=#3700CC;strokeWidth=4;" edge="1" parent="1" source="oGB6CN06Xmh-bsSJnLjn-2" target="oGB6CN06Xmh-bsSJnLjn-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-2" value="&lt;b&gt;Hospital&lt;br&gt;admissions&lt;/b&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;" vertex="1" parent="1">
+          <mxGeometry x="130" y="195" width="125" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-4" value="&lt;b&gt;% Occupancy&lt;/b&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;" vertex="1" parent="1">
+          <mxGeometry x="335" y="195" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=4;fillColor=#6a00ff;strokeColor=#3700CC;" edge="1" parent="1" source="oGB6CN06Xmh-bsSJnLjn-6" target="oGB6CN06Xmh-bsSJnLjn-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-6" value="&lt;b&gt;Delayed&lt;br&gt;discharges&lt;/b&gt;" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#6a00ff;fontColor=#ffffff;strokeColor=#3700CC;" vertex="1" parent="1">
+          <mxGeometry x="535" y="195" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#a20025;strokeColor=#6F0000;strokeWidth=8;" edge="1" parent="1" source="oGB6CN06Xmh-bsSJnLjn-9" target="oGB6CN06Xmh-bsSJnLjn-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fillColor=#a20025;strokeColor=#6F0000;strokeWidth=8;" edge="1" parent="1" source="oGB6CN06Xmh-bsSJnLjn-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fillColor=#a20025;strokeColor=#6F0000;strokeWidth=8;" edge="1" parent="1" source="oGB6CN06Xmh-bsSJnLjn-9" target="oGB6CN06Xmh-bsSJnLjn-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="oGB6CN06Xmh-bsSJnLjn-9" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;COVID&lt;/font&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#a20025;fontColor=#ffffff;strokeColor=#6F0000;" vertex="1" parent="1">
+          <mxGeometry x="355" y="70" width="80" height="80" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

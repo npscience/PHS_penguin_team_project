@@ -5,11 +5,10 @@ library(shiny)
 library(tidyverse)
 library(janitor)
 library(lubridate)
-
 library(bslib)
-library(plotly)
-library(leaflet) # for maps
-library(sf) # if using geometry
+library(leaflet)
+#library(plotly)
+#library(sf) # if using geometry
 
 # load in data ----
 
@@ -52,11 +51,6 @@ hbs_list <- c("Ayrshire and Arran" = "S08000015",
 # theme for plots ----
 
 ## colour palettes for plots ----
-
-# show all of scotland v one hb
-scot_hb_colours <- c("S92000003" = "blue4",
-                     "S08000015" = "darkviolet")
-# set first hb (scotland) to "blue4" and second hb (selected) to "darkviolet"
 
 # show 3 different ages
 age_colours <- c("Under 5" = "greenyellow",
