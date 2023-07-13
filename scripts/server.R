@@ -141,7 +141,13 @@ server <- function(input, output, session) {
   #Thijmen end
   
   
+
   # Chiara plots start
+  
+  
+  
+  
+
   output$admissions_heatmap <- renderLeaflet({
     join_ha_map %>% 
       leaflet() %>% 
@@ -194,6 +200,7 @@ server <- function(input, output, session) {
   
   
   
+
   # Chiara plots end
   
   
@@ -201,4 +208,5 @@ server <- function(input, output, session) {
   
   
   
+
 }
