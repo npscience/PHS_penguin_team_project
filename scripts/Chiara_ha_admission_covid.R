@@ -10,8 +10,8 @@ library(leaflet) # for maps
 library(sf) 
 
 
-ha_demo <- read_csv("data/cleaned_data/ha_demo_clean.csv")
-join_ha_map <- read_csv("data/cleaned_data/join_ha_map.csv")
+ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
+join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
 
 hbs_list <- c("Ayrshire and Arran" = "S08000015",
               "Borders" = "S08000016",
