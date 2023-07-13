@@ -100,9 +100,9 @@ ui <- fluidPage(
              ),
              fluidRow(
                column(width = 5, offset = 1,
-                        "asdfsadfasf"),
+                        "Map of difference in means of average delayed discharge bed-days by health board before and after COVID-19. The points are more red in health boards where there are more delayed bed-days after covid than before"),
                column(width = 6,
-                        "asdfsadfasf"),
+                        "Splitting the data by age group, see the proportion of the effect on 75+ year olds as opposed to those of 74 or younger"),
              )
     )
   )
