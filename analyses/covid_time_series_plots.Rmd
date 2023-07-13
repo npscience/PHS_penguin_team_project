@@ -98,9 +98,7 @@ ha_demo <- ha_demo %>%
 ```
 
 
-```{r}
-ha_demo_join <- left_join(ha_demo, ha_simd, by = "hb")
-```
+
 
 
 
