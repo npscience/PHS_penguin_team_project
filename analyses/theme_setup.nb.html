@@ -11,7 +11,7 @@
 
 
 
-<title>R Notebook</title>
+<title>theming the plots</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1682,17 +1682,23 @@ overflow-y: auto;
 border: 1px solid #ddd;
 border-radius: 4px;
 }
-.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
-content: "\e259";
+.tabset-dropdown > .nav-tabs > li.active:before {
+content: "";
 font-family: 'Glyphicons Halflings';
 display: inline-block;
 padding: 10px;
 border-right: 1px solid #ddd;
 }
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
-content: "\e258";
-font-family: 'Glyphicons Halflings';
+content: "";
 border: none;
+}
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+content: "";
+font-family: 'Glyphicons Halflings';
+display: inline-block;
+padding: 10px;
+border-right: 1px solid #ddd;
 }
 .tabset-dropdown > .nav-tabs > li.active {
 display: block;
@@ -1746,7 +1752,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">R Notebook</h1>
+<h1 class="title toc-ignore">theming the plots</h1>
 
 </div>
 
@@ -1754,298 +1760,236 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGx1YnJpZGF0ZSlcbmxpYnJhcnkoamFuaXRvcilcbmxpYnJhcnkobHVicmlkYXRlKVxuYGBgIn0= -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5saWJyYXJ5KGphbml0b3IpXG5saWJyYXJ5KGx1YnJpZGF0ZSlcbmBgYCJ9 -->
 <pre class="r"><code>library(tidyverse)
-library(lubridate)
 library(janitor)
 library(lubridate)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<div id="chiara-age-plot" class="section level1">
+<h1>chiara age plot</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZCA8LSBjbGVhbl9uYW1lcyhyZWFkX2NzdihcIi4uL2RhdGEvZGVsYXllZC1kaXNjaGFyZ2UtYmVkZGF5cy1oZWFsdGgtYm9hcmQuY3N2XCIpKVxuYGBgIn0= -->
-<pre class="r"><code>delayed &lt;- clean_names(read_csv(&quot;../data/delayed-discharge-beddays-health-board.csv&quot;))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Initial clean: remove reason, remove qualifier rows</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZCA8LSBkZWxheWVkICU+JSBcbiAgc2VsZWN0KG1vbnRoX29mX2RlbGF5LFxuICAgICAgICAgaGJ0LFxuICAgICAgICAgYWdlX2dyb3VwLFxuICAgICAgICAgbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMsXG4gICAgICAgICBhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX2JlZHMsXG4gICAgICAgICByZWFzb25fZm9yX2RlbGF5KVxuYGBgIn0= -->
-<pre class="r"><code>delayed &lt;- delayed %&gt;% 
-  select(month_of_delay,
-         hbt,
-         age_group,
-         number_of_delayed_bed_days,
-         average_daily_number_of_delayed_beds,
-         reason_for_delay)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZF9ub19yZWFzb24gPC0gZGVsYXllZCAlPiUgXG4gIGZpbHRlcihyZWFzb25fZm9yX2RlbGF5ID09IFwiQWxsIERlbGF5IFJlYXNvbnNcIikgJT4lIFxuICBzZWxlY3QoLXJlYXNvbl9mb3JfZGVsYXkpXG5gYGAifQ== -->
-<pre class="r"><code>delayed_no_reason &lt;- delayed %&gt;% 
-  filter(reason_for_delay == &quot;All Delay Reasons&quot;) %&gt;% 
-  select(-reason_for_delay)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZCA8LSBkZWxheWVkICU+JSBcbiAgbXV0YXRlKG1vbnRoX29mX2RlbGF5ID0geW0obW9udGhfb2ZfZGVsYXkpKVxuXG5cbmRlbGF5ZWRfbm9fcmVhc29uIDwtIGRlbGF5ZWRfbm9fcmVhc29uICU+JSBcbiAgbXV0YXRlKG1vbnRoX29mX2RlbGF5ID0geW0obW9udGhfb2ZfZGVsYXkpKVxuYGBgIn0= -->
-<pre class="r"><code>delayed &lt;- delayed %&gt;% 
-  mutate(month_of_delay = ym(month_of_delay))
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuaGFfZGVtbyA8LSByZWFkX2NzdihcIi4uL2RhdGEvY292aWQvaG9zcGl0YWxfYWRtaXNzaW9ucy9ob3NwaXRhbF9hZG1pc3Npb25zX2hiX2FnZXNleF8yMDIzMDcwNi5jc3ZcIikgJT4lIFxuICBjbGVhbl9uYW1lcygpXG5cbmhhX2RlbW8gPC0gaGFfZGVtbyAlPiUgXG4gIG11dGF0ZShtb250aF9lbmRpbmdfZGF0ZSA9IHltKHN0cl9zdWIoYXMuY2hhcmFjdGVyKHdlZWtfZW5kaW5nKSwgc3RhcnQgPSAxLCBlbmQgPSA2KSksIC5hZnRlciA9IHdlZWtfZW5kaW5nKSAlPiUgXG4gIG11dGF0ZSh3ZWVrX2VuZGluZyA9IHltZCh3ZWVrX2VuZGluZykpIFxuXG5oYV9kZW1vIDwtIGhhX2RlbW8gJT4lIFxuICBtdXRhdGUoaGIgPSBpZl9lbHNlKGhiID09IFwiUzkyMDAwMDAzXCIsIFwiU2NvdGxhbmRcIiwgaGIpKSBcblxuaGFfZGVtbyA8LSBoYV9kZW1vICU+JSBcbiAgbXV0YXRlKGFnZSA9IGNhc2Vfd2hlbihcbiAgICBhZ2VfZ3JvdXAgPT0gXCJVbmRlciA1XCJ+IFwiVW5kZXIgNVwiLFxuICAgIGFnZV9ncm91cCAlaW4lIGMoXCIxNSAtIDQ0XCIsIFwiNDUgLSA2NFwiKX5cIjUgLSA2NFwiLFxuICAgIGFnZV9ncm91cCAlaW4lIGMoXCI2NSAtIDc0XCIsIFwiNzUgLSA4NFwiLCBcIjg1IGFuZCBvdmVyXCIpflwib3ZlciA2NVwiLFxuICAgIGFnZV9ncm91cCA9PSBcIjUgLSAxNFwifiBcIjUgLSA2NFwiLFxuICAgIGFnZV9ncm91cCA9PSBcIkFsbCBhZ2VzXCJ+XCJBbGwgYWdlc1wiIFxuICApLCBcbiAgLmFmdGVyID0gYWdlX2dyb3VwKVxuYGBgIn0= -->
+<pre class="r"><code>ha_demo &lt;- read_csv(&quot;../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv&quot;) %&gt;% 
+  clean_names()
 
+ha_demo &lt;- ha_demo %&gt;% 
+  mutate(month_ending_date = ym(str_sub(as.character(week_ending), start = 1, end = 6)), .after = week_ending) %&gt;% 
+  mutate(week_ending = ymd(week_ending)) 
 
-delayed_no_reason &lt;- delayed_no_reason %&gt;% 
-  mutate(month_of_delay = ym(month_of_delay))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudW5pcXVlKGRlbGF5ZWQkaGJ0KVxuYGBgIn0= -->
-<pre class="r"><code>unique(delayed$hbt)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<div id="inspecting-the-difference-over-health-boards-all-ages" class="section level4">
-<h4>Inspecting the difference over health boards (all ages)</h4>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZF9ub19yZWFzb24gJT4lIFxuICBmaWx0ZXIoYWdlX2dyb3VwID09IFwiMThwbHVzXCIpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LFxuICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcyxcbiAgICAgIGdyb3VwID0gaGJ0LCBjb2xvdXIgPSBoYnQpICtcbiAgZ2VvbV9saW5lKClcbmBgYCJ9 -->
-<pre class="r"><code>delayed_no_reason %&gt;% 
-  filter(age_group == &quot;18plus&quot;) %&gt;% 
-  ggplot() +
-  aes(x = month_of_delay,
-      y = average_daily_number_of_delayed_beds,
-      group = hbt, colour = hbt) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Removing outlier to get a better impression of how the health boards
-compare</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZF9ub19yZWFzb24gJT4lIFxuICBzbGljZV9tYXgoYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9ub19yZWFzb25fYmVkcywgbiA9IDEpXG5gYGAifQ== -->
-<pre class="r"><code>delayed_no_reason %&gt;% 
-  slice_max(average_daily_number_of_delayed_no_reason_beds, n = 1)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZF9ub19yZWFzb24gJT4lIFxuICBmaWx0ZXIoYWdlX2dyb3VwID09IFwiMThwbHVzXCIsXG4gICAgICAgICBoYnQgIT0gXCJTOTIwMDAwMDNcIikgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0gbW9udGhfb2ZfZGVsYXksXG4gICAgICB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLFxuICAgICAgZ3JvdXAgPSBoYnQsIGNvbG91ciA9IGhidCkgK1xuICBnZW9tX2xpbmUoKVxuYGBgIn0= -->
-<pre class="r"><code>delayed_no_reason %&gt;% 
-  filter(age_group == &quot;18plus&quot;,
-         hbt != &quot;S92000003&quot;) %&gt;% 
-  ggplot() +
-  aes(x = month_of_delay,
-      y = average_daily_number_of_delayed_beds,
-      group = hbt, colour = hbt) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>most readable graph of the year winner 2023</p>
-<p>would be interesting to be able to look at individual health boards
-reactively as they seem to have drastically different patterns to one
-another</p>
-</div>
-<div id="difference-between-age-groups" class="section level4">
-<h4>Difference between age groups</h4>
-<p>example of difference in ages for single health board</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZF9ub19yZWFzb24gJT4lIFxuICBmaWx0ZXIoYWdlX2dyb3VwICE9IFwiMThwbHVzXCIsXG4gICAgICAgICBoYnQgPT0gXCJTMDgwMDAwMTVcIikgJT4lIFxuICBnZ3Bsb3QoKSArXG4gIGFlcyh4ID0gbW9udGhfb2ZfZGVsYXksXG4gICAgICB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLFxuICAgICAgZ3JvdXAgPSBhZ2VfZ3JvdXAsIGNvbG91ciA9IGFnZV9ncm91cCkgK1xuICBnZW9tX2xpbmUoKVxuYGBgIn0= -->
-<pre class="r"><code>delayed_no_reason %&gt;% 
-  filter(age_group != &quot;18plus&quot;,
-         hbt == &quot;S08000015&quot;) %&gt;% 
-  ggplot() +
-  aes(x = month_of_delay,
-      y = average_daily_number_of_delayed_beds,
-      group = age_group, colour = age_group) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>not super interesting, only shows the difference, maybe a line of
-changing proportion would be more descriptive</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcF9jaGFuZ2UgPC0gZGVsYXllZF9ub19yZWFzb24gJT4lIFxuICBmaWx0ZXIoYWdlX2dyb3VwICE9IFwiMThwbHVzXCIpICU+JSBcbiAgZ3JvdXBfYnkoaGJ0LCBtb250aF9vZl9kZWxheSkgJT4lXG4gIHN1bW1hcmlzZShwcm9wID0gbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMvc3VtKG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzKSwgYWdlX2dyb3VwKVxuYGBgIn0= -->
-<pre class="r"><code>prop_change &lt;- delayed_no_reason %&gt;% 
-  filter(age_group != &quot;18plus&quot;) %&gt;% 
-  group_by(hbt, month_of_delay) %&gt;%
-  summarise(prop = number_of_delayed_bed_days/sum(number_of_delayed_bed_days), age_group)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvcF9jaGFuZ2UgJT4lIFxuICBmaWx0ZXIoYWdlX2dyb3VwID09IFwiMTgtNzRcIixcbiAgICAgICAgIGhidCA9PSBcIlMwODAwMDAxNVwiKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwgeSA9IHByb3ApICtcbiAgZ2VvbV9saW5lKClcbmBgYCJ9 -->
-<pre class="r"><code>prop_change %&gt;% 
-  filter(age_group == &quot;18-74&quot;,
-         hbt == &quot;S08000015&quot;) %&gt;% 
-  ggplot() +
-  aes(x = month_of_delay, y = prop) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZF9ub19yZWFzb24gJT4lXG4gIGZpbHRlcihoYnQgPT0gXCJTMDgwMDAwMTVcIixcbiAgICAgICAgIGFnZV9ncm91cCAhPSBcIjE4cGx1c1wiKSAlPiUgXG4gIGdncGxvdCgpICtcbiAgYWVzKHggPSBtb250aF9vZl9kZWxheSxcbiAgICAgIHkgPSBhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX2JlZHMsXG4gICAgICBncm91cCA9IGFnZV9ncm91cCwgY29sb3VyID0gYWdlX2dyb3VwKSArXG4gIGdlb21fbGluZSgpXG5gYGAifQ== -->
-<pre class="r"><code>delayed_no_reason %&gt;%
-  filter(hbt == &quot;S08000015&quot;,
-         age_group != &quot;18plus&quot;) %&gt;% 
-  ggplot() +
-  aes(x = month_of_delay,
-      y = average_daily_number_of_delayed_beds,
-      group = age_group, colour = age_group) +
-  geom_line()</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGVsYXllZCAlPiUgXG4gIGZpbHRlcihoYnQgPT0gXCJTMDgwMDAwMTVcIixcbiAgICAgICAgIGFnZV9ncm91cCA9PSBcIjE4cGx1c1wiLFxuICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSAhPSBcIkFsbCBEZWxheSBSZWFzb25zXCIpICU+JSBcbiAgZ2dwbG90KCkgK1xuICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LCB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLCBjb2xvdXIgPSByZWFzb25fZm9yX2RlbGF5KSArXG4gIGdlb21fbGluZSgpXG5gYGAifQ== -->
-<pre class="r"><code>delayed %&gt;% 
-  filter(hbt == &quot;S08000015&quot;,
-         age_group == &quot;18plus&quot;,
-         reason_for_delay != &quot;All Delay Reasons&quot;) %&gt;% 
-  ggplot() +
-  aes(x = month_of_delay, y = average_daily_number_of_delayed_beds, colour = reason_for_delay) +
-  geom_line()</code></pre>
+ha_demo &lt;- ha_demo %&gt;% 
+  mutate(hb = if_else(hb == &quot;S92000003&quot;, &quot;Scotland&quot;, hb)) 
+
+ha_demo &lt;- ha_demo %&gt;% 
+  mutate(age = case_when(
+    age_group == &quot;Under 5&quot;~ &quot;Under 5&quot;,
+    age_group %in% c(&quot;15 - 44&quot;, &quot;45 - 64&quot;)~&quot;5 - 64&quot;,
+    age_group %in% c(&quot;65 - 74&quot;, &quot;75 - 84&quot;, &quot;85 and over&quot;)~&quot;over 65&quot;,
+    age_group == &quot;5 - 14&quot;~ &quot;5 - 64&quot;,
+    age_group == &quot;All ages&quot;~&quot;All ages&quot; 
+  ), 
+  .after = age_group)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
-<div id="hypothesis-testing" class="section level4">
-<h4>Hypothesis Testing</h4>
-<p>creating sets to test against one another</p>
-<p>before = (2016-01-01 - 2020-01-01)</p>
+<div id="naomi-occupancy-ts-by-hb" class="section level1">
+<h1>naomi occupancy ts by hb</h1>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdF9iZWZvcmUgPC0gZGVsYXllZF9ub19yZWFzb24gJT4lIFxuICBmaWx0ZXIoYWdlX2dyb3VwID09IFwiMThwbHVzXCIsXG4gICAgICAgICBtb250aF9vZl9kZWxheSA8IFwiMjAyMC0wMS0wMVwiLFxuICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPj0gXCIyMDE3LTAxLTAxXCIsXG4gICAgICAgICBoYnQgPT0gXCJTMDgwMDAwMjJcIilcbmBgYCJ9 -->
-<pre class="r"><code>test_before &lt;- delayed_no_reason %&gt;% 
-  filter(age_group == &quot;18plus&quot;,
-         month_of_delay &lt; &quot;2020-01-01&quot;,
-         month_of_delay &gt;= &quot;2017-01-01&quot;,
-         hbt == &quot;S08000022&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYmVkcyA8LSByZWFkX2NzdihcIi4uL2RhdGEvYmVkc19ieV9uaHNfYm9hcmRfb2ZfdHJlYXRtZW50X2FuZF9zcGVjaWFsdHkuY3N2XCIpICU+JSBcbiAgY2xlYW5fbmFtZXMoKSAlPiUgXG4gIG11dGF0ZShxdWFydGVyID0gem9vOjphcy55ZWFycXRyKHF1YXJ0ZXIpKVxuXG5vY2N1cGFuY3lfcGVyX2hiIDwtIGJlZHMgJT4lIFxuICBncm91cF9ieShoYiwgcXVhcnRlcikgJT4lIFxuICBzdW1tYXJpc2UodG90YWxfb2NjdXBpZWRfYmVkZGF5cyA9IHN1bSh0b3RhbF9vY2N1cGllZF9iZWRkYXlzKSxcbiAgICAgICAgICAgIGFsbF9zdGFmZmVkX2JlZGRheXMgPSBzdW0oYWxsX3N0YWZmZWRfYmVkZGF5cykpICU+JSBcbiAgbXV0YXRlKHBlcmNlbnRhZ2Vfb2NjdXBhbmN5ID0gMTAwICogKHRvdGFsX29jY3VwaWVkX2JlZGRheXMgLyBhbGxfc3RhZmZlZF9iZWRkYXlzKSlcbmBgYCJ9 -->
+<pre class="r"><code>beds &lt;- read_csv(&quot;../data/beds_by_nhs_board_of_treatment_and_specialty.csv&quot;) %&gt;% 
+  clean_names() %&gt;% 
+  mutate(quarter = zoo::as.yearqtr(quarter))
+
+occupancy_per_hb &lt;- beds %&gt;% 
+  group_by(hb, quarter) %&gt;% 
+  summarise(total_occupied_beddays = sum(total_occupied_beddays),
+            all_staffed_beddays = sum(all_staffed_beddays)) %&gt;% 
+  mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="thijmen-seasonal-bar-plot" class="section level1">
+<h1>thijmen seasonal bar plot</h1>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2FpdGluZ190aW1lcyA8LSByZWFkLmNzdihcIi4uL2RhdGEvYV9hbmRfZS9tb250aGx5X2FlX2FjdGl2aXR5XzIwMjMwNS5jc3ZcIikgJT4lIFxuICBjbGVhbl9uYW1lcygpXG5cbiMgbGV0cyBmaXJzdCBjcmVhdGUgYSBiYXJwbG90IGNvbXBhcmluZyBzdW1tZXIvd2ludGVyIHBlciB5ZWFyIGZvciBhdHRlbmRhbmNlc1xuXG4jMS4gY3JlYXRlIHZhcmlhYmxlIGZvciBzZWFzb25cbnNlYXNvbl9uYW1lIDwtIHNldE5hbWVzKHJlcChjKFwid2ludGVyXCIsIFwic3ByaW5nXCIsIFwic3VtbWVyXCIsIFwiYXV0dW1uXCIpLCBlYWNoID0gMyksXG4gICAgICAgICAgICAgICAgICAgICAgICBtb250aC5uYW1lKVxuXG4jIDIuIGNyZWF0ZSB0YWJsZSBzcGVjaWZ5aW5nIHNlYXNvblxuYXR0ZW5kYW5jZXNfYWUgPC0gd2FpdGluZ190aW1lcyAlPiUgXG4gIHNlbGVjdChtb250aCwgaGJ0LCBudW1iZXJfb2ZfYXR0ZW5kYW5jZXNfYWxsKSAlPiUgXG4gICNsZXQncyBhZGQgYSBjb2x1bW4gaW5kaWNhdGluZyBzZWFzb25cbiAgbXV0YXRlKG1vbnRoX2xhYmVsID0gbW9udGgoXG4gICAgICAgICAgICAgICAgICAgICAgeW0obW9udGgpLCBsYWJlbCA9IFRSVUUsIGFiYnIgPSBGQUxTRSksIFxuICAgICAgICAgLmJlZm9yZSA9IGhidCkgJT4lIFxuICBtdXRhdGUoc2Vhc29uID0gc2Vhc29uX25hbWVbbW9udGhfbGFiZWxdLCAuYmVmb3JlID0gaGJ0KSAlPiUgXG4gICMgY3JlYXRlIGEgIHllYXIgY29sdW1uLCBcbiAgbXV0YXRlKHllYXIgPSB5ZWFyKHltKG1vbnRoKSksIC5iZWZvcmUgPSBoYnQpICU+JSBcbiAgIyBjcmVhdGUgYSBcImZha2VcIiB5ZWFyIGZvciBkZWNlbWJlciwgdG8gbWFrZSBzdXJlIHRoYXQgZGVjZW1iZXIgb2YgcHJldmlvdXMgeWVhciBmYWxscyBpbiBuZXh0IHllYXIgZm9yIGNvcnJlY3QgZ3JvdXBpbmdcbiAgbXV0YXRlKHllYXIgPSBpZl9lbHNlKG1vbnRoX2xhYmVsID09IFwiRGVjZW1iZXJcIiwgeWVhcisxLCB5ZWFyKSkgJT4lIFxuICBtdXRhdGUoc2Vhc29uID0gaWZfZWxzZShtb250aF9sYWJlbCA9PSBcIkRlY2VtYmVyXCIsIFwid2ludGVyXCIsIHNlYXNvbikpICU+JSAgXG4gIG11dGF0ZShzZWFzb24gPSBpZl9lbHNlKG1vbnRoX2xhYmVsID09IFwiTWFyY2hcIiwgXCJzcHJpbmdcIiwgc2Vhc29uKSkgJT4lIFxuICBtdXRhdGUoc2Vhc29uID0gaWZfZWxzZShtb250aF9sYWJlbCA9PSBcIkp1bmVcIiwgXCJzdW1tZXJcIiwgc2Vhc29uKSkgJT4lIFxuICBtdXRhdGUoc2Vhc29uID0gaWZfZWxzZShtb250aF9sYWJlbCA9PSBcIlNlcHRlbWJlclwiLCBcImF1dHVtblwiLCBzZWFzb24pKSAlPiUgXG4gICMgY3JlYXRlIGEgY29sdW1uIHRvIGxhdGVyIGZpbHRlciByaWdodCBzZWFzb24hXG4gIG11dGF0ZShyaWdodF9zZWFzb24gPSBpZl9lbHNlKFxuICAgICAgICAgICAgICAgICAgICAgICAgc3RyX2RldGVjdChzZWFzb24sIFwid2ludGVyfHN1bW1lclwiKSwgVFJVRSwgRkFMU0UpLFxuICAgICAgICAgLmJlZm9yZSA9IGhidCkgXG5cblxuIyAzLlxuI2xldHMgY3JlYXRlIGEgdGFibGUgd2l0aCBhIHllYXJseSBhdmVyYWdlIHBlciBoYiBwZXIgc2Vhc29uLCBmb3IgZWFjaCB5ZWFyOlxuYXZnX3llYXJwZXJzZWFzb25faGIgPC0gYXR0ZW5kYW5jZXNfYWUgJT4lIFxuICBzZWxlY3QoeWVhciwgaGJ0LCBudW1iZXJfb2ZfYXR0ZW5kYW5jZXNfYWxsKSAlPiUgXG4gIGdyb3VwX2J5KHllYXIsIGhidCkgJT4lIFxuICBzdW1tYXJpc2UoYXZlcmFnZV9zZWFzb25feWVhciA9IHN1bShudW1iZXJfb2ZfYXR0ZW5kYW5jZXNfYWxsKS80KSAlPiUgXG4gIGZpbHRlcihoYnQgPT0gXCJTMDgwMDAwMjhcIilcblxuIyA0LiBsZXRzIGNyZWF0ZSBhIHRhYmxlIGFzIGlucHV0IGZvciB0aGUgZ2dwbG90XG5pbnB1dF90YWJsZV9nZ3Bsb3RfYXR0ZW5kYW5jZXMgPC0gYXR0ZW5kYW5jZXNfYWUgJT4lIFxuICBmaWx0ZXIocmlnaHRfc2Vhc29uID09IFRSVUUpICU+JSBcbiAgZ3JvdXBfYnkoeWVhciwgc2Vhc29uLCBoYnQpICU+JSBcbiAgc3VtbWFyaXNlKHRvdGFsX2F0dGVuZGFuY2VzID0gc3VtKG51bWJlcl9vZl9hdHRlbmRhbmNlc19hbGwpKSAlPiVcbiAgZmlsdGVyKHllYXIgPCAyMDIwICYgeWVhciA+IDIwMDcpICU+JSBcbiAgZmlsdGVyKGhidCA9PSBcIlMwODAwMDAyOFwiKVxuYGBgIn0= -->
+<pre class="r"><code>waiting_times &lt;- read.csv(&quot;../data/a_and_e/monthly_ae_activity_202305.csv&quot;) %&gt;% 
+  clean_names()
+
+# lets first create a barplot comparing summer/winter per year for attendances
+
+#1. create variable for season
+season_name &lt;- setNames(rep(c(&quot;winter&quot;, &quot;spring&quot;, &quot;summer&quot;, &quot;autumn&quot;), each = 3),
+                        month.name)
+
+# 2. create table specifying season
+attendances_ae &lt;- waiting_times %&gt;% 
+  select(month, hbt, number_of_attendances_all) %&gt;% 
+  #let&#39;s add a column indicating season
+  mutate(month_label = month(
+                      ym(month), label = TRUE, abbr = FALSE), 
+         .before = hbt) %&gt;% 
+  mutate(season = season_name[month_label], .before = hbt) %&gt;% 
+  # create a  year column, 
+  mutate(year = year(ym(month)), .before = hbt) %&gt;% 
+  # create a &quot;fake&quot; year for december, to make sure that december of previous year falls in next year for correct grouping
+  mutate(year = if_else(month_label == &quot;December&quot;, year+1, year)) %&gt;% 
+  mutate(season = if_else(month_label == &quot;December&quot;, &quot;winter&quot;, season)) %&gt;%  
+  mutate(season = if_else(month_label == &quot;March&quot;, &quot;spring&quot;, season)) %&gt;% 
+  mutate(season = if_else(month_label == &quot;June&quot;, &quot;summer&quot;, season)) %&gt;% 
+  mutate(season = if_else(month_label == &quot;September&quot;, &quot;autumn&quot;, season)) %&gt;% 
+  # create a column to later filter right season!
+  mutate(right_season = if_else(
+                        str_detect(season, &quot;winter|summer&quot;), TRUE, FALSE),
+         .before = hbt) 
+
+
+# 3.
+#lets create a table with a yearly average per hb per season, for each year:
+avg_yearperseason_hb &lt;- attendances_ae %&gt;% 
+  select(year, hbt, number_of_attendances_all) %&gt;% 
+  group_by(year, hbt) %&gt;% 
+  summarise(average_season_year = sum(number_of_attendances_all)/4) %&gt;% 
+  filter(hbt == &quot;S08000028&quot;)
+
+# 4. lets create a table as input for the ggplot
+input_table_ggplot_attendances &lt;- attendances_ae %&gt;% 
+  filter(right_season == TRUE) %&gt;% 
+  group_by(year, season, hbt) %&gt;% 
+  summarise(total_attendances = sum(number_of_attendances_all)) %&gt;%
+  filter(year &lt; 2020 &amp; year &gt; 2007) %&gt;% 
+  filter(hbt == &quot;S08000028&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<div id="thijmen-simd-bars" class="section level2">
+<h2>thijmen simd bars</h2>
+</div>
+</div>
+<div id="create-theme" class="section level1">
+<h1>create theme</h1>
+<div id="theme-function" class="section level2">
+<h2>theme function</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGhlbWVfcGVuZ3VpbiA8LSBmdW5jdGlvbiAoKXtcbiAgXG4gIHRoZW1lKGxlZ2VuZC5wb3NpdGlvbiA9IFwiYm90dG9tXCIsXG4gICAgICAgICAgICBwYW5lbC5iYWNrZ3JvdW5kID0gZWxlbWVudF9ibGFuaygpLFxuICAgICAgICAgICAgcGFuZWwuZ3JpZC5taW5vci54ID0gZWxlbWVudF9ibGFuaygpLFxuICAgICAgICAgICAgcGFuZWwuZ3JpZC5taW5vci55ID0gZWxlbWVudF9ibGFuaygpLFxuICAgICAgICAgICAgYXhpcy50ZXh0ID0gZWxlbWVudF90ZXh0KHNpemUgPSAxMiksXG4gICAgICAgICAgICBheGlzLnRpdGxlID0gZWxlbWVudF90ZXh0KHNpemUgPSAxNiksXG4gICAgICAgICAgICBsZWdlbmQudGl0bGUgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEyKSxcbiAgICAgICAgICAgIHBsb3QudGl0bGUgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDIwKVxuICAgICAgKVxuICBcbn1cblxuYGBgIn0= -->
+<pre class="r"><code>theme_penguin &lt;- function (){
+  
+  theme(legend.position = &quot;bottom&quot;,
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20)
+      )
+  
+}
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="colours" class="section level2">
+<h2>colours</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBzaG93IGFsbCBvZiBzY290bGFuZCB2IG9uZSBoYjpcbnNjb3RfaGJfY29sb3VycyA8LSBjKFwiUzkyMDAwMDAzXCIgPSBcImJsdWU0XCIsXG4gICAgICAgICAgICAgICAgICAgICBcIlMwODAwMDAxNVwiID0gXCJkYXJrdmlvbGV0XCIpXG4jIHNldCBmaXJzdCBoYiAoc2NvdGxhbmQpIHRvIFwiYmx1ZTRcIiBhbmQgc2Vjb25kIGhiIChzZWxlY3RlZCkgdG8gXCJkYXJrdmlvbGV0XCJcbiAgXG4jIHNob3cgMyBkaWZmZXJlbnQgYWdlc1xuYWdlX2NvbG91cnMgPC0gYyhcIlVuZGVyIDVcIiA9IFwiZ3JlZW55ZWxsb3dcIixcbiAgICAgICAgICAgICAgICAgXCI1IC0gNjRcIiA9IFwic3ByaW5nZ3JlZW5cIixcbiAgICAgICAgICAgICAgICAgXCJvdmVyIDY1XCIgPSBcImRhcmtncmVlblwiXG4gICAgICAgICAgICAgICAgKVxuXG4jIHRoaWptZW4ncyA3IGFnZSBncm91cHNcblxuIyB0aGlqbWVuJ3MgNiBzaW1kIGxldmVsc1xuXG4jIHNob3cgc3VtbWVyIHYgd2ludGVyXG5zZWFzb25fY29sb3VycyA8LSBjKFwic3VtbWVyXCIgPSBcImdvbGRlbnJvZDFcIixcbiAgICAgICAgICAgICAgICAgICAgXCJ3aW50ZXJcIiA9IFwic3RlZWxibHVlMVwiKVxuXG5cblxucGFsIDwtIGNvbG9yRmFjdG9yKGMoXCJuYXZ5XCIsIFwiYmx1ZVwiLCBcInN0ZWVsYmx1ZVwiLCBcInNreWJsdWVcIixcbiAgICAgICAgICAgICAgICAgICAgIFwicmVkXCIsXCJpbmRpYW5yZWRcIiwgXCJtYXJvb25cIiwgXCJicm93blwiLFxuICAgICAgICAgICAgICAgICAgICAgXCJzcHJpbmdncmVlblwiLCBcInNwcmluZ2dyZWVuMlwiLCBcInNwcmluZ2dyZWVuM1wiLCBcInNwcmluZ2dyZWVuNFwiLFxuICAgICAgICAgICAgICAgICAgICAgXCJnb2xkXCIsIFwiZ29sZGVucm9kXCIsIFwieWVsbG93XCIsIFwib3JhbmdlXCIpLFxuICAgICAgICAgICAgICAgICAgIGRvbWFpbiA9IHVuaXF1ZShob3NwaXRhbF9sb2NhdGlvbl9vY2N1cGFuY3kkaGIpKVxuYGBgIn0= -->
+<pre class="r"><code># show all of scotland v one hb:
+scot_hb_colours &lt;- c(&quot;S92000003&quot; = &quot;blue4&quot;,
+                     &quot;S08000015&quot; = &quot;darkviolet&quot;)
+# set first hb (scotland) to &quot;blue4&quot; and second hb (selected) to &quot;darkviolet&quot;
+  
+# show 3 different ages
+age_colours &lt;- c(&quot;Under 5&quot; = &quot;greenyellow&quot;,
+                 &quot;5 - 64&quot; = &quot;springgreen&quot;,
+                 &quot;over 65&quot; = &quot;darkgreen&quot;
+                )
+
+# thijmen&#39;s 7 age groups
+
+# thijmen&#39;s 6 simd levels
+
+# show summer v winter
+season_colours &lt;- c(&quot;summer&quot; = &quot;goldenrod1&quot;,
+                    &quot;winter&quot; = &quot;steelblue1&quot;)
+
+
+
+pal &lt;- colorFactor(c(&quot;navy&quot;, &quot;blue&quot;, &quot;steelblue&quot;, &quot;skyblue&quot;,
+                     &quot;red&quot;,&quot;indianred&quot;, &quot;maroon&quot;, &quot;brown&quot;,
+                     &quot;springgreen&quot;, &quot;springgreen2&quot;, &quot;springgreen3&quot;, &quot;springgreen4&quot;,
+                     &quot;gold&quot;, &quot;goldenrod&quot;, &quot;yellow&quot;, &quot;orange&quot;),
+                   domain = unique(hospital_location_occupancy$hb))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="try-all-the-plots" class="section level2">
+<h2>try all the plots</h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIGNoaWFyYSBhZ2UgZ3JvdXBzIGxpbmUgLS0tXG5oYV9kZW1vICU+JSBcbiAgICAgIGZpbHRlcihoYiAlaW4lIGMoXCJTMDgwMDAwMTVcIiksIGFnZSAhPSBcIkFsbCBhZ2VzXCIpICU+JVxuICAgICAgZ3JvdXBfYnkoYWdlLCBtb250aF9lbmRpbmdfZGF0ZSkgJT4lIFxuICAgICAgc3VtbWFyaXNlKG1lYW5fYWRtaXNzaW9ucyA9IG1lYW4obnVtYmVyX2FkbWlzc2lvbnMpKSAlPiUgXG4gICAgICBnZ3Bsb3QoKSArXG4gICAgICBhZXMoeCA9IG1vbnRoX2VuZGluZ19kYXRlLCB5ID0gbWVhbl9hZG1pc3Npb25zLCBncm91cCA9IGFnZSwgY29sb3VyID0gYWdlKSArXG4gICAgICBnZW9tX2xpbmUoKSArXG4gICAgICBsYWJzKFxuICAgICAgICB4ID0gXCJcXG50aW1lXCIsXG4gICAgICAgIHkgPSBcImF2ZXJhZ2UgbW9udGhseSBob3NwaXRhbCBhZG1pc3Npb25zXFxuXCIpICtcbiAgICAgIHNjYWxlX2NvbG91cl9tYW51YWwodmFsdWVzID0gYWdlX2NvbG91cnMpICtcbiAgICAgIHRoZW1lX3Blbmd1aW4oKVxuXG5cbiMgbmFvbWkgb2NjdXBhbmN5IHRzIC0tLS1cbm9jY3VwYW5jeV9wZXJfaGIgJT4lIFxuICAgICAgZmlsdGVyKGhiICVpbiUgYyhcIlM5MjAwMDAwM1wiLCBcIlMwODAwMDAxNVwiKSkgJT4lIFxuICAgICAgZ2dwbG90KCkgK1xuICAgICAgYWVzKHggPSBxdWFydGVyLCB5ID0gcGVyY2VudGFnZV9vY2N1cGFuY3ksIGNvbG91ciA9IGhiKSArXG4gICAgICBnZW9tX2xpbmUoKSArXG4gICAgICBnZW9tX3BvaW50KCkgK1xuICAgICAgc2NhbGVfY29sb3VyX21hbnVhbCh2YWx1ZXMgPSBzY290X2hiX2NvbG91cnMpICtcbiAgICAgIGxhYnMoeCA9IFwiXFxuWWVhciBxdWFydGVyXCIsIHkgPSBcIlBlcmNlbnRhZ2Ugb2NjdXBhbmN5XFxuXCIsXG4gICAgICAgICAgIHRpdGxlID0gXCJQZXJjZW50YWdlIG9jY3VwYW5jeSAoaG9zcGl0YWwgYmVkcylcIixcbiAgICAgICAgICAgY29sb3VyID0gXCJIZWFsdGggYm9hcmRcIikgK1xuICB0aGVtZV9wZW5ndWluKClcblxuXG4jIHRoaWptZW4gc3VtbWVyIHYgd2ludGVyIGJhcnMgLS0tLVxuXG4jIDUuIGxldHMgY3JlYXRlIHRoZSBnZ3Bsb3QgY29tYmluaW5nIGJvdGggZGF0YXNldHNcbmdncGxvdCgpICtcbiAgZ2VvbV9jb2woZGF0YSA9IGlucHV0X3RhYmxlX2dncGxvdF9hdHRlbmRhbmNlcywgXG4gICAgICAgICAgIGFlcyhcbiAgICB4ID0geWVhciwgXG4gICAgeSA9IHRvdGFsX2F0dGVuZGFuY2VzLCBcbiAgICBmaWxsID0gc2Vhc29uKSxcbiAgICAgICAgICAgcG9zaXRpb24gPSBcImRvZGdlXCIsIGNvbCA9IFwid2hpdGVcIikgK1xuICBnZW9tX2xpbmUoZGF0YSA9IGF2Z195ZWFycGVyc2Vhc29uX2hiLCBcbiAgICAgICAgICAgIGFlcyhcbiAgICB4ID0geWVhciwgXG4gICAgeSA9IGF2ZXJhZ2Vfc2Vhc29uX3llYXIpKSArXG4gIHNjYWxlX2ZpbGxfbWFudWFsKHZhbHVlcyA9IHNlYXNvbl9jb2xvdXJzKSArXG4gIHRoZW1lX3Blbmd1aW4oKVxuYGBgIn0= -->
+<pre class="r"><code>
+# chiara age groups line ---
+ha_demo %&gt;% 
+      filter(hb %in% c(&quot;S08000015&quot;), age != &quot;All ages&quot;) %&gt;%
+      group_by(age, month_ending_date) %&gt;% 
+      summarise(mean_admissions = mean(number_admissions)) %&gt;% 
+      ggplot() +
+      aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
+      geom_line() +
+      labs(
+        x = &quot;\ntime&quot;,
+        y = &quot;average monthly hospital admissions\n&quot;) +
+      scale_colour_manual(values = age_colours) +
+      theme_penguin()
+
+
+# naomi occupancy ts ----
+occupancy_per_hb %&gt;% 
+      filter(hb %in% c(&quot;S92000003&quot;, &quot;S08000015&quot;)) %&gt;% 
+      ggplot() +
+      aes(x = quarter, y = percentage_occupancy, colour = hb) +
+      geom_line() +
+      geom_point() +
+      scale_colour_manual(values = scot_hb_colours) +
+      labs(x = &quot;\nYear quarter&quot;, y = &quot;Percentage occupancy\n&quot;,
+           title = &quot;Percentage occupancy (hospital beds)&quot;,
+           colour = &quot;Health board&quot;) +
+  theme_penguin()
+
+
+# thijmen summer v winter bars ----
+
+# 5. lets create the ggplot combining both datasets
+ggplot() +
+  geom_col(data = input_table_ggplot_attendances, 
+           aes(
+    x = year, 
+    y = total_attendances, 
+    fill = season),
+           position = &quot;dodge&quot;, col = &quot;white&quot;) +
+  geom_line(data = avg_yearperseason_hb, 
+            aes(
+    x = year, 
+    y = average_season_year)) +
+  scale_fill_manual(values = season_colours) +
+  theme_penguin()</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGVzdF9hZnRlciA8LSBkZWxheWVkX25vX3JlYXNvbiAlPiUgXG4gIGZpbHRlcihhZ2VfZ3JvdXAgPT0gXCIxOHBsdXNcIixcbiAgICAgICAgIG1vbnRoX29mX2RlbGF5ID49IFwiMjAyMi0wMS0wMVwiLFxuICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPCBcIjIwMjMtMDEtMDFcIixcbiAgICAgICAgIGhidCA9PSBcIlMwODAwMDAyMlwiKVxuYGBgIn0= -->
-<pre class="r"><code>test_after &lt;- delayed_no_reason %&gt;% 
-  filter(age_group == &quot;18plus&quot;,
-         month_of_delay &gt;= &quot;2022-01-01&quot;,
-         month_of_delay &lt; &quot;2023-01-01&quot;,
-         hbt == &quot;S08000022&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudC50ZXN0KHRlc3RfYmVmb3JlJG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzLFxuICAgICAgIHRlc3RfYWZ0ZXIkbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMsXG4gICAgICAgYWx0ZXJuYXRpdmUgPSBcInR3by5zaWRlZFwiLFxuICAgICAgIHBhaXJlZCA9IEZBTFNFLFxuICAgICAgIGNvbmYubGV2ZWwgPSAwLjk1KVxuYGBgIn0= -->
-<pre class="r"><code>t.test(test_before$number_of_delayed_bed_days,
-       test_after$number_of_delayed_bed_days,
-       alternative = &quot;two.sided&quot;,
-       paired = FALSE,
-       conf.level = 0.95)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>mean before and after covid</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbnNfYmVmb3JlIDwtIGRlbGF5ZWQgJT4lIFxuICBmaWx0ZXIoYWdlX2dyb3VwID09IFwiMThwbHVzXCIsXG4gICAgICAgICBtb250aF9vZl9kZWxheSA8IFwiMjAyMC0wMS0wMVwiLFxuICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSA9PSBcIkFsbCBEZWxheSBSZWFzb25zXCJcbiAgKSAlPiUgXG4gIHN1bW1hcmlzZShtZWFuID0gbWVhbihhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX2JlZHMpLCAuYnkgPSBoYnQpXG5gYGAifQ== -->
-<pre class="r"><code>means_before &lt;- delayed %&gt;% 
-  filter(age_group == &quot;18plus&quot;,
-         month_of_delay &lt; &quot;2020-01-01&quot;,
-         reason_for_delay == &quot;All Delay Reasons&quot;
-  ) %&gt;% 
-  summarise(mean = mean(average_daily_number_of_delayed_beds), .by = hbt)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbnNfYWZ0ZXIgPC0gZGVsYXllZCAlPiUgXG4gIGZpbHRlcihhZ2VfZ3JvdXAgPT0gXCIxOHBsdXNcIixcbiAgICAgICAgIG1vbnRoX29mX2RlbGF5ID49IFwiMjAyMi0wMS0wMVwiLFxuICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSA9PSBcIkFsbCBEZWxheSBSZWFzb25zXCIpICU+JSBcbiAgc3VtbWFyaXNlKG1lYW4gPSBtZWFuKGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcyksIC5ieSA9IGhidClcbmBgYCJ9 -->
-<pre class="r"><code>means_after &lt;- delayed %&gt;% 
-  filter(age_group == &quot;18plus&quot;,
-         month_of_delay &gt;= &quot;2022-01-01&quot;,
-         reason_for_delay == &quot;All Delay Reasons&quot;) %&gt;% 
-  summarise(mean = mean(average_daily_number_of_delayed_beds), .by = hbt)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbl9kaWZmIDwtIGlubmVyX2pvaW4obWVhbnNfYmVmb3JlLCBtZWFuc19hZnRlciwgYnkgPSBcImhidFwiKSAlPiUgXG4gIG11dGF0ZShtZWFuX2RpZmYgPSBtZWFuLnkgLSBtZWFuLngsIEhCID0gaGJ0KVxuYGBgIn0= -->
-<pre class="r"><code>mean_diff &lt;- inner_join(means_before, means_after, by = &quot;hbt&quot;) %&gt;% 
-  mutate(mean_diff = mean.y - mean.x, HB = hbt)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFwIDwtIHJlYWRfY3N2KFwiLi4vZGF0YS9jbGVhbmVkX2RhdGEvaG9zcGl0YWxfbG9jYXRpb25zX2NsZWFuLmNzdlwiKVxuYGBgIn0= -->
-<pre class="r"><code>map &lt;- read_csv(&quot;../data/cleaned_data/hospital_locations_clean.csv&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFwX21lYW5zIDwtIGxlZnRfam9pbihtYXAsIG1lYW5fZGlmZiwgYnkgPSBcIkhCXCIpXG5gYGAifQ== -->
-<pre class="r"><code>map_means &lt;- left_join(map, mean_diff, by = &quot;HB&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFwX21lYW5zICU+JSBcbiAgZmlsdGVyKEhCICE9IFwiU0IwODAyXCIsXG4gICAgICAgICBIQiAhPSBcIlNCMDgwMVwiKSAlPiUgXG4gIGxlYWZsZXQoKSAlPiUgXG4gIGFkZFRpbGVzKCkgJT4lIFxuICBhZGRDaXJjbGVNYXJrZXJzKGxuZyA9IH4gbG9uZ2l0dWRlLFxuICAgICAgICAgICAgICAgICAgIGxhdCA9IH4gbGF0aXR1ZGUsXG4gICAgICAgICAgICAgICAgICAgd2VpZ2h0ID0gMCxcbiAgICAgICAgICAgICAgICAgICBmaWxsQ29sb3IgPSB+IGlmZWxzZShtZWFuX2RpZmYgPiAwLCBcInJlZFwiLCBcImdyZWVuXCIpLFxuICAgICAgICAgICAgICAgICAgIGZpbGxPcGFjaXR5ID0gfiBhYnMobWVhbl9kaWZmKS8zMDAsXG4gICAgICAgICAgICAgICAgICAgcG9wdXAgPSB+IHBhc3RlKExvY2F0aW9uLCBicigpLCBcIkJvYXJkOlwiLCBIQiwgYnIoKSwgcm91bmQobWVhbl9kaWZmLCAwKSlcbiAgKVxuYGBgIn0= -->
-<pre class="r"><code>map_means %&gt;% 
-  filter(HB != &quot;SB0802&quot;,
-         HB != &quot;SB0801&quot;) %&gt;% 
-  leaflet() %&gt;% 
-  addTiles() %&gt;% 
-  addCircleMarkers(lng = ~ longitude,
-                   lat = ~ latitude,
-                   weight = 0,
-                   fillColor = ~ ifelse(mean_diff &gt; 0, &quot;red&quot;, &quot;green&quot;),
-                   fillOpacity = ~ abs(mean_diff)/300,
-                   popup = ~ paste(Location, br(), &quot;Board:&quot;, HB, br(), round(mean_diff, 0))
-  )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWFwX21lYW5zICU+JSBcbiAgZmlsdGVyKEhCICE9IFwiU0IwODAyXCIsXG4gICAgICAgICBIQiAhPSBcIlNCMDgwMVwiKSAlPiUgXG4gIGxlYWZsZXQoKSAlPiUgXG4gIGFkZFByb3ZpZGVyVGlsZXMocHJvdmlkZXJzJFN0YW1lbi5Ub25lckxpdGUpICU+JVxuICBhZGRDaXJjbGVNYXJrZXJzKGxuZyA9IH4gbG9uZ2l0dWRlLFxuICAgICAgICAgICAgICAgICAgIGxhdCA9IH4gbGF0aXR1ZGUsXG4gICAgICAgICAgICAgICAgICAgd2VpZ2h0ID0gMCxcbiAgICAgICAgICAgICAgICAgICBmaWxsQ29sb3IgPSB+Y29sb3JOdW1lcmljKCdSZFlsR24nLCAtMTg1OjE4NSlcbiAgICAgICAgICAgICAgICAgICAoLW1lYW5fZGlmZiksXG4gICAgICAgICAgICAgICAgICAgZmlsbE9wYWNpdHkgPSAwLjksXG4gICAgICAgICAgICAgICAgICAgcG9wdXAgPSB+IHBhc3RlKExvY2F0aW9uLCBicigpLCBcIkJvYXJkOlwiLCBIQiwgYnIoKSwgcm91bmQobWVhbl9kaWZmLCAwKSlcbiAgKVxuYGBgIn0= -->
-<pre class="r"><code>map_means %&gt;% 
-  filter(HB != &quot;SB0802&quot;,
-         HB != &quot;SB0801&quot;) %&gt;% 
-  leaflet() %&gt;% 
-  addProviderTiles(providers$Stamen.TonerLite) %&gt;%
-  addCircleMarkers(lng = ~ longitude,
-                   lat = ~ latitude,
-                   weight = 0,
-                   fillColor = ~colorNumeric(&#39;RdYlGn&#39;, -185:185)
-                   (-mean_diff),
-                   fillOpacity = 0.9,
-                   popup = ~ paste(Location, br(), &quot;Board:&quot;, HB, br(), round(mean_diff, 0))
-  )</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
+</div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiUiBOb3RlYm9vayIKb3V0cHV0OiBodG1sX25vdGVib29rCi0tLQoKYGBge3J9CmxpYnJhcnkodGlkeXZlcnNlKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKbGlicmFyeShqYW5pdG9yKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKYGBgCgoKYGBge3J9CmRlbGF5ZWQgPC0gY2xlYW5fbmFtZXMocmVhZF9jc3YoIi4uL2RhdGEvZGVsYXllZC1kaXNjaGFyZ2UtYmVkZGF5cy1oZWFsdGgtYm9hcmQuY3N2IikpCmBgYAoKSW5pdGlhbCBjbGVhbjogICAgcmVtb3ZlIHJlYXNvbiwgcmVtb3ZlIHF1YWxpZmllciByb3dzCgoKYGBge3J9CmRlbGF5ZWQgPC0gZGVsYXllZCAlPiUgCiAgc2VsZWN0KG1vbnRoX29mX2RlbGF5LAogICAgICAgICBoYnQsCiAgICAgICAgIGFnZV9ncm91cCwKICAgICAgICAgbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMsCiAgICAgICAgIGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSkKYGBgCgoKCmBgYHtyfQpkZWxheWVkX25vX3JlYXNvbiA8LSBkZWxheWVkICU+JSAKICBmaWx0ZXIocmVhc29uX2Zvcl9kZWxheSA9PSAiQWxsIERlbGF5IFJlYXNvbnMiKSAlPiUgCiAgc2VsZWN0KC1yZWFzb25fZm9yX2RlbGF5KQpgYGAKCgoKCmBgYHtyfQpkZWxheWVkIDwtIGRlbGF5ZWQgJT4lIAogIG11dGF0ZShtb250aF9vZl9kZWxheSA9IHltKG1vbnRoX29mX2RlbGF5KSkKCgpkZWxheWVkX25vX3JlYXNvbiA8LSBkZWxheWVkX25vX3JlYXNvbiAlPiUgCiAgbXV0YXRlKG1vbnRoX29mX2RlbGF5ID0geW0obW9udGhfb2ZfZGVsYXkpKQpgYGAKCgpgYGB7cn0KdW5pcXVlKGRlbGF5ZWQkaGJ0KQpgYGAKCgoKIyMjIyBJbnNwZWN0aW5nIHRoZSBkaWZmZXJlbmNlIG92ZXIgaGVhbHRoIGJvYXJkcyAoYWxsIGFnZXMpCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjE4cGx1cyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwKICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgZ3JvdXAgPSBoYnQsIGNvbG91ciA9IGhidCkgKwogIGdlb21fbGluZSgpCmBgYAoKCgpSZW1vdmluZyBvdXRsaWVyIHRvIGdldCBhIGJldHRlciBpbXByZXNzaW9uIG9mIGhvdyB0aGUgaGVhbHRoIGJvYXJkcyBjb21wYXJlCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIHNsaWNlX21heChhdmVyYWdlX2RhaWx5X251bWJlcl9vZl9kZWxheWVkX25vX3JlYXNvbl9iZWRzLCBuID0gMSkKYGBgCgoKYGBge3J9CmRlbGF5ZWRfbm9fcmVhc29uICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBoYnQgIT0gIlM5MjAwMDAwMyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwKICAgICAgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywKICAgICAgZ3JvdXAgPSBoYnQsIGNvbG91ciA9IGhidCkgKwogIGdlb21fbGluZSgpCmBgYAoKbW9zdCByZWFkYWJsZSBncmFwaCBvZiB0aGUgeWVhciB3aW5uZXIgMjAyMwoKd291bGQgYmUgaW50ZXJlc3RpbmcgdG8gYmUgYWJsZSB0byBsb29rIGF0IGluZGl2aWR1YWwgaGVhbHRoIGJvYXJkcyByZWFjdGl2ZWx5IGFzIHRoZXkgc2VlbSB0byBoYXZlCmRyYXN0aWNhbGx5IGRpZmZlcmVudCBwYXR0ZXJucyB0byBvbmUgYW5vdGhlcgoKCgoKCiMjIyMgRGlmZmVyZW5jZSBiZXR3ZWVuIGFnZSBncm91cHMKCmV4YW1wbGUgb2YgZGlmZmVyZW5jZSBpbiBhZ2VzIGZvciBzaW5nbGUgaGVhbHRoIGJvYXJkCgpgYGB7cn0KZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIsCiAgICAgICAgIGhidCA9PSAiUzA4MDAwMDE1IikgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LAogICAgICB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLAogICAgICBncm91cCA9IGFnZV9ncm91cCwgY29sb3VyID0gYWdlX2dyb3VwKSArCiAgZ2VvbV9saW5lKCkKYGBgCgoKbm90IHN1cGVyIGludGVyZXN0aW5nLCBvbmx5IHNob3dzIHRoZSBkaWZmZXJlbmNlLCBtYXliZSBhIGxpbmUgb2YgY2hhbmdpbmcgcHJvcG9ydGlvbiB3b3VsZCBiZSBtb3JlCmRlc2NyaXB0aXZlCgpgYGB7cn0KcHJvcF9jaGFuZ2UgPC0gZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgIT0gIjE4cGx1cyIpICU+JSAKICBncm91cF9ieShoYnQsIG1vbnRoX29mX2RlbGF5KSAlPiUKICBzdW1tYXJpc2UocHJvcCA9IG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzL3N1bShudW1iZXJfb2ZfZGVsYXllZF9iZWRfZGF5cyksIGFnZV9ncm91cCkKYGBgCgpgYGB7cn0KcHJvcF9jaGFuZ2UgJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjE4LTc0IiwKICAgICAgICAgaGJ0ID09ICJTMDgwMDAwMTUiKSAlPiUgCiAgZ2dwbG90KCkgKwogIGFlcyh4ID0gbW9udGhfb2ZfZGVsYXksIHkgPSBwcm9wKSArCiAgZ2VvbV9saW5lKCkKYGBgCgoKCgoKCgoKYGBge3J9CmRlbGF5ZWRfbm9fcmVhc29uICU+JQogIGZpbHRlcihoYnQgPT0gIlMwODAwMDAxNSIsCiAgICAgICAgIGFnZV9ncm91cCAhPSAiMThwbHVzIikgJT4lIAogIGdncGxvdCgpICsKICBhZXMoeCA9IG1vbnRoX29mX2RlbGF5LAogICAgICB5ID0gYXZlcmFnZV9kYWlseV9udW1iZXJfb2ZfZGVsYXllZF9iZWRzLAogICAgICBncm91cCA9IGFnZV9ncm91cCwgY29sb3VyID0gYWdlX2dyb3VwKSArCiAgZ2VvbV9saW5lKCkKYGBgCgoKCgpgYGB7cn0KZGVsYXllZCAlPiUgCiAgZmlsdGVyKGhidCA9PSAiUzA4MDAwMDE1IiwKICAgICAgICAgYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICByZWFzb25fZm9yX2RlbGF5ICE9ICJBbGwgRGVsYXkgUmVhc29ucyIpICU+JSAKICBnZ3Bsb3QoKSArCiAgYWVzKHggPSBtb250aF9vZl9kZWxheSwgeSA9IGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcywgY29sb3VyID0gcmVhc29uX2Zvcl9kZWxheSkgKwogIGdlb21fbGluZSgpCmBgYAoKCgojIyMjIEh5cG90aGVzaXMgVGVzdGluZwoKCmNyZWF0aW5nIHNldHMgdG8gdGVzdCBhZ2FpbnN0IG9uZSBhbm90aGVyCgpiZWZvcmUgPSAoMjAxNi0wMS0wMSAgIC0gICAgMjAyMC0wMS0wMSkKCgoKYGBge3J9CnRlc3RfYmVmb3JlIDwtIGRlbGF5ZWRfbm9fcmVhc29uICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBtb250aF9vZl9kZWxheSA8ICIyMDIwLTAxLTAxIiwKICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPj0gIjIwMTctMDEtMDEiLAogICAgICAgICBoYnQgPT0gIlMwODAwMDAyMiIpCmBgYAoKYGBge3J9CnRlc3RfYWZ0ZXIgPC0gZGVsYXllZF9ub19yZWFzb24gJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjE4cGx1cyIsCiAgICAgICAgIG1vbnRoX29mX2RlbGF5ID49ICIyMDIyLTAxLTAxIiwKICAgICAgICAgbW9udGhfb2ZfZGVsYXkgPCAiMjAyMy0wMS0wMSIsCiAgICAgICAgIGhidCA9PSAiUzA4MDAwMDIyIikKYGBgCgoKCmBgYHtyfQp0LnRlc3QodGVzdF9iZWZvcmUkbnVtYmVyX29mX2RlbGF5ZWRfYmVkX2RheXMsCiAgICAgICB0ZXN0X2FmdGVyJG51bWJlcl9vZl9kZWxheWVkX2JlZF9kYXlzLAogICAgICAgYWx0ZXJuYXRpdmUgPSAidHdvLnNpZGVkIiwKICAgICAgIHBhaXJlZCA9IEZBTFNFLAogICAgICAgY29uZi5sZXZlbCA9IDAuOTUpCmBgYAoKCgoKCm1lYW4gYmVmb3JlIGFuZCBhZnRlciBjb3ZpZAoKYGBge3J9Cm1lYW5zX2JlZm9yZSA8LSBkZWxheWVkICU+JSAKICBmaWx0ZXIoYWdlX2dyb3VwID09ICIxOHBsdXMiLAogICAgICAgICBtb250aF9vZl9kZWxheSA8ICIyMDIwLTAxLTAxIiwKICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSA9PSAiQWxsIERlbGF5IFJlYXNvbnMiCiAgKSAlPiUgCiAgc3VtbWFyaXNlKG1lYW4gPSBtZWFuKGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcyksIC5ieSA9IGhidCkKYGBgCgoKYGBge3J9Cm1lYW5zX2FmdGVyIDwtIGRlbGF5ZWQgJT4lIAogIGZpbHRlcihhZ2VfZ3JvdXAgPT0gIjE4cGx1cyIsCiAgICAgICAgIG1vbnRoX29mX2RlbGF5ID49ICIyMDIyLTAxLTAxIiwKICAgICAgICAgcmVhc29uX2Zvcl9kZWxheSA9PSAiQWxsIERlbGF5IFJlYXNvbnMiKSAlPiUgCiAgc3VtbWFyaXNlKG1lYW4gPSBtZWFuKGF2ZXJhZ2VfZGFpbHlfbnVtYmVyX29mX2RlbGF5ZWRfYmVkcyksIC5ieSA9IGhidCkKYGBgCgoKYGBge3J9Cm1lYW5fZGlmZiA8LSBpbm5lcl9qb2luKG1lYW5zX2JlZm9yZSwgbWVhbnNfYWZ0ZXIsIGJ5ID0gImhidCIpICU+JSAKICBtdXRhdGUobWVhbl9kaWZmID0gbWVhbi55IC0gbWVhbi54LCBIQiA9IGhidCkKYGBgCgoKCmBgYHtyfQptYXAgPC0gcmVhZF9jc3YoIi4uL2RhdGEvY2xlYW5lZF9kYXRhL2hvc3BpdGFsX2xvY2F0aW9uc19jbGVhbi5jc3YiKQpgYGAKCmBgYHtyfQptYXBfbWVhbnMgPC0gbGVmdF9qb2luKG1hcCwgbWVhbl9kaWZmLCBieSA9ICJIQiIpCmBgYAoKCgpgYGB7cn0KbWFwX21lYW5zICU+JSAKICBmaWx0ZXIoSEIgIT0gIlNCMDgwMiIsCiAgICAgICAgIEhCICE9ICJTQjA4MDEiKSAlPiUgCiAgbGVhZmxldCgpICU+JSAKICBhZGRUaWxlcygpICU+JSAKICBhZGRDaXJjbGVNYXJrZXJzKGxuZyA9IH4gbG9uZ2l0dWRlLAogICAgICAgICAgICAgICAgICAgbGF0ID0gfiBsYXRpdHVkZSwKICAgICAgICAgICAgICAgICAgIHdlaWdodCA9IDAsCiAgICAgICAgICAgICAgICAgICBmaWxsQ29sb3IgPSB+IGlmZWxzZShtZWFuX2RpZmYgPiAwLCAicmVkIiwgImdyZWVuIiksCiAgICAgICAgICAgICAgICAgICBmaWxsT3BhY2l0eSA9IH4gYWJzKG1lYW5fZGlmZikvMzAwLAogICAgICAgICAgICAgICAgICAgcG9wdXAgPSB+IHBhc3RlKExvY2F0aW9uLCBicigpLCAiQm9hcmQ6IiwgSEIsIGJyKCksIHJvdW5kKG1lYW5fZGlmZiwgMCkpCiAgKQpgYGAKCgoKYGBge3J9Cm1hcF9tZWFucyAlPiUgCiAgZmlsdGVyKEhCICE9ICJTQjA4MDIiLAogICAgICAgICBIQiAhPSAiU0IwODAxIikgJT4lIAogIGxlYWZsZXQoKSAlPiUgCiAgYWRkUHJvdmlkZXJUaWxlcyhwcm92aWRlcnMkU3RhbWVuLlRvbmVyTGl0ZSkgJT4lCiAgYWRkQ2lyY2xlTWFya2VycyhsbmcgPSB+IGxvbmdpdHVkZSwKICAgICAgICAgICAgICAgICAgIGxhdCA9IH4gbGF0aXR1ZGUsCiAgICAgICAgICAgICAgICAgICB3ZWlnaHQgPSAwLAogICAgICAgICAgICAgICAgICAgZmlsbENvbG9yID0gfmNvbG9yTnVtZXJpYygnUmRZbEduJywgLTE4NToxODUpCiAgICAgICAgICAgICAgICAgICAoLW1lYW5fZGlmZiksCiAgICAgICAgICAgICAgICAgICBmaWxsT3BhY2l0eSA9IDAuOSwKICAgICAgICAgICAgICAgICAgIHBvcHVwID0gfiBwYXN0ZShMb2NhdGlvbiwgYnIoKSwgIkJvYXJkOiIsIEhCLCBicigpLCByb3VuZChtZWFuX2RpZmYsIDApKQogICkKYGBgCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAidGhlbWluZyB0aGUgcGxvdHMiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKbGlicmFyeShqYW5pdG9yKQpsaWJyYXJ5KGx1YnJpZGF0ZSkKYGBgCgojIGNoaWFyYSBhZ2UgcGxvdAoKYGBge3J9CmhhX2RlbW8gPC0gcmVhZF9jc3YoIi4uL2RhdGEvY292aWQvaG9zcGl0YWxfYWRtaXNzaW9ucy9ob3NwaXRhbF9hZG1pc3Npb25zX2hiX2FnZXNleF8yMDIzMDcwNi5jc3YiKSAlPiUgCiAgY2xlYW5fbmFtZXMoKQoKaGFfZGVtbyA8LSBoYV9kZW1vICU+JSAKICBtdXRhdGUobW9udGhfZW5kaW5nX2RhdGUgPSB5bShzdHJfc3ViKGFzLmNoYXJhY3Rlcih3ZWVrX2VuZGluZyksIHN0YXJ0ID0gMSwgZW5kID0gNikpLCAuYWZ0ZXIgPSB3ZWVrX2VuZGluZykgJT4lIAogIG11dGF0ZSh3ZWVrX2VuZGluZyA9IHltZCh3ZWVrX2VuZGluZykpIAoKaGFfZGVtbyA8LSBoYV9kZW1vICU+JSAKICBtdXRhdGUoaGIgPSBpZl9lbHNlKGhiID09ICJTOTIwMDAwMDMiLCAiU2NvdGxhbmQiLCBoYikpIAoKaGFfZGVtbyA8LSBoYV9kZW1vICU+JSAKICBtdXRhdGUoYWdlID0gY2FzZV93aGVuKAogICAgYWdlX2dyb3VwID09ICJVbmRlciA1In4gIlVuZGVyIDUiLAogICAgYWdlX2dyb3VwICVpbiUgYygiMTUgLSA0NCIsICI0NSAtIDY0Iil+IjUgLSA2NCIsCiAgICBhZ2VfZ3JvdXAgJWluJSBjKCI2NSAtIDc0IiwgIjc1IC0gODQiLCAiODUgYW5kIG92ZXIiKX4ib3ZlciA2NSIsCiAgICBhZ2VfZ3JvdXAgPT0gIjUgLSAxNCJ+ICI1IC0gNjQiLAogICAgYWdlX2dyb3VwID09ICJBbGwgYWdlcyJ+IkFsbCBhZ2VzIiAKICApLCAKICAuYWZ0ZXIgPSBhZ2VfZ3JvdXApCmBgYAoKIyBuYW9taSBvY2N1cGFuY3kgdHMgYnkgaGIKCmBgYHtyfQpiZWRzIDwtIHJlYWRfY3N2KCIuLi9kYXRhL2JlZHNfYnlfbmhzX2JvYXJkX29mX3RyZWF0bWVudF9hbmRfc3BlY2lhbHR5LmNzdiIpICU+JSAKICBjbGVhbl9uYW1lcygpICU+JSAKICBtdXRhdGUocXVhcnRlciA9IHpvbzo6YXMueWVhcnF0cihxdWFydGVyKSkKCm9jY3VwYW5jeV9wZXJfaGIgPC0gYmVkcyAlPiUgCiAgZ3JvdXBfYnkoaGIsIHF1YXJ0ZXIpICU+JSAKICBzdW1tYXJpc2UodG90YWxfb2NjdXBpZWRfYmVkZGF5cyA9IHN1bSh0b3RhbF9vY2N1cGllZF9iZWRkYXlzKSwKICAgICAgICAgICAgYWxsX3N0YWZmZWRfYmVkZGF5cyA9IHN1bShhbGxfc3RhZmZlZF9iZWRkYXlzKSkgJT4lIAogIG11dGF0ZShwZXJjZW50YWdlX29jY3VwYW5jeSA9IDEwMCAqICh0b3RhbF9vY2N1cGllZF9iZWRkYXlzIC8gYWxsX3N0YWZmZWRfYmVkZGF5cykpCmBgYAoKCiMgdGhpam1lbiBzZWFzb25hbCBiYXIgcGxvdAoKYGBge3J9CndhaXRpbmdfdGltZXMgPC0gcmVhZC5jc3YoIi4uL2RhdGEvYV9hbmRfZS9tb250aGx5X2FlX2FjdGl2aXR5XzIwMjMwNS5jc3YiKSAlPiUgCiAgY2xlYW5fbmFtZXMoKQoKIyBsZXRzIGZpcnN0IGNyZWF0ZSBhIGJhcnBsb3QgY29tcGFyaW5nIHN1bW1lci93aW50ZXIgcGVyIHllYXIgZm9yIGF0dGVuZGFuY2VzCgojMS4gY3JlYXRlIHZhcmlhYmxlIGZvciBzZWFzb24Kc2Vhc29uX25hbWUgPC0gc2V0TmFtZXMocmVwKGMoIndpbnRlciIsICJzcHJpbmciLCAic3VtbWVyIiwgImF1dHVtbiIpLCBlYWNoID0gMyksCiAgICAgICAgICAgICAgICAgICAgICAgIG1vbnRoLm5hbWUpCgojIDIuIGNyZWF0ZSB0YWJsZSBzcGVjaWZ5aW5nIHNlYXNvbgphdHRlbmRhbmNlc19hZSA8LSB3YWl0aW5nX3RpbWVzICU+JSAKICBzZWxlY3QobW9udGgsIGhidCwgbnVtYmVyX29mX2F0dGVuZGFuY2VzX2FsbCkgJT4lIAogICNsZXQncyBhZGQgYSBjb2x1bW4gaW5kaWNhdGluZyBzZWFzb24KICBtdXRhdGUobW9udGhfbGFiZWwgPSBtb250aCgKICAgICAgICAgICAgICAgICAgICAgIHltKG1vbnRoKSwgbGFiZWwgPSBUUlVFLCBhYmJyID0gRkFMU0UpLCAKICAgICAgICAgLmJlZm9yZSA9IGhidCkgJT4lIAogIG11dGF0ZShzZWFzb24gPSBzZWFzb25fbmFtZVttb250aF9sYWJlbF0sIC5iZWZvcmUgPSBoYnQpICU+JSAKICAjIGNyZWF0ZSBhICB5ZWFyIGNvbHVtbiwgCiAgbXV0YXRlKHllYXIgPSB5ZWFyKHltKG1vbnRoKSksIC5iZWZvcmUgPSBoYnQpICU+JSAKICAjIGNyZWF0ZSBhICJmYWtlIiB5ZWFyIGZvciBkZWNlbWJlciwgdG8gbWFrZSBzdXJlIHRoYXQgZGVjZW1iZXIgb2YgcHJldmlvdXMgeWVhciBmYWxscyBpbiBuZXh0IHllYXIgZm9yIGNvcnJlY3QgZ3JvdXBpbmcKICBtdXRhdGUoeWVhciA9IGlmX2Vsc2UobW9udGhfbGFiZWwgPT0gIkRlY2VtYmVyIiwgeWVhcisxLCB5ZWFyKSkgJT4lIAogIG11dGF0ZShzZWFzb24gPSBpZl9lbHNlKG1vbnRoX2xhYmVsID09ICJEZWNlbWJlciIsICJ3aW50ZXIiLCBzZWFzb24pKSAlPiUgIAogIG11dGF0ZShzZWFzb24gPSBpZl9lbHNlKG1vbnRoX2xhYmVsID09ICJNYXJjaCIsICJzcHJpbmciLCBzZWFzb24pKSAlPiUgCiAgbXV0YXRlKHNlYXNvbiA9IGlmX2Vsc2UobW9udGhfbGFiZWwgPT0gIkp1bmUiLCAic3VtbWVyIiwgc2Vhc29uKSkgJT4lIAogIG11dGF0ZShzZWFzb24gPSBpZl9lbHNlKG1vbnRoX2xhYmVsID09ICJTZXB0ZW1iZXIiLCAiYXV0dW1uIiwgc2Vhc29uKSkgJT4lIAogICMgY3JlYXRlIGEgY29sdW1uIHRvIGxhdGVyIGZpbHRlciByaWdodCBzZWFzb24hCiAgbXV0YXRlKHJpZ2h0X3NlYXNvbiA9IGlmX2Vsc2UoCiAgICAgICAgICAgICAgICAgICAgICAgIHN0cl9kZXRlY3Qoc2Vhc29uLCAid2ludGVyfHN1bW1lciIpLCBUUlVFLCBGQUxTRSksCiAgICAgICAgIC5iZWZvcmUgPSBoYnQpIAoKCiMgMy4KI2xldHMgY3JlYXRlIGEgdGFibGUgd2l0aCBhIHllYXJseSBhdmVyYWdlIHBlciBoYiBwZXIgc2Vhc29uLCBmb3IgZWFjaCB5ZWFyOgphdmdfeWVhcnBlcnNlYXNvbl9oYiA8LSBhdHRlbmRhbmNlc19hZSAlPiUgCiAgc2VsZWN0KHllYXIsIGhidCwgbnVtYmVyX29mX2F0dGVuZGFuY2VzX2FsbCkgJT4lIAogIGdyb3VwX2J5KHllYXIsIGhidCkgJT4lIAogIHN1bW1hcmlzZShhdmVyYWdlX3NlYXNvbl95ZWFyID0gc3VtKG51bWJlcl9vZl9hdHRlbmRhbmNlc19hbGwpLzQpICU+JSAKICBmaWx0ZXIoaGJ0ID09ICJTMDgwMDAwMjgiKQoKIyA0LiBsZXRzIGNyZWF0ZSBhIHRhYmxlIGFzIGlucHV0IGZvciB0aGUgZ2dwbG90CmlucHV0X3RhYmxlX2dncGxvdF9hdHRlbmRhbmNlcyA8LSBhdHRlbmRhbmNlc19hZSAlPiUgCiAgZmlsdGVyKHJpZ2h0X3NlYXNvbiA9PSBUUlVFKSAlPiUgCiAgZ3JvdXBfYnkoeWVhciwgc2Vhc29uLCBoYnQpICU+JSAKICBzdW1tYXJpc2UodG90YWxfYXR0ZW5kYW5jZXMgPSBzdW0obnVtYmVyX29mX2F0dGVuZGFuY2VzX2FsbCkpICU+JQogIGZpbHRlcih5ZWFyIDwgMjAyMCAmIHllYXIgPiAyMDA3KSAlPiUgCiAgZmlsdGVyKGhidCA9PSAiUzA4MDAwMDI4IikKYGBgCgojIyB0aGlqbWVuIHNpbWQgYmFycwoKCiMgY3JlYXRlIHRoZW1lCgojIyB0aGVtZSBmdW5jdGlvbgoKYGBge3J9CnRoZW1lX3Blbmd1aW4gPC0gZnVuY3Rpb24gKCl7CiAgCiAgdGhlbWUobGVnZW5kLnBvc2l0aW9uID0gImJvdHRvbSIsCiAgICAgICAgICAgIHBhbmVsLmJhY2tncm91bmQgPSBlbGVtZW50X2JsYW5rKCksCiAgICAgICAgICAgIHBhbmVsLmdyaWQubWlub3IueCA9IGVsZW1lbnRfYmxhbmsoKSwKICAgICAgICAgICAgcGFuZWwuZ3JpZC5taW5vci55ID0gZWxlbWVudF9ibGFuaygpLAogICAgICAgICAgICBheGlzLnRleHQgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEyKSwKICAgICAgICAgICAgYXhpcy50aXRsZSA9IGVsZW1lbnRfdGV4dChzaXplID0gMTYpLAogICAgICAgICAgICBsZWdlbmQudGl0bGUgPSBlbGVtZW50X3RleHQoc2l6ZSA9IDEyKSwKICAgICAgICAgICAgcGxvdC50aXRsZSA9IGVsZW1lbnRfdGV4dChzaXplID0gMjApCiAgICAgICkKICAKfQoKYGBgCgojIyBjb2xvdXJzCgpgYGB7cn0KIyBzaG93IGFsbCBvZiBzY290bGFuZCB2IG9uZSBoYjoKc2NvdF9oYl9jb2xvdXJzIDwtIGMoIlM5MjAwMDAwMyIgPSAiYmx1ZTQiLAogICAgICAgICAgICAgICAgICAgICAiUzA4MDAwMDE1IiA9ICJkYXJrdmlvbGV0IikKIyBzZXQgZmlyc3QgaGIgKHNjb3RsYW5kKSB0byAiYmx1ZTQiIGFuZCBzZWNvbmQgaGIgKHNlbGVjdGVkKSB0byAiZGFya3Zpb2xldCIKICAKIyBzaG93IDMgZGlmZmVyZW50IGFnZXMKYWdlX2NvbG91cnMgPC0gYygiVW5kZXIgNSIgPSAiZ3JlZW55ZWxsb3ciLAogICAgICAgICAgICAgICAgICI1IC0gNjQiID0gInNwcmluZ2dyZWVuIiwKICAgICAgICAgICAgICAgICAib3ZlciA2NSIgPSAiZGFya2dyZWVuIgogICAgICAgICAgICAgICAgKQoKIyB0aGlqbWVuJ3MgNyBhZ2UgZ3JvdXBzCgojIHRoaWptZW4ncyA2IHNpbWQgbGV2ZWxzCgojIHNob3cgc3VtbWVyIHYgd2ludGVyCnNlYXNvbl9jb2xvdXJzIDwtIGMoInN1bW1lciIgPSAiZ29sZGVucm9kMSIsCiAgICAgICAgICAgICAgICAgICAgIndpbnRlciIgPSAic3RlZWxibHVlMSIpCgoKCnBhbCA8LSBjb2xvckZhY3RvcihjKCJuYXZ5IiwgImJsdWUiLCAic3RlZWxibHVlIiwgInNreWJsdWUiLAogICAgICAgICAgICAgICAgICAgICAicmVkIiwiaW5kaWFucmVkIiwgIm1hcm9vbiIsICJicm93biIsCiAgICAgICAgICAgICAgICAgICAgICJzcHJpbmdncmVlbiIsICJzcHJpbmdncmVlbjIiLCAic3ByaW5nZ3JlZW4zIiwgInNwcmluZ2dyZWVuNCIsCiAgICAgICAgICAgICAgICAgICAgICJnb2xkIiwgImdvbGRlbnJvZCIsICJ5ZWxsb3ciLCAib3JhbmdlIiksCiAgICAgICAgICAgICAgICAgICBkb21haW4gPSB1bmlxdWUoaG9zcGl0YWxfbG9jYXRpb25fb2NjdXBhbmN5JGhiKSkKYGBgCgoKIyMgdHJ5IGFsbCB0aGUgcGxvdHMKCmBgYHtyfQoKIyBjaGlhcmEgYWdlIGdyb3VwcyBsaW5lIC0tLQpoYV9kZW1vICU+JSAKICAgICAgZmlsdGVyKGhiICVpbiUgYygiUzA4MDAwMDE1IiksIGFnZSAhPSAiQWxsIGFnZXMiKSAlPiUKICAgICAgZ3JvdXBfYnkoYWdlLCBtb250aF9lbmRpbmdfZGF0ZSkgJT4lIAogICAgICBzdW1tYXJpc2UobWVhbl9hZG1pc3Npb25zID0gbWVhbihudW1iZXJfYWRtaXNzaW9ucykpICU+JSAKICAgICAgZ2dwbG90KCkgKwogICAgICBhZXMoeCA9IG1vbnRoX2VuZGluZ19kYXRlLCB5ID0gbWVhbl9hZG1pc3Npb25zLCBncm91cCA9IGFnZSwgY29sb3VyID0gYWdlKSArCiAgICAgIGdlb21fbGluZSgpICsKICAgICAgbGFicygKICAgICAgICB4ID0gIlxudGltZSIsCiAgICAgICAgeSA9ICJhdmVyYWdlIG1vbnRobHkgaG9zcGl0YWwgYWRtaXNzaW9uc1xuIikgKwogICAgICBzY2FsZV9jb2xvdXJfbWFudWFsKHZhbHVlcyA9IGFnZV9jb2xvdXJzKSArCiAgICAgIHRoZW1lX3Blbmd1aW4oKQoKCiMgbmFvbWkgb2NjdXBhbmN5IHRzIC0tLS0Kb2NjdXBhbmN5X3Blcl9oYiAlPiUgCiAgICAgIGZpbHRlcihoYiAlaW4lIGMoIlM5MjAwMDAwMyIsICJTMDgwMDAwMTUiKSkgJT4lIAogICAgICBnZ3Bsb3QoKSArCiAgICAgIGFlcyh4ID0gcXVhcnRlciwgeSA9IHBlcmNlbnRhZ2Vfb2NjdXBhbmN5LCBjb2xvdXIgPSBoYikgKwogICAgICBnZW9tX2xpbmUoKSArCiAgICAgIGdlb21fcG9pbnQoKSArCiAgICAgIHNjYWxlX2NvbG91cl9tYW51YWwodmFsdWVzID0gc2NvdF9oYl9jb2xvdXJzKSArCiAgICAgIGxhYnMoeCA9ICJcblllYXIgcXVhcnRlciIsIHkgPSAiUGVyY2VudGFnZSBvY2N1cGFuY3lcbiIsCiAgICAgICAgICAgdGl0bGUgPSAiUGVyY2VudGFnZSBvY2N1cGFuY3kgKGhvc3BpdGFsIGJlZHMpIiwKICAgICAgICAgICBjb2xvdXIgPSAiSGVhbHRoIGJvYXJkIikgKwogIHRoZW1lX3Blbmd1aW4oKQoKCiMgdGhpam1lbiBzdW1tZXIgdiB3aW50ZXIgYmFycyAtLS0tCgojIDUuIGxldHMgY3JlYXRlIHRoZSBnZ3Bsb3QgY29tYmluaW5nIGJvdGggZGF0YXNldHMKZ2dwbG90KCkgKwogIGdlb21fY29sKGRhdGEgPSBpbnB1dF90YWJsZV9nZ3Bsb3RfYXR0ZW5kYW5jZXMsIAogICAgICAgICAgIGFlcygKICAgIHggPSB5ZWFyLCAKICAgIHkgPSB0b3RhbF9hdHRlbmRhbmNlcywgCiAgICBmaWxsID0gc2Vhc29uKSwKICAgICAgICAgICBwb3NpdGlvbiA9ICJkb2RnZSIsIGNvbCA9ICJ3aGl0ZSIpICsKICBnZW9tX2xpbmUoZGF0YSA9IGF2Z195ZWFycGVyc2Vhc29uX2hiLCAKICAgICAgICAgICAgYWVzKAogICAgeCA9IHllYXIsIAogICAgeSA9IGF2ZXJhZ2Vfc2Vhc29uX3llYXIpKSArCiAgc2NhbGVfZmlsbF9tYW51YWwodmFsdWVzID0gc2Vhc29uX2NvbG91cnMpICsKICB0aGVtZV9wZW5ndWluKCkKYGBgCgoKCgoKCg==</div>
 
 
 
@@ -2092,7 +2036,7 @@ $(document).ready(function () {
 <!-- code folding -->
 <script>
 $(document).ready(function () {
-  window.initializeSourceEmbed("delayed_discharges.Rmd");
+  window.initializeSourceEmbed("theme_setup.Rmd");
   window.initializeCodeFolding("show" === "show");
 });
 </script>

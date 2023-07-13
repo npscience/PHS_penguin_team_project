@@ -21,15 +21,6 @@ ui <- fluidPage(
              HTML("<br>"),
              
              fluidRow(
-               
-               # select hb(s)
-               selectInput(inputId = "season_hb",
-                           label = tags$b("Which health board?"),
-                           choices = hbs_list,
-                           selected = "S08000015")
-             ),
-             
-             fluidRow(
                column(width = 6,
                       leafletOutput("attendance_season_heatmap")
                ),
@@ -69,18 +60,22 @@ ui <- fluidPage(
     
     tabPanel(tags$b("COVID impact on bed occupancy"),
              HTML("<br>"),
-             
+             fluidRow(
+               "From Public Health Scotland data glossary: 'The percentage occupancy is the percentage of average available staffed beds that were occupied by inpatients during the period.'"
+             ),
              fluidRow(
                column(width = 4,
                       leafletOutput("occupancy_heatmap_all")
                ),
                column(width = 4,
-                      leafletOutput("occupancy_heatmap"),
-                      "This map shows occupancy in 2022 Q4"
+                      leafletOutput("occupancy_heatmap")
                ),
                column(width = 4,
                       plotOutput("occupancy_ts")
                )
+             ),
+             fluidRow(
+               "These maps show % bed occupancy for the most recent quarter with data available (2022 Q4)"
              )
     ),
     
@@ -90,16 +85,14 @@ ui <- fluidPage(
              HTML("<br>"),
              
              fluidRow(
-               column(width = 4,
-                      leafletOutput("delayed_heatmap")
+               column(width = 6,
+                      leafletOutput("delays_map")
                ),
-               column(width = 4,
-                      plotOutput("delayed_ts")
-               ),
-               column(width = 4,
-                      plotOutput("delayed_plot")
+               column(width = 6,
+                      plotOutput("delays_age")
                )
              )
     )
   )
 )
+  

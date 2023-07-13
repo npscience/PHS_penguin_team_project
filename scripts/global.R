@@ -39,16 +39,35 @@ hbs_list <- c("Ayrshire and Arran" = "S08000015",
 
 # theme for plots ----
 
-## tbc
+## colour palettes for plots ----
 
-## occupancy heatmap
+# show all of scotland v one hb
+scot_hb_colours <- c("S92000003" = "blue4",
+                     "S08000015" = "darkviolet")
+# set first hb (scotland) to "blue4" and second hb (selected) to "darkviolet"
+
+# show 3 different ages
+age_colours <- c("Under 5" = "greenyellow",
+                 "5 - 64" = "springgreen",
+                 "over 65" = "darkgreen"
+)
+
+# show summer v winter
+season_colours <- c("summer" = "goldenrod1",
+                    "winter" = "steelblue1")
+
+## heatmap palettes ----
+
+# occupancy heatmap 
 occupancy_pal <- colorNumeric(
   palette = "viridis",
   domain = hospital_location_occupancy$percentage_occupancy)
 
-## static plot to show all of scotland
+## static plots ----
+
+# occupancy heatmap for all of scotland
 occupancy_heatmap_all <- hospital_location_occupancy %>% 
-  leaflet() %>% 
+  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>% 
   addCircleMarkers(lng = ~ longitude,
                    lat = ~ latitude,
@@ -57,16 +76,10 @@ occupancy_heatmap_all <- hospital_location_occupancy %>%
                    fillOpacity = 1,
                    popup = ~ paste(location_name, br(), "Board:", hb),
                    color = ~ occupancy_pal(percentage_occupancy)
-  )
+  ) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6)
 
-## [old] colour palette for hospitals on map
-pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
-                     "red","indianred", "maroon", "brown",
-                     "springgreen", "springgreen2", "springgreen3", "springgreen4",
-                     "gold", "goldenrod", "yellow", "orange"),
-                   domain = unique(hospital_location_occupancy$hb))
-
-########### thijmen
+########### thijmen ----
 #### Create dataset including season terminology for summer/winter difference
 
 # Open datafile and clean names
@@ -133,13 +146,31 @@ locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
 #thijmen end
 
 
-#Chiara data
+#Chiara data ----
 
 ha_demo <- read_csv("../data/cleaned_data/ha_demo_clean.csv")
 join_ha_map <- read_csv("../data/cleaned_data/join_ha_map.csv")
 
 
+# Ali ----
 
+delayed <- clean_names(read_csv("../data/cleaned_data/delayed.csv"))
+map_means <- read_csv("../data/cleaned_data/delayed_map_means.csv")
 
+# static map
 
+map_plot <- map_means %>% 
+  filter(HB != "SB0802",
+         HB != "SB0801") %>% 
+  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~colorNumeric('RdYlGn', -185:185)
+                   (-mean_diff),
+                   fillOpacity = 0.9,
+                   popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
+  )
 

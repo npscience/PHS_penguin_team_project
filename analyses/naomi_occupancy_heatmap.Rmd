@@ -42,7 +42,7 @@ occupancy_pal <- colorNumeric(
 
 hospital_location_occupancy %>% 
       #filter(hb == "S08000031") %>% 
-      leaflet() %>% 
+      leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
       addProviderTiles(providers$Stamen.TonerLite) %>% 
       addCircleMarkers(lng = ~ longitude,
                        lat = ~ latitude,
@@ -51,6 +51,7 @@ hospital_location_occupancy %>%
                        fillOpacity = 1,
                        popup = ~ paste(location_name, br(), "Board:", hb),
                        color = ~occupancy_pal(percentage_occupancy)
-      )
+      ) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6)
 ```
 

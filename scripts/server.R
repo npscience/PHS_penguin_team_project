@@ -38,7 +38,7 @@ server <- function(input, output, session) {
       aes(x = quarter, y = percentage_occupancy, colour = hb) +
       geom_line() +
       geom_point() +
-      scale_colour_brewer(type = "qual", palette = "Set1") +
+      scale_colour_manual(values = scot_hb_colours) +
       labs(x = "\nYear quarter", y = "Percentage occupancy\n",
            title = "Percentage occupancy (hospital beds)",
            colour = "Health board") +
@@ -53,7 +53,8 @@ server <- function(input, output, session) {
       )
   })
   
-  # Thijmen start
+
+  # Thijmen start ----
   # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
@@ -63,7 +64,7 @@ server <- function(input, output, session) {
                  group_by(year, season, hbt) %>% 
                  summarise(total_attendances = sum(number_of_attendances_all)) %>%
                  filter(year < 2020 & year > 2007) %>% 
-                 filter(hbt == input$season_hb), 
+                 filter(hbt == input$hb), 
                aes(
                  x = year, 
                  y = total_attendances, 
@@ -75,14 +76,15 @@ server <- function(input, output, session) {
                   group_by(year, hbt) %>% 
                   summarise(average_season_year = sum(number_of_attendances_all)/4) %>% 
                   filter(year < 2020 & year > 2007) %>%
-                  filter(hbt == input$season_hb), 
+                  filter(hbt == input$hb), 
                 aes(
                   x = year, 
                   y = average_season_year)) +
       labs(title = "Number of A&E attendances per year, per season",
            subtitle = "line indicating average number of attendances per season per year",
            x = "\nYear", y = "Total attendances\n",
-           fill = "Season")
+           fill = "Season") +
+      scale_fill_manual(values = season_colours)
     
   })
   
@@ -92,7 +94,7 @@ server <- function(input, output, session) {
     demo_attendances_season %>% 
       filter(right_season == TRUE) %>% 
       filter(year < 2020 & year > 2007) %>% 
-      filter(hbt == input$season_hb) %>% 
+      filter(hbt == input$hb) %>% 
       select(year, season, hbt, deprivation, number_of_attendances) %>% 
       group_by(year, season, hbt, deprivation) %>% 
       summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
@@ -111,7 +113,7 @@ server <- function(input, output, session) {
     demo_attendances_season %>% 
       filter(right_season == TRUE) %>% 
       filter(year < 2020 & year > 2007) %>% 
-      filter(hbt == input$season_hb) %>% 
+      filter(hbt == input$hb) %>% 
       select(year, season, hbt, age, number_of_attendances) %>% 
       group_by(year, season, hbt, age) %>% 
       summarise(total_per_age = sum(number_of_attendances)) %>% 
@@ -129,7 +131,7 @@ server <- function(input, output, session) {
     waiting_times %>% 
       rename("Location" = "treatment_location") %>% 
       left_join(locations, by = "Location") %>% 
-      filter(hbt == input$season_hb) %>% 
+      filter(hbt == input$hb) %>% 
       leaflet() %>% 
       addProviderTiles(providers$Stamen.TonerLite) %>%
       addCircleMarkers(lng = ~ longitude,
@@ -141,8 +143,7 @@ server <- function(input, output, session) {
   #Thijmen end
   
   
-
-  # Chiara plots start
+# Chiara plots start
   
   
   
@@ -195,13 +196,7 @@ server <- function(input, output, session) {
   })
   
   
-  
-  
-  
-  
-  
-
-  # Chiara plots end
+# Chiara plots end
   
   
   
@@ -209,4 +204,30 @@ server <- function(input, output, session) {
   
   
 
+
+  # Ali start ----
+  
+  output$delays_age <- renderPlot({
+    delayed %>%
+      filter(hbt == input$hb,
+             reason_for_delay == "All Delay Reasons") %>% 
+      ggplot() +
+      aes(x = month_of_delay,
+          y = average_daily_number_of_delayed_beds,
+          group = age_group, colour = age_group) +
+      geom_line() +
+      geom_point() +
+      theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20))
+  })
+  
+  output$delays_map <- renderLeaflet({
+    map_plot
+  })
 }
