@@ -173,7 +173,7 @@ server <- function(input, output, session) {
       aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
       geom_line(show.legend = FALSE) +
       labs(
-        x = "\ntime",
+        x = "\nYear",
         y = "average monthly hospital admissions\n"
       )
   })
@@ -190,7 +190,7 @@ server <- function(input, output, session) {
       aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
       geom_line() +
       labs(
-        x = "\ntime",
+        x = "\nYear",
         y = "average monthly hospital admissions\n"
       )
   })
