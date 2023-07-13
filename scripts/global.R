@@ -78,8 +78,10 @@ occupancy_pal <- colorNumeric(
 
 # Chiara: admissions heatmap for all of scotland
 admissions_heatmap <- join_ha_map %>% 
+  filter(hb != "S92000003") %>% 
   leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>%
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
   addCircleMarkers(lng = ~ longitude,
                    lat = ~ latitude,
                    weight = 0,
@@ -87,26 +89,26 @@ admissions_heatmap <- join_ha_map %>%
                    fillColor = ~colorNumeric('RdYlGn', mean_adm)
                    (mean_adm),
                    fillOpacity = 0.9,
-                   popup = ~ paste("Board:", hb, br(), round(mean_adm, 0))
-  ) %>% 
-  setView(-3.524194, 57.786499, zoom = 5.6)
+                   popup = ~ paste("Board:", hb, br(), 
+                                   "Mean admissions: ", round(mean_adm, 0))
+  )
 
 
 # Naomi: occupancy heatmap for all of scotland
 occupancy_heatmap_all <- hospital_location_occupancy %>% 
   leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
   addCircleMarkers(lng = ~ longitude,
                    lat = ~ latitude,
-                   weight = 1,
+                   weight = 0,
                    radius = 5,
-                   fillOpacity = 0.9,
                    fillColor = ~colorNumeric('RdYlGn', percentage_occupancy)
                    (percentage_occupancy),
-                   popup = ~ paste(location_name, br(), "Board:", hb)
-                   #color = ~ occupancy_pal(percentage_occupancy)
-  ) %>% 
-  setView(-3.524194, 57.786499, zoom = 5.6)
+                   fillOpacity = 0.9,
+                   popup = ~ paste(location_name, br(), "Board:", hb, br(), 
+                                   "Occupancy: ", round(percentage_occupancy,0), "%")
+  )
 
 # Ali: delayed discharges heatmap for all of scotland
 map_plot <- map_means %>% 
@@ -119,10 +121,12 @@ map_plot <- map_means %>%
                    lat = ~ latitude,
                    weight = 0,
                    radius = 5,
-                   fillColor = ~colorNumeric('RdYlGn',  -185:185)
+                   fillColor = ~colorNumeric('RdYlGn', -185:185)
                    (-mean_diff),
                    fillOpacity = 0.9,
-                   popup = ~ paste(Location, br(), "Board:", HB, br(), round(mean_diff, 0))
+                   popup = ~ paste(Location, br(), "Board:", HB, br(), 
+                                   "Difference in means: ",
+                                   round(mean_diff, 0))
   )
 
 ########### thijmen ----
