@@ -115,6 +115,9 @@ ui <- fluidPage(
   
   fluidRow(
     column(width = 6,
+#           leafletOutput("attendance_season_heatmap")
+    ),
+    column(width = 6,
            plotOutput("plot_season")
     )),
   
@@ -133,7 +136,7 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
-  # create the plot for season difference
+  # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
       geom_col(data = 
@@ -157,11 +160,15 @@ server <- function(input, output, session) {
                   filter(hbt == input$season_hb), 
                 aes(
                   x = year, 
-                  y = average_season_year))
+                  y = average_season_year)) +
+      labs(title = "Number of A&E attendances per year, per season",
+           subtitle = "line indicating average number of attendances per season per year",
+           x = "\nYear", y = "Total attendances\n",
+           fill = "Season")
   
 })
   
-  # create the plot with demographics - focus on deprivation
+  # Thijmen - output plot with demographics - focus on deprivation
   output$plot_season_demo_simd <- renderPlot({
     
     demo_attendances_season %>% 
@@ -173,11 +180,14 @@ server <- function(input, output, session) {
       summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
       ggplot() +
       aes(x = as.character(year), y = total_per_deprivation, fill = as.character(deprivation), group = season) +
-      geom_col(position = "dodge", col = "white")
+      geom_col(position = "dodge", col = "white") +
+      labs(title = "Number of attendances split by SIMD",
+           x = "\nYear", y = "Attendances\n",
+           fill = "SIMD")
   
 })
   
-  # create the plot with demographics - focus on age
+  # Thijmen - output plot with demographics - focus on age
   output$plot_season_demo_age <- renderPlot({
     
     demo_attendances_season %>% 
@@ -189,9 +199,25 @@ server <- function(input, output, session) {
       summarise(total_per_age = sum(number_of_attendances)) %>% 
       ggplot() +
       aes(x = as.character(year), y = total_per_age, fill = as.character(age), group = season) +
-      geom_col(position = "dodge", col = "white") 
+      geom_col(position = "dodge", col = "white") +
+      labs(title = "Number of attendances split by age group",
+           x = "\nYear", y = "Attendances\n",
+           fill = "Age group")
     
   })
+  
+  # Thijmen - output map leaflet plot
+#  output$attendance_season_heatmap <- renderLeaflet({
+#    hospital_location_occupancy %>% 
+#      filter(hb == input$covid_hb) %>% 
+#      leaflet() %>% 
+#      addTiles() %>% 
+#      addCircleMarkers(lng = ~ longitude,
+#                       lat = ~ latitude,
+#                       weight = 1,
+#                       popup = ~ paste(location_name, br(), "Board:", hb),
+#                       color = ~ percentage_occupancy
+#      )
   
 }
   

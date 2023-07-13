@@ -1756,10 +1756,6 @@ display: none;
 2. Numberwithin 4 hours 3. Number over 4 hours</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxud2FpdGluZ190aW1lcyA8LSByZWFkLmNzdihcIi4uL2RhdGEvYV9hbmRfZS9tb250aGx5X2FlX2FjdGl2aXR5XzIwMjMwNS5jc3ZcIilcblxuYGBgIn0= -->
-<pre class="r"><code>waiting_times &lt;- read.csv(&quot;../data/a_and_e/monthly_ae_activity_202305.csv&quot;)
-</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -1782,13 +1778,21 @@ library(lubridate)</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2V4cGxvcmUgZGF0YVxuaGVhZCh3YWl0aW5nX3RpbWVzKVxuZ2xpbXBzZSh3YWl0aW5nX3RpbWVzKVxudmlldyh3YWl0aW5nX3RpbWVzKVxuY29sbmFtZXMod2FpdGluZ190aW1lcylcbmBgYCJ9 -->
-<pre class="r"><code>#explore data
-head(waiting_times)
-glimpse(waiting_times)
-view(waiting_times)
-colnames(waiting_times)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuY29sbmFtZXMod2FpdGluZ190aW1lcylcblxuYGBgIn0= -->
+<pre class="r"><code>colnames(waiting_times)
+</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiIFsxXSBcIk1vbnRoXCIgICAgICAgICAgICAgICAgICAgICAgICAgICBcIkNvdW50cnlcIiAgICAgICAgICAgICAgICAgICAgICAgICBcIkhCVFwiICAgICAgICAgICAgICAgICAgICAgICAgICAgIFxuIFs0XSBcIlRyZWF0bWVudExvY2F0aW9uXCIgICAgICAgICAgICAgICBcIkRlcGFydG1lbnRUeXBlXCIgICAgICAgICAgICAgICAgICBcIk51bWJlck9mQXR0ZW5kYW5jZXNBbGxcIiAgICAgICAgIFxuIFs3XSBcIk51bWJlcldpdGhpbjRIb3Vyc0FsbFwiICAgICAgICAgICBcIk51bWJlck92ZXI0SG91cnNBbGxcIiAgICAgICAgICAgICBcIlBlcmNlbnRhZ2VXaXRoaW40SG91cnNBbGxcIiAgICAgIFxuWzEwXSBcIk51bWJlck9mQXR0ZW5kYW5jZXNFcGlzb2RlXCIgICAgICBcIk51bWJlck9mQXR0ZW5kYW5jZXNFcGlzb2RlUUZcIiAgICBcIk51bWJlcldpdGhpbjRIb3Vyc0VwaXNvZGVcIiAgICAgIFxuWzEzXSBcIk51bWJlcldpdGhpbjRIb3Vyc0VwaXNvZGVRRlwiICAgICBcIk51bWJlck92ZXI0SG91cnNFcGlzb2RlXCIgICAgICAgICBcIk51bWJlck92ZXI0SG91cnNFcGlzb2RlUUZcIiAgICAgIFxuWzE2XSBcIlBlcmNlbnRhZ2VXaXRoaW40SG91cnNFcGlzb2RlXCIgICBcIlBlcmNlbnRhZ2VXaXRoaW40SG91cnNFcGlzb2RlUUZcIiBcIk51bWJlck92ZXI4SG91cnNFcGlzb2RlXCIgICAgICAgIFxuWzE5XSBcIk51bWJlck92ZXI4SG91cnNFcGlzb2RlUUZcIiAgICAgICBcIlBlcmNlbnRhZ2VPdmVyOEhvdXJzRXBpc29kZVwiICAgICBcIlBlcmNlbnRhZ2VPdmVyOEhvdXJzRXBpc29kZVFGXCIgIFxuWzIyXSBcIk51bWJlck92ZXIxMkhvdXJzRXBpc29kZVwiICAgICAgICBcIk51bWJlck92ZXIxMkhvdXJzRXBpc29kZVFGXCIgICAgICBcIlBlcmNlbnRhZ2VPdmVyMTJIb3Vyc0VwaXNvZGVcIiAgIFxuWzI1XSBcIlBlcmNlbnRhZ2VPdmVyMTJIb3Vyc0VwaXNvZGVRRlwiIFxuIn0= -->
+<pre><code> [1] &quot;Month&quot;                           &quot;Country&quot;                         &quot;HBT&quot;                            
+ [4] &quot;TreatmentLocation&quot;               &quot;DepartmentType&quot;                  &quot;NumberOfAttendancesAll&quot;         
+ [7] &quot;NumberWithin4HoursAll&quot;           &quot;NumberOver4HoursAll&quot;             &quot;PercentageWithin4HoursAll&quot;      
+[10] &quot;NumberOfAttendancesEpisode&quot;      &quot;NumberOfAttendancesEpisodeQF&quot;    &quot;NumberWithin4HoursEpisode&quot;      
+[13] &quot;NumberWithin4HoursEpisodeQF&quot;     &quot;NumberOver4HoursEpisode&quot;         &quot;NumberOver4HoursEpisodeQF&quot;      
+[16] &quot;PercentageWithin4HoursEpisode&quot;   &quot;PercentageWithin4HoursEpisodeQF&quot; &quot;NumberOver8HoursEpisode&quot;        
+[19] &quot;NumberOver8HoursEpisodeQF&quot;       &quot;PercentageOver8HoursEpisode&quot;     &quot;PercentageOver8HoursEpisodeQF&quot;  
+[22] &quot;NumberOver12HoursEpisode&quot;        &quot;NumberOver12HoursEpisodeQF&quot;      &quot;PercentageOver12HoursEpisode&quot;   
+[25] &quot;PercentageOver12HoursEpisodeQF&quot; </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->

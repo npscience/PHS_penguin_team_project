@@ -18,6 +18,7 @@ demo_attendances <- read.csv("../data/a_and_e/opendata_monthly_ae_demographics_2
 
 ```{r}
 view(demo_attendances)
+colnames(demo_attendances)
 ```
 
 ```{r}
@@ -55,6 +56,7 @@ demo_attendances_season %>%
   filter(year < 2020 & year > 2007) %>% 
   filter(hbt == "S08000028") %>% 
   select(year, season, hbt, deprivation, number_of_attendances) %>% 
+  #mutate(deprivation = recode(deprivation, NA_integer_ = "unknown")) %>%
   group_by(year, season, hbt, deprivation) %>% 
   summarise(total_per_deprivation = sum(number_of_attendances)) %>% 
   ggplot() +
@@ -67,6 +69,7 @@ demo_attendances_season %>%
   filter(right_season == TRUE) %>% 
   filter(year < 2020 & year > 2007) %>% 
   filter(hbt == "S08000028") %>% 
+  #mutate(age = recode(age, NULL = "unknown")) %>%
   select(year, season, hbt, age, number_of_attendances) %>% 
   group_by(year, season, hbt, age) %>% 
   summarise(total_per_age = sum(number_of_attendances)) %>% 
@@ -87,5 +90,15 @@ demo_attendances_season %>%
   geom_col(position = "dodge", col = "white")
   
 
+```
+
+```{r}
+demo_attendances_season %>% 
+  distinct(age)
+```
+
+```{r}
+demo_attendances_season %>% 
+  distinct(deprivation)
 ```
 
