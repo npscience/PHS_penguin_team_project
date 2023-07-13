@@ -86,7 +86,8 @@ server <- function(input, output, session) {
            subtitle = "line indicating average number of attendances per season per year",
            x = "\nYear", y = "Total attendances\n",
            fill = "Season") +
-      scale_fill_manual(values = season_colours)
+      scale_fill_manual(values = season_colours) +
+      theme_penguin()
     
   })
   
@@ -107,7 +108,8 @@ server <- function(input, output, session) {
       geom_col(position = "dodge", col = "white") +
       labs(title = "Number of attendances split by SIMD",
            x = "\nYear", y = "Attendances\n",
-           fill = "SIMD")
+           fill = "SIMD") +
+      theme_penguin()
     
   })
   
@@ -126,7 +128,8 @@ server <- function(input, output, session) {
       geom_col(position = "dodge", col = "white") +
       labs(title = "Number of attendances split by age group",
            x = "\nYear", y = "Attendances\n",
-           fill = "Age group")
+           fill = "Age group") +
+      theme_penguin()
     
   })
   
@@ -167,15 +170,7 @@ server <- function(input, output, session) {
         x = "\nYear",
         y = "average monthly hospital admissions\n"
       ) +
-      theme(legend.position = "bottom",
-            panel.background = element_blank(),
-            panel.grid.minor.x = element_blank(),
-            panel.grid.minor.y = element_blank(),
-            axis.text = element_text(size = 12),
-            axis.title = element_text(size = 16),
-            legend.title = element_text(size = 12),
-            plot.title = element_text(size = 20)
-      )
+      theme_penguin()
   })
   
   output$admissions_plot <- renderPlot({
@@ -191,15 +186,7 @@ server <- function(input, output, session) {
         x = "\nYear",
         y = "average monthly hospital admissions\n"
       ) +
-      theme(legend.position = "bottom",
-            panel.background = element_blank(),
-            panel.grid.minor.x = element_blank(),
-            panel.grid.minor.y = element_blank(),
-            axis.text = element_text(size = 12),
-            axis.title = element_text(size = 16),
-            legend.title = element_text(size = 12),
-            plot.title = element_text(size = 20)
-      )
+      theme_penguin()
   })
   
   
@@ -221,14 +208,7 @@ server <- function(input, output, session) {
            x = "\nYear",
            y = "Average Daily Number of Delayed Beds\n",
            colour = "Age Group") +
-      theme(legend.position = "bottom",
-            panel.background = element_blank(),
-            panel.grid.minor.x = element_blank(),
-            panel.grid.minor.y = element_blank(),
-            axis.text = element_text(size = 12),
-            axis.title = element_text(size = 16),
-            legend.title = element_text(size = 12),
-            plot.title = element_text(size = 20))
+      theme_penguin()
   })
   
   output$delays_map <- renderLeaflet({
