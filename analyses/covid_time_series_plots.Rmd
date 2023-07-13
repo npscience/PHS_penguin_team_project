@@ -164,10 +164,6 @@ join_ha_map <- full_join(map, ha_for_join, by = "hb")
 #Cleaning join dataset
 
 
-```{r}
-ha_
-```
-
 
 
 
