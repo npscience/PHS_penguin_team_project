@@ -11,7 +11,6 @@ library(sf)
 
 
 ha_demo <- read_csv("../PHS_penguin_team_project/data/cleaned_data/ha_demo_clean.csv")
-
 join_ha_map <- read_csv("../PHS_penguin_team_project/data/cleaned_data/join_ha_map.csv")
 
 hbs_list <- c("Ayrshire and Arran" = "S08000015",
