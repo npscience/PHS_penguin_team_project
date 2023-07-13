@@ -3,13 +3,18 @@ ui <- fluidPage(
   theme = bs_theme(bootswatch = "simplex"),
   
   # ABOVE TABS ----
-  titlePanel(tags$h3("Main title")),
+  titlePanel(tags$h3("Trends in acute care provision")),
   
   # global selector for health board
-  fluidRow(selectInput(inputId = "hb",
+  fluidRow(
+    #column(width = 6,
+    selectInput(inputId = "hb",
                        label = tags$b("Which health board?"),
                        choices = hbs_list,
                        selected = "S08000015")
+  # ),
+  # column(width = 6,
+  #        imageOutput("PHSlogo")
   ),
   
   # start tabs

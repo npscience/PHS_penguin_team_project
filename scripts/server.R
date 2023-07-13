@@ -1,6 +1,16 @@
 # server -----
 server <- function(input, output, session) {
   
+  # render PHS logo
+  # 
+  # output$PHSlogo <- renderImage({
+  #   list(src = "../images/phs-logo.png",
+  #        width = 100,
+  #        height = 60,
+  #        alt = "Public Health Scotland")
+  # })
+  
+# Naomi plots start ----
   # output$occupancy_heatmap_all ----
   # static, shows all of scotland
   output$occupancy_heatmap_all <- renderLeaflet({
@@ -52,9 +62,9 @@ server <- function(input, output, session) {
             plot.title = element_text(size = 20)
       )
   })
-  
+# Naomi plots end
 
-  # Thijmen start ----
+# Thijmen start ----
   # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
@@ -143,23 +153,13 @@ server <- function(input, output, session) {
                        fillColor = "darkviolet",
                        popup = ~ paste(department_type))
   })
- #Thijmen end
+#Thijmen end
   
   
 # Chiara plots start ----
 
   output$admissions_heatmap <- renderLeaflet({
-    join_ha_map %>% 
-      leaflet() %>% 
-      addProviderTiles(providers$Stamen.TonerLite) %>%
-      addCircleMarkers(lng = ~ longitude,
-                       lat = ~ latitude,
-                       weight = 0,
-                       fillColor = ~colorNumeric('RdYlGn', mean_adm)
-                       (mean_adm),
-                       fillOpacity = 0.9
-                       #popup = ~ paste( br(), "Board:", HB, br(), round(mean_diff, 0))
-      )
+    admissions_heatmap
   })
   
   output$admissions_ts <- renderPlot({
