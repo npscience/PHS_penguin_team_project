@@ -12,10 +12,11 @@ ui <- fluidPage(
                        label = tags$b("Which health board?"),
                        choices = hbs_list,
                        selected = "S08000015")
-  # ),
-  # column(width = 6,
-  #        imageOutput("PHSlogo")
   ),
+  # column(width = 6,
+  #        img(src = "../images/phs_logo.png", align = "right")
+  #         #imageOutput("PHSlogo")
+  # ),
   
   # start tabs
   tabsetPanel(
