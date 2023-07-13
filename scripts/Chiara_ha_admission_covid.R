@@ -96,7 +96,7 @@ server <- function(input, output, session) {
   
   output$admissions_ts <- renderPlot({
     ha_demo %>% 
-      filter(hb %in% c(input$hb, "S92000003")) %>% 
+      filter(hb %in% c(input$hb)) %>% 
       group_by(hb, month_ending_date) %>% 
       summarise(mean_admissions = mean(number_admissions)) %>% 
       ggplot() +
