@@ -154,6 +154,8 @@ server <- function(input, output, session) {
           group = age_group, colour = age_group) +
       geom_line() +
       geom_point() +
+      labs(title = "Average Daily Number of Delayed Beds",
+           x = "\nYear", y = "average daily number of delayed beds\n") +
       theme(legend.position = "bottom",
             panel.background = element_blank(),
             panel.grid.minor.x = element_blank(),
@@ -167,4 +169,9 @@ server <- function(input, output, session) {
   output$delays_map <- renderLeaflet({
     map_plot
   })
+  
+  
+  # Ali end
+  
 }
+
