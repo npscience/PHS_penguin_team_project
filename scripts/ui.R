@@ -5,7 +5,12 @@ ui <- fluidPage(
   # ABOVE TABS ----
   titlePanel(tags$h3("Main title")),
   
-  # add fluidRow here if want a global selector
+  # global selector for health board
+  fluidRow(selectInput(inputId = "hb",
+                       label = tags$b("Which health board?"),
+                       choices = hbs_list,
+                       selected = "S08000015")
+  ),
   
   # start tabs
   tabsetPanel(
@@ -14,6 +19,7 @@ ui <- fluidPage(
     
     tabPanel(tags$b("Winter/Summer effect"),
              HTML("<br>"),
+             
              fluidRow(
                
                # select hb(s)
@@ -25,43 +31,75 @@ ui <- fluidPage(
              
              fluidRow(
                column(width = 6,
-                      plotOutput("plot1")
+                      leafletOutput("attendance_season_heatmap")
                ),
                column(width = 6,
-                      plotOutput("plot2")
+                      plotOutput("plot_season")
+               )),
+             
+             fluidRow(
+               column(width = 6,
+                      plotOutput("plot_season_demo_simd")
+               ),
+               column(width = 6,
+                      plotOutput("plot_season_demo_age")
+               )
+             )),
+    
+    
+    # Tab 2: COVID impact on hospital admissions ----
+    
+    tabPanel(tags$b("COVID impact in hospital admissions"),
+             HTML("<br>"),
+             
+             fluidRow(
+               column(width = 4,
+                      leafletOutput("admissions_heatmap")
+               ),
+               column(width = 4,
+                      plotOutput("admissions_ts")
+               ),
+               column(width = 4,
+                      plotOutput("admissions_plot")
                )
              )
     ),
     
-    # Tab 2: COVID impact ----
+    # Tab 3: COVID impact on bed occupancy ----
     
-    tabPanel(tags$b("COVID impact"),
+    tabPanel(tags$b("COVID impact on bed occupancy"),
              HTML("<br>"),
              
              fluidRow(
-               # select hb(s)
-               column(width = 6,
-                      selectInput(inputId = "covid_hb",
-                                  label = tags$b("Which health board(s)?"),
-                                  choices = hbs_list,
-                                  selected = "S08000015")
-               ),
-               column(width = 6,
-                      selectInput(inputId = "covid_kpi",
-                                  label = tags$b("Which metric?"),
-                                  choices = covid_kpi_list,
-                                  selected = "Bed occupancy")
-               ),
-             ),
-             
-             fluidRow(
                column(width = 4,
-                      leafletOutput("occupancy_heatmap")
+                      leafletOutput("occupancy_heatmap_all")
                ),
-               column(width = 8,
+               column(width = 4,
+                      leafletOutput("occupancy_heatmap"),
+                      "This map shows occupancy in 2022 Q4"
+               ),
+               column(width = 4,
                       plotOutput("occupancy_ts")
                )
              )
     ),
+    
+    # Tab 4: COVID impact on delayed discharges ----
+    
+    tabPanel(tags$b("COVID impact on delayed discharges"),
+             HTML("<br>"),
+             
+             fluidRow(
+               column(width = 4,
+                      leafletOutput("delayed_heatmap")
+               ),
+               column(width = 4,
+                      plotOutput("delayed_ts")
+               ),
+               column(width = 4,
+                      plotOutput("delayed_plot")
+               )
+             )
+    )
   )
 )

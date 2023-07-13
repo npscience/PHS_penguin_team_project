@@ -10,6 +10,7 @@ library(tidyverse)
 library(ggplot2)
 library(janitor)
 library(lubridate)
+library(leaflet)
 ```
 
 
@@ -65,11 +66,7 @@ ha_simd <- ha_simd %>%
 #Since, the heal board code 'Scotland' correspond to the entire Scotland, I am going to mutate it in 'Scotland' for clarity.
 
 
-ha_demo <- ha_demo %>% 
-  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
 
-ha_simd <- ha_simd %>% 
-  mutate(hb = if_else(hb == "S92000003", "Scotland", hb)) 
 
 #Finally, I am going to create a new column for dividing the age_groups into different age groups I am more interested in.
 
@@ -101,16 +98,105 @@ ha_demo <- ha_demo %>%
 ```
 
 
+```{r}
+ha_demo_join <- left_join(ha_demo, ha_simd, by = "hb")
+```
+
+
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland")) %>% 
+  filter(hb %in% c("S08000015", "S92000003")) %>% 
   group_by(hb, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
   aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
   geom_line()
 ```
+
+```{r}
+map <- read_csv("../data/cleaned_data/hospital_locations_clean.csv") %>% 
+  clean_names()
+```
+
+
+```{r}
+ha_demo %>% 
+  group_by(hb) %>% 
+  summarise(mean_adm = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = hb, y = mean_adm, fill = hb) +
+  geom_col()
+```
+
+
+
+
+```{r}
+ha_demo %>% 
+  filter(month_ending_date == "2023-06-01") %>% 
+  group_by(hb) %>%
+  summarise(mean_adm = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = hb, y = mean_adm, fill = hb) +
+  geom_col()
+```
+
+
+```{r}
+ha_for_join <- ha_demo %>% 
+  group_by(hb) %>% 
+  summarise(mean_adm = mean(number_admissions))
+```
+
+
+```{r}
+#join <- left_join(ha_demo, map, by = "hb")
+```
+
+
+
+
+```{r}
+join_ha_map <- full_join(map, ha_for_join, by = "hb")
+```
+
+#Cleaning join dataset
+
+
+
+
+
+```{r}
+join_ha_map %>% 
+leaflet() %>% 
+  addProviderTiles(providers$Stamen.TonerLite) %>%
+  addCircleMarkers(lng = ~ longitude,
+                   lat = ~ latitude,
+                   weight = 0,
+                   fillColor = ~colorNumeric('RdYlGn', mean_adm)
+                   (mean_adm),
+                   fillOpacity = 0.9
+                   #popup = ~ paste( br(), "Board:", HB, br(), round(mean_diff, 0))
+  )
+  
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r}
 ha_simd %>% 
@@ -120,6 +206,31 @@ ha_simd %>%
   ggplot() +
   aes(x = month_ending_date, y = mean_admissions, group = simd_quintile, colour = simd_quintile) +
   geom_line()
+
+```
+
+
+
+```{r}
+join %>% 
+  filter(hb %in% c("S08000015", "S92000003"), age_group != "All ages") %>%
+  group_by(age_group, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = age_group, colour = age_group) +
+  geom_line()
+```
+
+
+```{r}
+join %>% 
+  filter(hb %in% c("S08000015"), age != "All ages") %>%
+  group_by(age, month_ending_date) %>% 
+  summarise(mean_admissions = mean(number_admissions)) %>% 
+  ggplot() +
+  aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
+  geom_line()
+
 ```
 
 
@@ -128,7 +239,7 @@ ha_simd %>%
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland"), age_group != "All ages") %>%
+  filter(hb %in% c("S08000015", "S92000003"), age_group != "All ages") %>%
   group_by(age_group, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
@@ -139,7 +250,7 @@ ha_demo %>%
 
 ```{r}
 ha_demo %>% 
-  filter(hb %in% c("S08000015", "Scotland"), age != "All ages") %>%
+  filter(hb %in% c("S08000015", "S92000003"), age != "All ages") %>%
   group_by(age, month_ending_date) %>% 
   summarise(mean_admissions = mean(number_admissions)) %>% 
   ggplot() +
