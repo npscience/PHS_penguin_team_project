@@ -133,7 +133,7 @@ scot_hb_colours <- c("blue4","darkviolet")
 # show 3 different ages
 age_colours <- c("Under 5" = "orchid",
                  "5 - 64" = "darkorchid2",
-                 "Over 65" = "darkmagenta"
+                 "over 65" = "darkmagenta"
                 )
 
 
