@@ -165,6 +165,8 @@ server <- function(input, output, session) {
       ggplot() +
       aes(x = month_ending_date, y = mean_admissions, group = hb, colour = hb) +
       geom_line(show.legend = FALSE) +
+      geom_point(show.legend = FALSE) +
+      scale_colour_manual(values = scot_hb_colours) +
       labs(
         title = "Hospital admissions trend per hb",
         x = "\nYear",
@@ -181,6 +183,8 @@ server <- function(input, output, session) {
       ggplot() +
       aes(x = month_ending_date, y = mean_admissions, group = age, colour = age) +
       geom_line() +
+      geom_point() +
+      scale_colour_manual(values = age_colours) +
       labs(
         title = "Hospital admissions depending on age",
         x = "\nYear",
