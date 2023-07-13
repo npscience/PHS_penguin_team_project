@@ -97,6 +97,12 @@ ui <- fluidPage(
                column(width = 6,
                       plotOutput("delays_age")
                )
+             ),
+             fluidRow(
+               column(width = 5, offset = 1,
+                        "asdfsadfasf"),
+               column(width = 6,
+                        "asdfsadfasf"),
              )
     )
   )
