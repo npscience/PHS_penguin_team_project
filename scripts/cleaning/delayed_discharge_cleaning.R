@@ -1,4 +1,4 @@
-delayed <- clean_names(read_csv("delayed-discharge-beddays-health-board.csv"))
+delayed <- clean_names(read_csv("../../data/delayed-discharge-beddays-health-board.csv"))
 
 delayed <- delayed %>% 
   select(month_of_delay,
@@ -11,4 +11,4 @@ delayed <- delayed %>%
 delayed <- delayed %>% 
   mutate(month_of_delay = ym(month_of_delay))
 
-write_csv(delayed, "cleaned_data/delayed.csv")
+write_csv(delayed, "../../data/cleaned_data/delayed.csv")
