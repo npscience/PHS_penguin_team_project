@@ -150,7 +150,8 @@ map_means <- read_csv("../data/cleaned_data/delayed_map_means.csv")
 map_plot <- map_means %>% 
   filter(HB != "SB0802",
          HB != "SB0801") %>% 
-  leaflet() %>% 
+  leaflet(options = leafletOptions(zoomSnap = 0.2, zoomDelta=0.2)) %>% 
+  setView(-3.524194, 57.786499, zoom = 5.6) %>% 
   addProviderTiles(providers$Stamen.TonerLite) %>%
   addCircleMarkers(lng = ~ longitude,
                    lat = ~ latitude,

@@ -54,7 +54,7 @@ server <- function(input, output, session) {
   })
   
 
-  # Thijmen start
+  # Thijmen start ----
   # Thijmen - output plot for season difference
   output$plot_season <- renderPlot({
     ggplot() +
@@ -141,4 +141,30 @@ server <- function(input, output, session) {
   })
   #Thijmen end
   
+  
+  # Ali start ----
+  
+  output$delays_age <- renderPlot({
+    delayed %>%
+      filter(hbt == input$hb,
+             reason_for_delay == "All Delay Reasons") %>% 
+      ggplot() +
+      aes(x = month_of_delay,
+          y = average_daily_number_of_delayed_beds,
+          group = age_group, colour = age_group) +
+      geom_line() +
+      geom_point() +
+      theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20))
+  })
+  
+  output$delays_map <- renderLeaflet({
+    map_plot
+  })
 }

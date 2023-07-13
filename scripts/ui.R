@@ -74,9 +74,9 @@ ui <- fluidPage(
                       plotOutput("occupancy_ts")
                )
              ),
-          fluidRow(
-            "These maps show % bed occupancy for the most recent quarter with data available (2022 Q4)"
-          )
+             fluidRow(
+               "These maps show % bed occupancy for the most recent quarter with data available (2022 Q4)"
+             )
     ),
     
     # Tab 4: COVID impact on delayed discharges ----
@@ -85,16 +85,14 @@ ui <- fluidPage(
              HTML("<br>"),
              
              fluidRow(
-               column(width = 4,
-                      leafletOutput("delayed_heatmap")
+               column(width = 6,
+                      leafletOutput("delays_map")
                ),
-               column(width = 4,
-                      plotOutput("delayed_ts")
-               ),
-               column(width = 4,
-                      plotOutput("delayed_plot")
+               column(width = 6,
+                      plotOutput("delays_age")
                )
              )
     )
   )
 )
+  
