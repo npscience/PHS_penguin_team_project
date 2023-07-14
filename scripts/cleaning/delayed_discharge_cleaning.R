@@ -1,4 +1,4 @@
-delayed <- clean_names(read_csv("../../data/delayed-discharge-beddays-health-board.csv"))
+delayed <- clean_names(read_csv("../data/delayed-discharge-beddays-health-board.csv"))
 
 delayed <- delayed %>% 
   select(month_of_delay,
@@ -33,9 +33,9 @@ mean_diff <- inner_join(means_before, means_after, by = "hbt") %>%
   mutate(mean_diff = mean.y - mean.x, HB = hbt)
 
 
-map <- read_csv("../../data/cleaned_data/hospital_locations_clean.csv")
+map <- read_csv("../data/cleaned_data/hospital_locations_clean.csv")
 
 map_means <- left_join(map, mean_diff, by = "HB")
 
-write_csv(delayed, "../../data/cleaned_data/delayed.csv")
-write_csv(map_means, "../../data/cleaned_data/delayed_map_means.csv")
+write_csv(delayed, "../data/cleaned_data/delayed.csv")
+write_csv(map_means, "../data/cleaned_data/delayed_map_means.csv")

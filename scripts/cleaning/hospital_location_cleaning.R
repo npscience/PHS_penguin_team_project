@@ -1,7 +1,7 @@
 library(sf)
 library(tidyverse)
 
-hospitals <- read.csv("../../data/map/nhs_hospitals_xy.csv")
+hospitals <- read.csv("../data/map/nhs_hospitals_xy.csv")
 
 # removing entries with NA in coordinate data
 
@@ -39,4 +39,4 @@ hospitals_revalid <- cbind(hospitals_invalid, df)
 all_hospital_long_lat <- rbind(hospitals_named, hospitals_revalid) %>% 
   arrange(Location)
 
-write_csv(all_hospital_long_lat, "../../data/cleaned_data/hospital_locations_clean.csv")
+write_csv(all_hospital_long_lat, "../data/cleaned_data/hospital_locations_clean.csv")
