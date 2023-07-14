@@ -30,14 +30,15 @@ server <- function(input, output, session) {
                        weight = 1,
                        radius = 5,
                        fillOpacity = 1,
-                       popup = ~ paste(location_name, br(), "Board:", hb),
+                       popup = ~ paste(location_name, br(), "Board:", hb, br(), 
+                                       "Occupancy: ", round(percentage_occupancy,0), "%"),
                        color = ~ occupancy_pal(percentage_occupancy)
       )
   })
   
   # output$occupancy_ts ----
   
-  # plot ave_length_of_stay over time with hb filter
+  # plot occupancy over time with hb filter
   # assign to plot_ts_occupancy_filter_hb
   # note scale all health boards == individual HB so keep on same graph
   output$occupancy_ts <- renderPlot({
