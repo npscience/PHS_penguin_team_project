@@ -13,7 +13,10 @@ https://www.opendata.nhs.scot/dataset/hospital-codes/resource/c698f450-eeed-41a0
 
 Exploration notebooks also include work using these additional datasets:
 
-* Treatment wait times
-* Length of stay for inpatients: (3 datasets)
+* Treatment wait times: https://www.opendata.nhs.scot/dataset/stage-of-treatment-waiting-times
+* Inpatient and day cases activity (including length of stay):
+  * Activity by Board of Treatment and Specialty: https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/c3b4be64-5fb4-4a2f-af41-b0012f0a276a
+  * Activity by Board of Treatment, Age and Sex: https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/00c00ecc-b533-426e-a433-42d79bdea5d4
+  * Activity by Board of Treatment and Deprivation: https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/4fc640aa-bdd4-4fbe-805b-1da1c8ed6383
 
 

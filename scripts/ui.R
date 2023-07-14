@@ -9,9 +9,9 @@ ui <- fluidPage(
   fluidRow(
     #column(width = 6,
     selectInput(inputId = "hb",
-                       label = tags$b("Which health board?"),
-                       choices = hbs_list,
-                       selected = "S08000015")
+                label = tags$b("Which health board?"),
+                choices = hbs_list,
+                selected = "S08000015")
   ),
   # column(width = 6,
   #        img(src = "../images/phs_logo.png", align = "right")
@@ -42,7 +42,15 @@ ui <- fluidPage(
                column(width = 5, 
                       plotOutput("plot_season_demo_age")
                )
-             )),
+             ),
+             
+             fluidRow(
+               
+               HTML("<br><br>"),
+               
+               tags$body("This dashboard uses ",a("Monthly A&E activity and waiting times data", href = "https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
+               )
+    ),
     
     
     # Tab 2: COVID impact on hospital admissions ----
@@ -104,11 +112,10 @@ ui <- fluidPage(
              ),
              fluidRow(
                column(width = 5, offset = 1,
-                        "Map of difference in means of average delayed discharge bed-days by health board before and after COVID-19. The points are more red in health boards where there are more delayed bed-days after covid than before"),
+                      "Map of difference in means of average delayed discharge bed-days by health board before and after COVID-19. The points are more red in health boards where there are more delayed bed-days after covid than before"),
                column(width = 6,
-                        "Splitting the data by age group, see the proportion of the effect on 75+ year olds as opposed to those of 74 or younger"),
+                      "Splitting the data by age group, see the proportion of the effect on 75+ year olds as opposed to those of 74 or younger"),
              )
     )
   )
 )
-  
