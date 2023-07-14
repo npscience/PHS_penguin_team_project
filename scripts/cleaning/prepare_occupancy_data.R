@@ -5,7 +5,7 @@ library(janitor)
 library(lubridate)
 
 # load in raw data ----
-beds <- read_csv("data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
+beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>% 
   clean_names() %>% 
   mutate(quarter = zoo::as.yearqtr(quarter))
 
@@ -17,7 +17,7 @@ most_recent_quarter <- beds %>%
   pull(quarter)
 
 # this could be in hospitals file
-hospitals <- read_csv("data/cleaned_data/hospital_locations_clean.csv")
+hospitals <- read_csv("../data/cleaned_data/hospital_locations_clean.csv")
 hospitals_lookup <- hospitals %>% 
   clean_names() %>% 
   select(location, location_name, longitude, latitude)
@@ -46,7 +46,7 @@ occupancy_per_hb <- beds %>%
   mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays))
 
 # write cleaned data to new files to load into shiny ----
-write_csv(hospital_location_occupancy, "data/cleaned_data/hospital_location_occupancy.csv")
-write_csv(occupancy_per_hb, "data/cleaned_data/occupancy_per_hb.csv")
+write_csv(hospital_location_occupancy, "../data/cleaned_data/hospital_location_occupancy.csv")
+write_csv(occupancy_per_hb, "../data/cleaned_data/occupancy_per_hb.csv")
 
 
