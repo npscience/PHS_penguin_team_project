@@ -192,6 +192,9 @@ demo_attendances_season <- read.csv("../data/cleaned_data/demographics_ae_season
 # 3. Load in data for leaflet map
 locations <- read.csv("../data/cleaned_data/hospital_locations_clean.csv")
 
+waiting_times <- read.csv("../data/a_and_e/monthly_ae_activity_202305.csv") %>% 
+  clean_names()
+
 #thijmen end
 
 
