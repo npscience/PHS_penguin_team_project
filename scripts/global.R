@@ -57,9 +57,10 @@ theme_penguin <- function(){
         panel.background = element_blank(),
         panel.grid.minor.x = element_blank(),
         panel.grid.minor.y = element_blank(),
-        axis.text = element_text(size = 12),
+        axis.text = element_text(size = 16),
         axis.title = element_text(size = 16),
-        legend.title = element_text(size = 12),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
         plot.title = element_text(size = 18)
   )
   

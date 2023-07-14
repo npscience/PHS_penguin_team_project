@@ -86,6 +86,7 @@ server <- function(input, output, session) {
            subtitle = "line indicating average number of attendances per season per year",
            x = "\nYear", y = "Total attendances\n",
            fill = "Season") +
+      scale_y_continuous(labels = scales::comma) +
       scale_fill_manual(values = season_colours) +
       theme_penguin()
     
