@@ -8,7 +8,8 @@ The Shiny dashboard presents data from the following specific datasets:
 * COVID-19 Wider Impacts - Hospital Admissions: https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions 
 * [for occupancy] Beds Information in Scotland: https://www.opendata.nhs.scot/dataset/hospital-beds-information 
 * Delayed Discharges in NHSScotland: https://www.opendata.nhs.scot/dataset/delayed-discharges-in-nhsscotland
-* Hospital locations
+* NHS Scotland Hospital Locations:
+https://www.opendata.nhs.scot/dataset/hospital-codes/resource/c698f450-eeed-41a0-88f7-c1e40a568acc
 
 Exploration notebooks also include work using these additional datasets:
 
