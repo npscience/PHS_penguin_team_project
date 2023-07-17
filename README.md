@@ -31,6 +31,8 @@ Exploration notebooks also include work using these additional datasets:
 
 ## Running the app locally
 
+<show snapshot of what it looks like?>
+
 ### Requirements
 
 List packages used and versions
