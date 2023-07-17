@@ -1,5 +1,15 @@
 # PHS_penguin_team_project
  
+## Project description
+
+About the project, its purpose
+
+## Contributors
+
+About us
+
+## About the data
+ 
 This project uses data from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
 
 The Shiny dashboard presents data from the following specific datasets: 
@@ -19,4 +29,16 @@ Exploration notebooks also include work using these additional datasets:
   * Activity by Board of Treatment, Age and Sex: https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/00c00ecc-b533-426e-a433-42d79bdea5d4
   * Activity by Board of Treatment and Deprivation: https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/4fc640aa-bdd4-4fbe-805b-1da1c8ed6383
 
+## Running the app locally
+
+### Requirements
+
+List packages used and versions
+
+Instructions for how to run app - first run cleaning scripts to write new csvs into a cleaned_data folder, then run one of global, ui, server
+
+
+## Process / other contents
+
+What's in the repo, what does it do (in brief)
 
