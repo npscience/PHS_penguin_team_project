@@ -27,7 +27,7 @@ library(forcats)
 Explore discharges data
 
 ```{r}
-discharges <- read_csv("data/a_and_e/opendata_monthly_ae_discharge_202305.csv") %>% 
+discharges <- read_csv("../data/a_and_e/opendata_monthly_ae_discharge_202305.csv") %>% 
   clean_names()
 ```
 ```{r}
@@ -39,6 +39,14 @@ glimpse(discharges)
 ```
 
 67,895 rows with 10 variables
+
+```{r}
+# practise group_by then mutate to add average age per hbt col to all
+discharges %>% 
+  group_by(hbt) %>% 
+  mutate(average_atts = mean(number_of_attendances, na.rm = TRUE)) %>% 
+  ungroup()
+```
 
 
 ### Looking at qf - quality notes
