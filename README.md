@@ -19,6 +19,11 @@ To investigate seasonality, we focussed on A&E attendances, because we found a s
 
 About us
 
+## License
+
+for code
+for presentation
+
 ## About the data
  
 This project uses data from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
