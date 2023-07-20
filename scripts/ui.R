@@ -47,9 +47,10 @@ ui <- fluidPage(
              fluidRow(
                
                HTML("<br><br>"),
-               
-               tags$body("This dashboard uses ",a("Monthly A&E activity and waiting times data", href = "https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
-               )
+               column(width = 11.5,
+                      offset = 0.5,
+               tags$body("This dashboard uses ", a("Monthly A&E activity and waiting times data", href = "https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
+               ))
     ),
     
     
