@@ -84,3 +84,5 @@ Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the ope
 
 What's in the repo, what does it do (in brief)
 
+* Presentation: [PDF](presentation/Project_presentation.pdf) of the slides used for a 20-minute presentation to Codeclan instructors and fellow students in July 2023 (recording available on [Youtube](https://www.youtube.com/watch?v=r6ZMxNVfhYE))
+
