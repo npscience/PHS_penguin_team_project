@@ -4,6 +4,7 @@
 
 About the project, its purpose
 
+**Disclaimer:** this project was not requested by and had no involvement from Public Health Scotland or NHS Scotland, and any results or insights are not intended to be used in real life.
 
 From the data available, we were able to explore several key performance indicators (KPIs) of acute care provision, including client intake (A&E attendances and hospital admissions), measures of service workload within the service (wait times in A&E and for hospital treatment, length of stay, bed occupancy), and an outflow metric that affects service capacity and resources (delayed discharge).
 
@@ -22,6 +23,11 @@ Dashboard created during, CodeClan - Professional Data Analysis course, by:
 * Chiara Capresi - [GitHub](https://github.com/ChiaraCapresi?tab=repositories)
 * Naomi Penfold - [GitHub](https://github.com/npscience?tab=repositories)
 * Alistair Trucco - [GitHub](https://github.com/the-deadly-c0w?tab=repositories)
+
+## License
+
+for code
+for presentation
 
 ## About the data
  
@@ -52,7 +58,7 @@ Exploration notebooks also include work using these additional datasets:
 
 List packages used and versions
 
-r Packages used:
+r packages used over all scripts:
 
 tidyverse_2.0.0
 ggplot2_3.4.2
@@ -68,7 +74,7 @@ shiny_1.7.4
 Instructions for how to run app locally:
 
 1. **Download raw data:** download .csv data from websites above 
-2. **Prepare cleaned data:** run all 5 cleaning scripts (in any order) - these will write new csvs into data/cleaned_data folder within your project directory, which are required for:
+2. **Prepare cleaned data:** run all 5 cleaning scripts (in any order) - these will write new csvs into data/cleaned_data folder within your project directory, which are required for running the dashboard.
 3. **Run the R Shiny dashboard locally:** run one of global, ui, server scripts - the shiny dashboard should load in your web browser
 
 Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the open data webpages since this date may affect whether the cleaning scripts run as expected. (We have not included data validation steps... yet.)
