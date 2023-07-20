@@ -19,10 +19,10 @@ To investigate seasonality, we focussed on A&E attendances, because we found a s
 
 Dashboard created during, CodeClan - Professional Data Analysis course, by:
 
-* Thijmen Breeschoten - [GitHub](https://github.com/Thijmen18?tab=repositories)
-* Chiara Capresi - [GitHub](https://github.com/ChiaraCapresi?tab=repositories)
-* Naomi Penfold - [GitHub](https://github.com/npscience?tab=repositories)
-* Alistair Trucco - [GitHub](https://github.com/the-deadly-c0w?tab=repositories)
+* Thijmen Breeschoten - [GitHub](https://github.com/Thijmen18) and [LinkedIn](https://www.linkedin.com/in/thijmenbreeschoten/)
+* Chiara Capresi - [GitHub](https://github.com/ChiaraCapresi) and [LinkedIn](https://www.linkedin.com/in/chiara-capresi/)
+* Naomi Penfold - [GitHub](https://github.com/npscience) and [LinkedIn](https://www.linkedin.com/in/naomipenfold/)
+* Alistair Trucco - [GitHub](https://github.com/the-deadly-c0w) and [LinkedIn](https://www.linkedin.com/in/a-trucco/)
 
 ## License
 
