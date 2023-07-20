@@ -52,6 +52,19 @@ Exploration notebooks also include work using these additional datasets:
 
 List packages used and versions
 
+r Packages used:
+
+tidyverse_2.0.0
+ggplot2_3.4.2
+janitor_2.2.0
+lubridate_1.9.2
+bslib_0.4.2 
+plotly_4.10.2
+leaflet_2.1.2
+sf_1.0-13 
+shiny_1.7.4
+
+
 Instructions for how to run app locally:
 
 1. **Download raw data:** download .csv data from websites above 
