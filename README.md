@@ -16,7 +16,12 @@ To investigate seasonality, we focussed on A&E attendances, because we found a s
 
 ## Contributors
 
-About us
+Dashboard created during, CodeClan - Professional Data Analysis course, by:
+
+* Thijmen Breeschoten - [GitHub](https://github.com/Thijmen18?tab=projects)
+* Chiara Capresi - [GitHub](https://github.com/ChiaraCapresi?tab=projects)
+* Naomi Penfold - [GitHub](https://github.com/npscience?tab=projects)
+* Alistair Trucco - [GitHub](https://github.com/the-deadly-c0w?tab=projects)
 
 ## About the data
  
