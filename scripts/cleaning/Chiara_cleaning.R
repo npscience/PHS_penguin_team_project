@@ -5,15 +5,15 @@ library(lubridate)
 
 
 
-ha_demo <- read_csv("../PHS_penguin_team_project/data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
+ha_demo <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv") %>% 
   clean_names()
 
 
-ha_simd <- read_csv("../PHS_penguin_team_project/data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
+ha_simd <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_simd_20230706.csv") %>% 
   clean_names()
 
 
-map <- read_csv("../PHS_penguin_team_project/data/cleaned_data/hospital_locations_clean.csv") %>% 
+map <- read_csv("../data/cleaned_data/hospital_locations_clean.csv") %>% 
   clean_names()
 
 #First of all, I create a column called 'month_ending_date', which I want have a data format and contains simply the month, in this way I will be able to group the data by month and make the dataset consistent with the other datasets.
@@ -69,9 +69,9 @@ ha_for_join <- ha_demo %>%
 join_ha_map <- full_join(map, ha_for_join, by = "hb")
 
 
-write_csv(join_ha_map, "../PHS_penguin_team_project/data/cleaned_data/join_ha_map.csv")
+write_csv(join_ha_map, "../data/cleaned_data/join_ha_map.csv")
 
-write_csv(ha_demo, "../PHS_penguin_team_project/data/cleaned_data/ha_demo_clean.csv")
+write_csv(ha_demo, "../data/cleaned_data/ha_demo_clean.csv")
 
 
 

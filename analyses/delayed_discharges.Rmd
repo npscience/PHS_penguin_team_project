@@ -58,13 +58,28 @@ unique(delayed$hbt)
 #### Inspecting the difference over health boards (all ages)
 
 ```{r}
-delayed_no_reason %>% 
-  filter(age_group == "18plus") %>% 
+delayed %>% 
+  filter(age_group == "18plus",
+         reason_for_delay == "All Delay Reasons",
+         hbt == "S08000031") %>% 
   ggplot() +
   aes(x = month_of_delay,
       y = average_daily_number_of_delayed_beds,
       group = hbt, colour = hbt) +
-  geom_line()
+  geom_line(linewidth = 2, colour = "darkviolet") +
+        geom_point(size = 3, colour = "darkviolet") +
+      labs(title = "Average Daily Number of Delayed Beds",
+           x = "\nYear",
+           y = "Average Daily Number of Delayed Beds\n",
+           colour = "Age Group") +
+      theme(legend.position = "none",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20))
 ```
 
 
@@ -103,13 +118,22 @@ example of difference in ages for single health board
 
 ```{r}
 delayed_no_reason %>% 
-  filter(age_group != "18plus",
-         hbt == "S08000015") %>% 
+  filter(hbt == "S08000015") %>% 
   ggplot() +
   aes(x = month_of_delay,
       y = average_daily_number_of_delayed_beds,
       group = age_group, colour = age_group) +
-  geom_line() +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+        scale_colour_manual(values = c("springgreen3", "darkblue", "darkgreen")) +
+        theme(legend.position = "bottom",
+            panel.background = element_blank(),
+            panel.grid.minor.x = element_blank(),
+            panel.grid.minor.y = element_blank(),
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 12),
+            plot.title = element_text(size = 20)) +
   labs(title = "Average Daily Number of Delayed Beds",
            x = "\nYear", y = "average daily number of delayed beds\n",
        colour = "age group")
