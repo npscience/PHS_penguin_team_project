@@ -2,7 +2,7 @@
  
 ## Project description
 
-About the project, its purpose
+**TODO:** Intro sentence about the project and its purpose
 
 **Disclaimer:** this project was not requested by and had no involvement from Public Health Scotland or NHS Scotland, and any results or insights are not intended to be used in real life.
 
@@ -17,7 +17,7 @@ To investigate seasonality, we focussed on A&E attendances, because we found a s
 
 ## Contributors
 
-Dashboard created during, CodeClan - Professional Data Analysis course, by:
+Dashboard created during CodeClan - Professional Data Analysis course by:
 
 * Thijmen Breeschoten - [GitHub](https://github.com/Thijmen18) and [LinkedIn](https://www.linkedin.com/in/thijmenbreeschoten/)
 * Chiara Capresi - [GitHub](https://github.com/ChiaraCapresi) and [LinkedIn](https://www.linkedin.com/in/chiara-capresi/)
@@ -26,8 +26,9 @@ Dashboard created during, CodeClan - Professional Data Analysis course, by:
 
 ## License
 
+**TODO:** pick licenses, add license files & explain here
 for code
-for presentation
+for presentation - Ali's penguin!
 
 ## About the data
  
@@ -52,23 +53,21 @@ Exploration notebooks also include work using these additional datasets:
 
 ## Running the app locally
 
-<show snapshot of what it looks like?>
+**TODO:** <show snapshot of what it looks like?>
 
 ### Requirements
 
-List packages used and versions
+R packages used over all scripts:
 
-r packages used over all scripts:
-
-tidyverse_2.0.0
-ggplot2_3.4.2
-janitor_2.2.0
-lubridate_1.9.2
-bslib_0.4.2 
-plotly_4.10.2
-leaflet_2.1.2
-sf_1.0-13 
-shiny_1.7.4
+* tidyverse_2.0.0
+* ggplot2_3.4.2
+* janitor_2.2.0
+* lubridate_1.9.2
+* bslib_0.4.2 
+* plotly_4.10.2
+* leaflet_2.1.2
+* sf_1.0-13 
+* shiny_1.7.4
 
 
 Instructions for how to run app locally:
@@ -82,7 +81,7 @@ Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the ope
 
 ## Process / other contents
 
-What's in the repo, what does it do (in brief)
+**TODO:** What's in the repo, what does it do (in brief)
 
 * Presentation: [PDF](presentation/Project_presentation.pdf) of the slides used for a 20-minute presentation to Codeclan instructors and fellow students in July 2023 (recording available on [Youtube](https://www.youtube.com/watch?v=r6ZMxNVfhYE))
 
