@@ -17,7 +17,12 @@ To investigate seasonality, we focussed on A&E attendances, because we found a s
 
 ## Contributors
 
-About us
+Dashboard created during, CodeClan - Professional Data Analysis course, by:
+
+* Thijmen Breeschoten - [GitHub](https://github.com/Thijmen18?tab=projects)
+* Chiara Capresi - [GitHub](https://github.com/ChiaraCapresi?tab=projects)
+* Naomi Penfold - [GitHub](https://github.com/npscience?tab=projects)
+* Alistair Trucco - [GitHub](https://github.com/the-deadly-c0w?tab=projects)
 
 ## License
 
@@ -33,7 +38,7 @@ The Shiny dashboard presents data from the following specific datasets:
 * Monthly A&E activity and waiting times: https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times  
 * COVID-19 Wider Impacts - Hospital Admissions: https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions 
 * [for occupancy] Beds Information in Scotland: https://www.opendata.nhs.scot/dataset/hospital-beds-information 
-* Delayed Discharges in NHSScotland: https://www.opendata.nhs.scot/dataset/delayed-discharges-in-nhsscotland
+* Delayed Discharges in NHS Scotland: https://www.opendata.nhs.scot/dataset/delayed-discharges-in-nhsscotland
 * NHS Scotland Hospital Locations:
 https://www.opendata.nhs.scot/dataset/hospital-codes/resource/c698f450-eeed-41a0-88f7-c1e40a568acc
 
@@ -53,10 +58,23 @@ Exploration notebooks also include work using these additional datasets:
 
 List packages used and versions
 
+r packages used over all scripts:
+
+tidyverse_2.0.0
+ggplot2_3.4.2
+janitor_2.2.0
+lubridate_1.9.2
+bslib_0.4.2 
+plotly_4.10.2
+leaflet_2.1.2
+sf_1.0-13 
+shiny_1.7.4
+
+
 Instructions for how to run app locally:
 
 1. **Download raw data:** download .csv data from websites above 
-2. **Prepare cleaned data:** run all 5 cleaning scripts (in any order) - these will write new csvs into data/cleaned_data folder within your project directory, which are required for:
+2. **Prepare cleaned data:** run all 5 cleaning scripts (in any order) - these will write new csvs into data/cleaned_data folder within your project directory, which are required for running the dashboard.
 3. **Run the R Shiny dashboard locally:** run one of global, ui, server scripts - the shiny dashboard should load in your web browser
 
 Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the open data webpages since this date may affect whether the cleaning scripts run as expected. (We have not included data validation steps... yet.)

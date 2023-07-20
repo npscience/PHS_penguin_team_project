@@ -47,9 +47,10 @@ ui <- fluidPage(
              fluidRow(
                
                HTML("<br><br>"),
-               
-               tags$body("This dashboard uses ",a("Monthly A&E activity and waiting times data", href = "https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
-               )
+               column(width = 11.5,
+                      offset = 0.5,
+               tags$body("This dashboard uses ", a("Monthly A&E activity and waiting times data", href = "https://www.opendata.nhs.scot/dataset/monthly-accident-and-emergency-activity-and-waiting-times")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
+               ))
     ),
     
     
@@ -72,7 +73,15 @@ ui <- fluidPage(
              HTML("<br>"),
              fluidRow(
                "These plot shows the trend of hospital admissions over time, from the beginning of 2020 up to June 2023."
-             )
+             ),
+             
+             fluidRow(
+               
+               HTML("<br><br>"),
+               column(width = 11.5,
+                      offset = 0.5,
+                      tags$body("This dashboard uses data about", a("COVID-19 Wider Impacts - Hospital Admissions", href = "https://www.opendata.nhs.scot/dataset/covid-19-wider-impacts-hospital-admissions")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
+               ))
     ),
     
     # Tab 3: COVID impact on bed occupancy ----
@@ -94,7 +103,15 @@ ui <- fluidPage(
              HTML("<br>"),
              fluidRow(
                "These maps show % bed occupancy for the most recent quarter with data available (2022 Q4)"
-             )
+             ),
+             
+             fluidRow(
+               
+               HTML("<br><br>"),
+               column(width = 11.5,
+                      offset = 0.5,
+                      tags$body("This dashboard uses data on", a("Beds Information in Scotland", href = "https://www.opendata.nhs.scot/dataset/hospital-beds-information")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
+               ))
     ),
     
     # Tab 4: COVID impact on delayed discharges ----
@@ -115,7 +132,15 @@ ui <- fluidPage(
                       "Map of difference in means of average delayed discharge bed-days by health board before and after COVID-19. The points are more red in health boards where there are more delayed bed-days after covid than before"),
                column(width = 6,
                       "Splitting the data by age group, see the proportion of the effect on 75+ year olds as opposed to those of 74 or younger"),
-             )
+             ),
+             
+             fluidRow(
+               
+               HTML("<br><br>"),
+               column(width = 11.5,
+                      offset = 0.5,
+                      tags$body("This dashboard uses ", a("Delayed Discharges in NHS Scotland data", href = "https://www.opendata.nhs.scot/dataset/delayed-discharges-in-nhsscotland")," from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the ",a("Open Government Licence v3.0.", href = "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"))
+               ))
     )
   )
 )
