@@ -4,6 +4,16 @@
 
 About the project, its purpose
 
+
+From the data available, we were able to explore several key performance indicators (KPIs) of acute care provision, including client intake (A&E attendances and hospital admissions), measures of service workload within the service (wait times in A&E and for hospital treatment, length of stay, bed occupancy), and an outflow metric that affects service capacity and resources (delayed discharge).
+
+![Key indicators of acute care provision included in the available datasets](images/covid_kpis_all.drawio.png)
+
+To understand the impact of COVID-19 pandemic, we focused on three key indicators that cover the flow of clients into, within and out of hospital care: hospital admissions, bed occupancy, and delayed discharge.
+
+To investigate seasonality, we focussed on A&E attendances, because we found a seasonal pattern here (also in A&E wait times) whereas we did not find any seasonality in other indicators.
+
+
 ## Contributors
 
 About us
@@ -37,7 +47,13 @@ Exploration notebooks also include work using these additional datasets:
 
 List packages used and versions
 
-Instructions for how to run app - first run cleaning scripts to write new csvs into a cleaned_data folder, then run one of global, ui, server
+Instructions for how to run app locally:
+
+1. **Download raw data:** download .csv data from websites above 
+2. **Prepare cleaned data:** run all 5 cleaning scripts (in any order) - these will write new csvs into data/cleaned_data folder within your project directory, which are required for:
+3. **Run the R Shiny dashboard locally:** run one of global, ui, server scripts - the shiny dashboard should load in your web browser
+
+Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the open data webpages since this date may affect whether the cleaning scripts run as expected. (We have not included data validation steps... yet.)
 
 
 ## Process / other contents
