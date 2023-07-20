@@ -47,7 +47,13 @@ Exploration notebooks also include work using these additional datasets:
 
 List packages used and versions
 
-Instructions for how to run app - first run cleaning scripts to write new csvs into a cleaned_data folder, then run one of global, ui, server
+Instructions for how to run app locally:
+
+1. **Download raw data:** download .csv data from websites above 
+2. **Prepare cleaned data:** run all 5 cleaning scripts (in any order) - these will write new csvs into data/cleaned_data folder within your project directory, which are required for:
+3. **Run the R Shiny dashboard locally:** run one of global, ui, server scripts - the shiny dashboard should load in your web browser
+
+Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the open data webpages since this date may affect whether the cleaning scripts run as expected. (We have not included data validation steps... yet.)
 
 
 ## Process / other contents
