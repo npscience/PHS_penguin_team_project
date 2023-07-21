@@ -10,7 +10,7 @@ In this project we were asked to provide an analysis  of how acute care provisio
 
 ## Process
 
-As we reported, in a more detailed way in the documentation file, our main approach was that of starting with a deep analysis of the data avilable with a view to identifying KPIs that in our opinion might be significant for the client.
+Our main approach was that of starting with a deep analysis of the data avilable with a view to identifying KPIs that in our opinion might be significant for the client.
 
 Each of us worked separately to the cleaning and wrangling data operations necessary for producing visualisations and explanation for each one of the KPIs we selected during the setting stage, even if we planned regular update stages for sharing with the other group's members new goals, hypothesis and concerns.
 
