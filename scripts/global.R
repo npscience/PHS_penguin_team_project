@@ -1,6 +1,6 @@
 # global -----
 
-#library(shiny) # comment out in order to load it on shinyapps.io
+library(shiny)
 
 library(tidyverse)
 library(janitor)
