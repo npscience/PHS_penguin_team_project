@@ -9,7 +9,7 @@
 From the data available, we were able to explore several key performance indicators (KPIs) of acute care provision, including client intake (A&E attendances and hospital admissions), measures of service workload within the service (wait times in A&E and for hospital treatment, length of stay, bed occupancy), and an outflow metric that affects service capacity and resources (delayed discharge).
 
 ![Key indicators diagram. Image shows data metrics in boxes (which are described in the following text) with their relationships. For example, A&E wait times follow on from A&E attendances, while hospital admissions has an arrow into hospital occupancy.](images/covid_kpis_all.drawio.png)
-_Key indicators of acute care provision included in the available datasets_
+_Key indicators of acute care provision included in the available datasets._
 
 To understand the impact of COVID-19 pandemic, we focused on three key indicators that cover the flow of clients into, within and out of hospital care: hospital admissions, bed occupancy, and delayed discharge.
 
