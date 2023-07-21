@@ -6,8 +6,6 @@
 
 **Disclaimer:** this project was not requested by and had no involvement from Public Health Scotland or NHS Scotland, and any results or insights are not intended to be used in real life.
 
-**TODO:** add some screenshots here
-
 From the data available, we were able to explore several key performance indicators (KPIs) of acute care provision, including client intake (A&E attendances and hospital admissions), measures of service workload within the service (wait times in A&E and for hospital treatment, length of stay, bed occupancy), and an outflow metric that affects service capacity and resources (delayed discharge).
 
 ![Key indicators of acute care provision included in the available datasets](images/covid_kpis_all.drawio.png)
@@ -16,6 +14,13 @@ To understand the impact of COVID-19 pandemic, we focused on three key indicator
 
 To investigate seasonality, we focussed on A&E attendances, because we found a seasonal pattern here (also in A&E wait times) whereas we did not find any seasonality in other indicators.
 
+![Dashboard tab 1: Seasonality patterns in A&E attendances (lead: Thijmen Breeschoten)](images/dashboard_screenshots/tab1_seasonality_browser.png)
+
+![Dashboard tab 2: Impact of COVID-19 pandemic on hospital admissions (lead: Chiara Capresi). This shows the dropdown selector to choose health board: all 4 tabs are interactive and respond to this input selection.](images/dashboard_screenshots/tab2_admissions_dropdown.png)
+
+![Dashboard tab 3: Impact of COVID-19 pandemic on hospital occupancy (lead: Naomi Penfold). This shows the hover-over function on the leaflet map plots.](images/dashboard_screenshots/tab3_occupancy_map_hover.png)
+
+![Dashboard tab 4: Impact of COVID-19 pandemic on delayed discharges (lead: Alistair Trucco).](images/dashboard_screenshots/tab4_delayed_discharge.png)
 
 ## Contributors
 
