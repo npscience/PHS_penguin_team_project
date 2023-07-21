@@ -2,22 +2,20 @@
  
 ## Project description
 
-The project we are going to describe is a group project we were assigned during our CodeClan course. The group was composed by four people: Thijmen Breeschoten, Chiara Capresi, Naomi Penfold and Alistair Trucco. 
-
+The project we are going to describe is a group project we were assigned during our CodeClan course. The group was composed by four people Thijmen Breeschoten, Chiara Capresi, Naomi Penfold and Alistair Trucco. 
 In this project we were asked to provide an analysis  of how acute care provision changes by season (summer versus winter) and with the impact of the COVID-19 pandemic, using data from Public Health Scotland and NHS Scotland.
+As we reported, in a more detailed way, in the documentation file, our main approach was that of starting with a deep analysis of the data avilable with a view to identifying KPIs that in our opinion might be significant for the client.
+Each of us worked separately to the cleaning and wrangling data operations necessary for producing visualisations and explanation for each one of the KPIs we selected during the setting stage, even if we planned regular update stages for sharing with the other group's members new goals, hypothesis and concerns.
+
+
+**todo:** says it's a codeclan project, what the brief was.
 
 **Disclaimer:** this project was not requested by and had no involvement from Public Health Scotland or NHS Scotland, and any results or insights are not intended to be used in real life.
-
-## Process
-
-As we reported, in a more detailed way in the documentation file, our main approach was that of starting with a deep analysis of the data avilable with a view to identifying KPIs that in our opinion might be significant for the client.
-
-Each of us worked separately to the cleaning and wrangling data operations necessary for producing visualisations and explanation for each one of the KPIs we selected during the setting stage, even if we planned regular update stages for sharing with the other group's members new goals, hypothesis and concerns.
 
 From the data available, we were able to explore several key performance indicators (KPIs) of acute care provision, including client intake (A&E attendances and hospital admissions), measures of service workload within the service (wait times in A&E and for hospital treatment, length of stay, bed occupancy), and an outflow metric that affects service capacity and resources (delayed discharge).
 
 ![Key indicators diagram. Image shows data metrics in boxes (which are described in the following text) with their relationships. For example, A&E wait times follow on from A&E attendances, while hospital admissions has an arrow into hospital occupancy.](images/covid_kpis_all.drawio.png)
-_Key indicators of acute care provision included in the available datasets._
+_Key indicators of acute care provision included in the available datasets_
 
 To understand the impact of COVID-19 pandemic, we focused on three key indicators that cover the flow of clients into, within and out of hospital care: hospital admissions, bed occupancy, and delayed discharge.
 
@@ -92,6 +90,8 @@ Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the ope
 
 ## Other information
 
+**TODO:** What's in the repo, what does it do (in brief), any other process points
+
 __Individual contributions to the project__
 
 For this group project everyone contributed equally to the following tasks/activities:
@@ -143,4 +143,5 @@ __Presentation of the project and dashboard__
 
 As indicated above this project uses data from Public Health Scotland and NHS Scotland, which contains public sector information licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/).
 
-This project is licensed under the terms of the MIT license. Please find details in ```LICENSE.md``` within this repo.
+This project is licensed under the terms of the MIT license. Please find details in 
+```LICENSE.md``` within this repo.
