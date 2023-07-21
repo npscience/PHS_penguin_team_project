@@ -2,6 +2,12 @@
  
 ## Project description
 
+The project we are going to describe is a group project we were assigned during our CodeClan course. The group was composed by four people Thijmen Breeschoten, Chiara Capresi, Naomi Penfold and Alistair Trucco. 
+In this project we were asked to provide an analysis  of how acute care provision changes by season (summer versus winter) and with the impact of the COVID-19 pandemic, using data from Public Health Scotland and NHS Scotland.
+As we reported, in a more detailed way, in the documentation file, our main approach was that of starting with a deep analysis of the data avilable with a view to idntifying KPIs that in our opinion might be significant for the client.
+Each of us worked separately to the cleaning and wrangling data operations necessary for producing visualisations and explanation for each one of the KPIs we selected during the setting stage, even if we planned regular update stages for sharing with the other group's members new goals, hypothesis and concerns.
+
+
 **todo:** says it's a codeclan project, what the brief was.
 
 **Disclaimer:** this project was not requested by and had no involvement from Public Health Scotland or NHS Scotland, and any results or insights are not intended to be used in real life.
