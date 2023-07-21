@@ -1,12 +1,25 @@
 ---
-title: "Inpatient length of stay"
-output: html_notebook
+title: "Exploratory analysis: Inpatient length of stay"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+  pdf_document: default
 ---
+
+**PDA outcomes: 2.5. Exploratory data analysis, 2.6. Statistical analyses to identify patterns, trends and relationships in the dataset, and 2.7. Interpreting the results of statistical analysis**
+
+This notebook explores hospital inpatient data (length of stay, total stays). We did not continue to explore these metrics for the dashboard: we chose to focus on hospital occupancy as a KPI, instead of inpatient length of stay, and I did less statistical analysis for occupancy. However, this notebook shows the exploratory analysis I did as well as some statistical analyses and interpretations for inpatient length of stay. 
+
+In particular, see the "Explore: length of stay" section (with 3 subheadings) for three examples of generated statistics (mean, totals), exploratory plots and interpretations.
+
+Some starting Qs for exploration:
 
 Q1: how to get to "all acute" in this data (specialties)
 Q2: what's the difference in length of stay for WvS, covid?
 
-# 1. Wrangle for all acute
+# set up and data wrangling
 
 ```{r}
 library(tidyverse)
@@ -45,9 +58,7 @@ And:
 
 From the 31 specialties in this dataset, even though some of these specialties deal with longer term care and/or chronic conditions (such as geriatric medicine), we are not excluding any specialties, since they are included in the broad definition of 'acute' hospital care.
 
-# Data --> insights
-
-## Data we have
+# Understanding the data we have
 
 The data we have is inpatient and day case 
 
@@ -55,7 +66,7 @@ The data we have is inpatient and day case
 * deprivation - "Deprivation breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients" https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/4fc640aa-bdd4-4fbe-805b-1da1c8ed6383
 * specialty - "Specialty breakdown for inpatient and daycase activity (episode and stays) by health board of treatment of the patients." https://www.opendata.nhs.scot/dataset/inpatient-and-daycase-activity/resource/c3b4be64-5fb4-4a2f-af41-b0012f0a276a
 
-## Qs to ask
+**What Qs can we ask?**
 
 We can look at any of these to see overall activity over time, and look into winter/summer and COVID impacts:
 
@@ -78,9 +89,7 @@ Some Qs from the brief:
 * Are there specialties that have more stable activity patterns over time and how much of an impact is stability on overall activity?
 * How significant are the differences in hospital activity across the country? Does urban/rural have an impact or is it related to the size and capacity of the health board?
 
-## Hospital activity by season
-
-Look at total activity, by quarter (this is what it is grouped by)
+Look at hospital activity by season, total activity, by quarter (this is what it is grouped by)
 
 ```{r cleaning}
 inpatients_age_sex <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv") %>% 
@@ -99,14 +108,14 @@ Interesting variables:
 * episodes, length of episode, average length of episode
 * stays, length of stays, average length of stays
 
-### admission type
+# Explore: admission type
 
 ```{r}
 inpatients_deprivation %>% 
   distinct(admission_type)
 ```
 
-### stay / spell / episode stats
+# Explore: length of stay
 
 Specialty data contains length of episode, length of spell
 Deprivation data contains length of episode, length of stay
@@ -129,49 +138,52 @@ Not sure how length of episode fits in here (not defined in glossary).
 
 Let's look at length of stay first. Length of spell or episode could be interesting if looking at individual specialties.
 
-Q1 v Q3 for seasonality
+## length of stay ~ seasonality
+
+Compare Q1 v Q3 for seasonality
 
 ```{r}
 head(inpatients_deprivation)
 ```
 
 ```{r wrangling}
+## PDA outcomes 2.5, 2.6 and 2.7
 # generate stays data for all health boards to compare individual hbs to
 all_hbs_stays <- inpatients_deprivation %>% 
+  # calculate mean_length_of_stay per quarter
   group_by(quarter) %>% 
   summarise(stays = sum(stays),
             length_of_stay = sum(length_of_stay),
-            average_length_of_stay = length_of_stay / stays) %>% 
+            mean_length_of_stay = length_of_stay / stays) %>% 
   mutate(hb = "All health boards", .after = quarter)
 
 # select same columns from original df
 stays_per_hb <- inpatients_deprivation %>% 
-  # check group by
   group_by(hb, quarter) %>% 
   summarise(stays = sum(stays),
             length_of_stay = sum(length_of_stay),
-            average_length_of_stay = length_of_stay / stays) %>% 
-  select(quarter, hb, stays, length_of_stay, average_length_of_stay)
+            mean_length_of_stay = length_of_stay / stays) %>% 
+  select(quarter, hb, stays, length_of_stay, mean_length_of_stay)
 
 # combine all_hbs data with individual hbs data
 stays <- bind_rows(all_hbs_stays, stays_per_hb)
-```
 
-
-```{r}
+# plot mean length of stay for all health boards
 stays %>% 
   filter(hb == "All health boards") %>% 
   ggplot() +
-  aes(x = quarter, y = average_length_of_stay, colour = hb) +
+  aes(x = quarter, y = mean_length_of_stay, colour = hb) +
   geom_line() +
   geom_point()
 ```
+**Interpretation:** the mean length of stay per quarter does seem to vary, but there is no clear seasonal pattern (i.e. Q1 is not alway the highest). Also there is a big increase in 2020, likely due to COVID-19 inpatients, and this peak dominates the overall trend for the data available (2017-2022).
 
-try to understand what affects length of stay - look at type of admission, specialty
+Next, explore to try to understand what affects length of stay - look at type of admission and index of deprivation:
 
-### drivers of length of stay (demographics, specialty)
+## length of stay ~ type of admission
 
 ```{r}
+## PDA outcomes 2.5, 2.6 and 2.7
 # average length of stay by admission type
 inpatients_deprivation %>% 
   filter(average_length_of_stay < 100) %>% 
@@ -180,9 +192,12 @@ inpatients_deprivation %>%
   geom_boxplot()
 ```
 
-Admission type doesn't look to change average length of stay that much, just the range within each is different (not specified has longer tail, and wider IQR).
+**Interpretation:** The range within each is different (not specified has longer tail, and wider inter-quartile range, IQR). There may be a difference to explore between elective and emergency inpatients - these are the most different, the IQRs do not overlap. Because we did not continue to explore this for the dashboard, I did not explore this further.
+
+## length of stay ~ index of deprivation
 
 ```{r}
+## PDA outcomes 2.5, 2.6 and 2.7
 # number of stays per SIMD by admission type over time
 inpatients_deprivation %>%
   group_by(admission_type, quarter, simd) %>% 
@@ -195,8 +210,11 @@ inpatients_deprivation %>%
   theme(legend.position = "bottom",
         panel.background = element_blank())
 ```
+**Interpretation:** Across all years, people in lowest index of deprivation (1) have the most stays in hospital, and those in the least deprived have the fewest number of stays): the general trend is that the more deprived, the more stays.
 
-### episodes by specialty
+Total stays dipped in Q1 2020 for all deprivation levels, due to the impact of COVID-19, maybe because people were not being admitted unless that had to be. the number of stays has started to return to pre-covid baseline, but has not returned fully to this level, and the greatest difference pre- and post-covid is in the highest deprivation group (SIMD 1).
+
+# Explore: episodes by specialty
 
 ```{r}
 inpatients_specialty %>% 
@@ -240,7 +258,9 @@ inpatients_specialty %>%
 ```
 
 
-### who is impacted by W/S / covid patterns
+# Further Qs
+
+Who is impacted by W/S / covid patterns?
 
 Are there key patient groups driving/most affected by any seasonal pattern?
 

@@ -28,7 +28,7 @@ library(lubridate)
 Explore discharges data
 
 ```{r}
-discharges <- read_csv("data/a_and_e/opendata_monthly_ae_discharge_202305.csv") %>% 
+discharges <- read_csv("../data/a_and_e/opendata_monthly_ae_discharge_202305.csv") %>% 
   clean_names()
 ```
 ```{r}
@@ -100,7 +100,7 @@ unique(discharges$department_type)
 ## Attendances, demographics ----
 
 ```{r}
-demographics <- read_csv("data/a_and_e/opendata_monthly_ae_demographics_202305.csv") %>% 
+demographics <- read_csv("../data/a_and_e/opendata_monthly_ae_demographics_202305.csv") %>% 
   clean_names()
 ```
 
@@ -124,7 +124,7 @@ demographics %>%
   theme(panel.background = element_blank())
 ```
 ```{r}
-ggsave("monthly_attendances_A&E_hb.png")
+ggsave("../images/exploratory_plots/monthly_attendances_A&E_hb.png")
 ```
 
 ```{r}
@@ -141,7 +141,7 @@ demographics %>%
 ```
 
 ```{r}
-ggsave("monthly_attendances_A&E_hb_before2020.png")
+ggsave("../images/exploratory_plots/monthly_attendances_A&E_hb_before2020.png")
 ```
 
 ### monthly A&E atts by depriv
@@ -190,7 +190,7 @@ demographics %>%
 ## Referral ----
 
 ```{r}
-referral <- read_csv("data/a_and_e/opendata_monthly_ae_referral_202305.csv")
+referral <- read_csv("../data/a_and_e/opendata_monthly_ae_referral_202305.csv")
 ```
 
 ```{r}
@@ -202,7 +202,7 @@ Referral gives how they were referred into the A&E (frequency of method)
 ## When ----
 
 ```{r}
-when <- read_csv("data/a_and_e/opendata_monthly_ae_when_202305.csv")
+when <- read_csv("../data/a_and_e/opendata_monthly_ae_when_202305.csv")
 ```
 
 ```{r}
@@ -220,12 +220,12 @@ the ..._when_... data file gives the number of attendances by time of day (1h bu
 library(sf)
 ```
 
-```{r}
-hb_geo <- st_read(dsn = "data/map/healthboard_geo/",
+```{r, eval = FALSE}
+hb_geo <- st_read(dsn = "../data/map/healthboard_geo/",
                   layer = "SG_NHS_HealthBoards_2019")
 ```
 
-```{r}
+```{r, eval = FALSE}
 plot(hb_geo)
 ```
 
@@ -236,7 +236,7 @@ plot(hb_geo)
 ## inpatient by age and sex
 
 ```{r}
-inpatient_age_and_sex <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv")
+inpatient_age_and_sex <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_age_and_sex.csv")
 ```
 
 ```{r}
@@ -271,7 +271,7 @@ inpatient_age_and_sex %>%
 ## inpatient ...
 
 ```{r}
-inpatient_specialty <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
+inpatient_specialty <- read_csv("../data/inpatient/inpatient_and_daycase_by_nhs_board_of_treatment_and_specialty.csv")
 ```
 
 
@@ -280,7 +280,7 @@ inpatient_specialty <- read_csv("data/inpatient_and_daycase_by_nhs_board_of_trea
 ## Hospital admissions during covid by age, sex
 
 ```{r}
-covid_age_sex <- read_csv("data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv")
+covid_age_sex <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_agesex_20230706.csv")
 ```
 
 ```{r}
@@ -309,17 +309,17 @@ with a comparator to same week in 2018/2019 (average of the two years)
 
 Can look at emergency admissions and see % variation from 2018/2019 average
 
-## hosp admissins by specialty?
+## hosp admissions by specialty?
 
 ```{r}
-covid_speciality <- read_csv("data/covid/hospital_admissions/hospital_admissions_hb_specialty_20230706.csv")
+covid_speciality <- read_csv("../data/covid/hospital_admissions/hospital_admissions_hb_specialty_20230706.csv")
 ```
 
 
 # Treatment wait times
 
 ```{r}
-performance_completed_treatment_waits <- read_csv("data/treatment_waiting_times/sot_performance_completed_waits_mar23.csv") %>% 
+performance_completed_treatment_waits <- read_csv("../data/treatment_waiting_times/sot_performance_completed_waits_mar23.csv") %>% 
   clean_names()
 ```
 
@@ -335,7 +335,7 @@ performance_completed_treatment_waits %>%
 ```
 
 ```{r}
-specialty_codes <- read_csv("data/reference_lookup_tables/specialty-reference.csv") %>% 
+specialty_codes <- read_csv("../data/reference_lookup_tables/specialty-reference.csv") %>% 
   clean_names()
 
 specialty_codes %>% 
@@ -377,14 +377,7 @@ filter for speciality
 look over time
 
 ```{r}
-performance_completed_treatment_waits %>% 
-  summarise(sum)
-```
-
-
-
-```{r}
-distribution_completed_treatment_waits <- read_csv("data/treatment_waiting_times/sot_distribution_of_completed_waits_mar23.csv") %>% 
+distribution_completed_treatment_waits <- read_csv("../data/treatment_waiting_times/sot_distribution_of_completed_waits_mar23.csv") %>% 
   clean_names()
 ```
 
