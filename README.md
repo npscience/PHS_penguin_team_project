@@ -72,7 +72,6 @@ R packages used over all scripts:
 
 Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the open data webpages since this date may affect whether the cleaning scripts run as expected. (We have not included data validation steps... yet.)
 
-
 ## Other information
 
 **TODO:** What's in the repo, what does it do (in brief), any other process points
