@@ -2,9 +2,11 @@
  
 ## Project description
 
-**TODO:** Intro sentence about the project and its purpose
+**todo:** says it's a codeclan project, what the brief was.
 
 **Disclaimer:** this project was not requested by and had no involvement from Public Health Scotland or NHS Scotland, and any results or insights are not intended to be used in real life.
+
+**TODO:** add some screenshots here
 
 From the data available, we were able to explore several key performance indicators (KPIs) of acute care provision, including client intake (A&E attendances and hospital admissions), measures of service workload within the service (wait times in A&E and for hospital treatment, length of stay, bed occupancy), and an outflow metric that affects service capacity and resources (delayed discharge).
 
@@ -23,12 +25,6 @@ Dashboard created during CodeClan - Professional Data Analysis course by:
 * Chiara Capresi - [GitHub](https://github.com/ChiaraCapresi) and [LinkedIn](https://www.linkedin.com/in/chiara-capresi/)
 * Naomi Penfold - [GitHub](https://github.com/npscience) and [LinkedIn](https://www.linkedin.com/in/naomipenfold/)
 * Alistair Trucco - [GitHub](https://github.com/the-deadly-c0w) and [LinkedIn](https://www.linkedin.com/in/a-trucco/)
-
-## License
-
-**TODO:** pick licenses, add license files & explain here
-for code
-for presentation - Ali's penguin!
 
 ## About the data
  
@@ -53,8 +49,6 @@ Exploration notebooks also include work using these additional datasets:
 
 ## Running the app locally
 
-**TODO:** <show snapshot of what it looks like?>
-
 ### Requirements
 
 R packages used over all scripts:
@@ -70,7 +64,7 @@ R packages used over all scripts:
 * shiny_1.7.4
 
 
-Instructions for how to run app locally:
+### How to run the app locally
 
 1. **Download raw data:** download .csv data from websites above 
 2. **Prepare cleaned data:** run all 5 cleaning scripts (in any order) - these will write new csvs into data/cleaned_data folder within your project directory, which are required for running the dashboard.
@@ -79,9 +73,9 @@ Instructions for how to run app locally:
 Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the open data webpages since this date may affect whether the cleaning scripts run as expected. (We have not included data validation steps... yet.)
 
 
-## Process / other contents
+## Other information
 
-**TODO:** What's in the repo, what does it do (in brief)
+**TODO:** What's in the repo, what does it do (in brief), any other process points
 
 * Presentation: [PDF](presentation/Project_presentation.pdf) of the slides used for a 20-minute presentation to Codeclan instructors and fellow students in July 2023 (recording available on [Youtube](https://www.youtube.com/watch?v=r6ZMxNVfhYE))
 
