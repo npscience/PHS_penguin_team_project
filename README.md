@@ -6,16 +6,26 @@
 
 **Disclaimer:** this project was not requested by and had no involvement from Public Health Scotland or NHS Scotland, and any results or insights are not intended to be used in real life.
 
-**TODO:** add some screenshots here
-
 From the data available, we were able to explore several key performance indicators (KPIs) of acute care provision, including client intake (A&E attendances and hospital admissions), measures of service workload within the service (wait times in A&E and for hospital treatment, length of stay, bed occupancy), and an outflow metric that affects service capacity and resources (delayed discharge).
 
-![Key indicators of acute care provision included in the available datasets](images/covid_kpis_all.drawio.png)
+![Key indicators diagram. Image shows data metrics in boxes (which are described in the following text) with their relationships. For example, A&E wait times follow on from A&E attendances, while hospital admissions has an arrow into hospital occupancy.](images/covid_kpis_all.drawio.png)
+_Key indicators of acute care provision included in the available datasets_
 
 To understand the impact of COVID-19 pandemic, we focused on three key indicators that cover the flow of clients into, within and out of hospital care: hospital admissions, bed occupancy, and delayed discharge.
 
 To investigate seasonality, we focussed on A&E attendances, because we found a seasonal pattern here (also in A&E wait times) whereas we did not find any seasonality in other indicators.
 
+![Screenshot of dashboard tab 1, with the selector at the top, 4 horizontal tabs, tab 1 selected, showing the 4 plots on tab 1.](images/dashboard_screenshots/tab1_seasonality_browser.png)
+_Dashboard tab 1: Seasonality patterns in A&E attendances (lead: Thijmen Breeschoten)_
+
+![Screenshot of dashboard tab 2, with the selector at the top, 4 horizontal tabs, tab 2 selected, showing a map plot on the left and two time series plots on the right, one for overall admissions and one showing amdissions for three different age categories. This image also shows the dropdown selector opened, with a list of health boards showing and one selected and highlighted in blue.](images/dashboard_screenshots/tab2_admissions_dropdown.png)
+_Dashboard tab 2: Impact of COVID-19 pandemic on hospital admissions (lead: Chiara Capresi). This shows the dropdown selector to choose health board: all 4 tabs are interactive and respond to this input selection._
+
+![Screenshot of dashboard tab 3, with the selector at the top, 4 horizontal tabs, tab 3 selected, showing two map plots on the left and a time series plot on the right. This image also shows the cursor positioned over a point on the second (and central) map plot with an information label showing that names the hospital at that location and its percentage occupancy.](images/dashboard_screenshots/tab3_occupancy_map_hover.png)
+_Dashboard tab 3: Impact of COVID-19 pandemic on hospital occupancy (lead: Naomi Penfold). This shows the hover-over function on the leaflet map plots._
+
+![Screenshot of dashboard tab 4, with the selector at the top, 4 horizontal tabs, tab 4 selected, showing a map plot on the left and a time series plot on the right.](images/dashboard_screenshots/tab4_delayed_discharge.png)
+_Dashboard tab 4: Impact of COVID-19 pandemic on delayed discharges (lead: Alistair Trucco)._
 
 ## Contributors
 
@@ -71,7 +81,6 @@ R packages used over all scripts:
 3. **Run the R Shiny dashboard locally:** run one of global, ui, server scripts - the shiny dashboard should load in your web browser
 
 Note we downloaded the raw data files on ~July 7-14 2023. Any updates to the open data webpages since this date may affect whether the cleaning scripts run as expected. (We have not included data validation steps... yet.)
-
 
 ## Other information
 
