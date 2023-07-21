@@ -5,6 +5,6 @@ account: naomipenfold
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9489584
-bundleId: 7483086
+bundleId: 7483120
 url: https://naomipenfold.shinyapps.io/scripts/
 version: 1
