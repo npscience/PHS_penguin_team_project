@@ -1,6 +1,11 @@
 ---
 title: "Plots for covid time series"
-output: html_notebook
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+  pdf_document: default
 ---
 
 # Library calls
@@ -311,7 +316,7 @@ Starting point: analyses/thijmen_exploring_beds.Rmd
 
 
 ## plot occupancy hb v scotland on ts
-
+**Naomi - PDA outcomes: 2.5. Exploratory data analysis, 2.6. Statistical analyses to identify patterns, trends and relationships in the dataset, and 2.7. Interpreting the results of statistical analysis**
 ```{r}
 # naomi
 # load in data
@@ -322,15 +327,16 @@ beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>%
 # generate occupancy data for all health boards to compare individual hbs to
 all_hbs_occupancy <- beds %>% 
   group_by(quarter) %>% 
+  # calculate quarterly proportion (% occupancy) for all hbs
   summarise(total_occupied_beddays = sum(total_occupied_beddays),
             all_staffed_beddays = sum(all_staffed_beddays)) %>% 
   mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays),
          hb = "All health boards", .after = quarter)
 
-
 # select same columns from original df
 occupancy_per_hb <- beds %>% 
   group_by(hb, quarter) %>% 
+  # calculate quarterly proportion (% occupancy) per hbs
  summarise(total_occupied_beddays = sum(total_occupied_beddays),
             all_staffed_beddays = sum(all_staffed_beddays)) %>% 
   mutate(percentage_occupancy = 100 * (total_occupied_beddays / all_staffed_beddays))
@@ -363,6 +369,9 @@ occupancy %>%
   #       )
 ```
 
+**Interpretation:** bed occupancy differs by health board, e.g. here we can see it is higher than the national average (red, "All health boards") for health board 15 (blue) and usually lower for health board 25 (green). All health boards see a dip in occupancy in Q2 2020, due to COVID. The return to pre-covid occupancy levels also seems to differ by health board - this is an interesting one to show on the dashboard.
+
+
 ## heatmap for occupancy
 
 * is there hospitals in the data? yes
@@ -374,7 +383,7 @@ library(shiny)
 
  # load in hospitals data
 ## hospitals for map
-hospitals <- read_csv("../data/map/hospital_locations_clean.csv")
+hospitals <- read_csv("../data/cleaned_data/hospital_locations_clean.csv")
 
 ### colour palette for hospitals on map
 pal <- colorFactor(c("navy", "blue", "steelblue", "skyblue",
@@ -392,6 +401,7 @@ beds <- read_csv("../data/beds_by_nhs_board_of_treatment_and_specialty.csv") %>%
   clean_names() %>% 
   mutate(quarter = zoo::as.yearqtr(quarter))
 ```
+
 ```{r}
 # data prep script for occupancy heatmap
 most_recent_quarter <- beds %>% 
